@@ -5,7 +5,7 @@
 ###############################################################################
 
 # Configure Host And Target Platform
-ARCH=i686
+ARCH=i386
 CROSS=i686-elf
 
 # Compile Flags
