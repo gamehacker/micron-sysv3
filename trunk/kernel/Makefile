@@ -18,24 +18,23 @@ CC=$(CROSS)-gcc $(CCFLAGS)
 LD=$(CROSS)-ld  $(LDFLAGS)
 export AS CC LD
 
+# Include Target Platform Makefile
 include arch/$(ARCH)/Makefile
 
 # Targets
-all:
+kernel.bin:$(OBJECTS)
+	@echo "[TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@
+
+clean:
+	@echo "[REMOVE] $(OBJECTS) kernel.bin"; rm $(OBJECTS) kernel.bin
+
+help:
 	@echo "****************************************************************"
 	@echo "Before the build process, please setup the following variables:"
 	@echo "    ARCH  - Target architecture(see directory names under arch)"
 	@echo "    CROSS - Cross compiler prefix"
 	@echo "Then type: make image"
 	@echo "****************************************************************"
-
-image: kernel.bin
-
-kernel.bin:$(OBJECTS)
-	@echo "[TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o kernel.bin
-
-clean:
-	@echo "[REMOVE] $(OBJECTS) kernel.bin"; rm $(OBJECTS) kernel.bin
 
 # Standard Procedures
 .s.o:
