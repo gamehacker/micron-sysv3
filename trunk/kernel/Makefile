@@ -11,15 +11,20 @@ CROSS=i686-elf
 # Compile Flags
 ASFLAGS=-g
 CCFLAGS=-Wall -g -Iinclude
+CXXFLAGS=-Wall -g -Iinclude
 
 # Toolchain Configuration
 AS=$(CROSS)-as  $(ASFLAGS)
 CC=$(CROSS)-gcc $(CCFLAGS)
+CXX=$(CROSS)-c++ $(CXXFLAGS)
 LD=$(CROSS)-ld  $(LDFLAGS)
-export AS CC LD
+export AS CC CXX LD
 
 # Include Target Platform Makefile
 include arch/$(ARCH)/Makefile
+
+# Portable Kernel Objective Code Targets
+OBJECTS+=
 
 # Targets
 kernel.bin:$(OBJECTS)
@@ -42,4 +47,7 @@ help:
 
 .c.o:
 	@echo "[TARGETCC] $@"; $(CC) -c -o $@ $<
+
+.cc.o:
+	@echo "[TARGETCXX] $@"; $(CXX) -c -o $@ $<
 
