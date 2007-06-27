@@ -24,7 +24,7 @@ export AS CC CXX LD
 include arch/$(ARCH)/Makefile
 
 # Portable Kernel Objective Code Targets
-OBJECTS+=
+OBJECTS+=test.o
 
 # Targets
 kernel.bin:$(OBJECTS)
@@ -38,7 +38,7 @@ help:
 	@echo "Before the build process, please setup the following variables:"
 	@echo "    ARCH  - Target architecture(see directory names under arch)"
 	@echo "    CROSS - Cross compiler prefix"
-	@echo "Then type: make image"
+	@echo "Then type: make kernel.bin"
 	@echo "****************************************************************"
 
 # Standard Procedures

@@ -1,4 +1,4 @@
-OUTPUT_FORMAT(binary)
+OUTPUT_FORMAT(elf32-i386)
 ENTRY(init)
 
 phys_begin = 0x100000;
@@ -24,5 +24,23 @@ SECTIONS
 		*(.bss)
 		. = ALIGN(page_align);
 	}
-	end = . ;
+	.inittab : AT(phys_begin + (inittab - code))
+	{
+		inittab = . ;
+		*(.inittab)
+		. = ALIGN(page_align);
+	}
+	.exittab : AT(phys_begin + (exittab - code))
+	{
+		exittab = . ;
+		*(.exittab)
+		. = ALIGN(page_align);
+	}
+	.exporttab : AT(phys_begin + (exporttab - code))
+	{
+		exporttab = . ;
+		*(.exporttab)
+		. = ALIGN(page_align);
+	}
+	kernel_end = . ;
 }
