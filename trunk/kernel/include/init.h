@@ -21,6 +21,6 @@ struct _exportitem
 {
 	char name[MAX_EXPSYMLEN];
 	int  value;
-}
+};
 
 #endif
