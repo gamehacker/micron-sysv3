@@ -13,6 +13,8 @@ all:
 		make --no-print-directory -C library
 	@echo "Building application..."; \
 		make --no-print-directory -C application
+	@echo "Building image tool..."; \
+		make --no-print-directory -C image
 	@echo "Installing bootloader..."; \
 		cp bootloader/bootloader.bin rootfs/system/
 	@echo "Installing kernel..."; \
@@ -27,6 +29,8 @@ clean:
 		make --no-print-directory -C kernel clean
 	@-echo "Cleaning library..."; \
 		make --no-print-directory -C library clean
+	@-echo "Cleaning image tool..."; \
+		make --no-print-directory -C image clean
 	@-echo "Cleaning application..."; \
 		make --no-print-directory -C application clean
 
