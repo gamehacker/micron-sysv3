@@ -1,42 +1,42 @@
-OUTPUT_FORMAT(elf32-i386)
+OUTPUT_FORMAT(binary)
 ENTRY(init)
 
-phys_begin = 0x100000;
+kernel_begin = 0x100000;
 page_align = 0x1000;
 
 SECTIONS
 {
-	.text phys_begin : AT(phys_begin)
+	.text kernel_begin : AT(kernel_begin)
 	{
 		code = . ;
 		*(.text)
 		. = ALIGN(page_align);
 	}
-	.data : AT(phys_begin + (data - code))
+	.data : AT(kernel_begin + (data - code))
 	{
 		data = . ;
 		*(.data)
 		. = ALIGN(page_align);
 	}
-	.bss : AT(phys_begin + (bss - code))
+	.bss : AT(kernel_begin + (bss - code))
 	{
 		bss = . ;
 		*(.bss)
 		. = ALIGN(page_align);
 	}
-	.inittab : AT(phys_begin + (inittab - code))
+	.inittab : AT(kernel_begin + (inittab - code))
 	{
 		inittab = . ;
 		*(.inittab)
 		. = ALIGN(page_align);
 	}
-	.exittab : AT(phys_begin + (exittab - code))
+	.exittab : AT(kernel_begin + (exittab - code))
 	{
 		exittab = . ;
 		*(.exittab)
 		. = ALIGN(page_align);
 	}
-	.exporttab : AT(phys_begin + (exporttab - code))
+	.exporttab : AT(kernel_begin + (exporttab - code))
 	{
 		exporttab = . ;
 		*(.exporttab)

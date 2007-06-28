@@ -24,21 +24,29 @@ export AS CC CXX LD
 include arch/$(ARCH)/Makefile
 
 # Portable Kernel Objective Code Targets
-OBJECTS+=test.o
+OBJECTS+=
 
 # Targets
-kernel.bin:$(OBJECTS)
-	@echo "[TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@
+all: bootloader kernel
+
+bootloader: $(BOOTOBJS)
+	@echo "[TARGETLD] $@"; $(LD) $(BOOTOBJS) -T$(BLLDSCRIPT) -o$@.bin
+	@echo; echo "=== BOOTLOADER COMPLETED ==="; echo
+
+kernel:$(OBJECTS)
+	@echo "[TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
+	@echo; echo "=== KERNEL COMPLETED ==="; echo
 
 clean:
-	@echo "[REMOVE] $(OBJECTS) kernel.bin"; rm $(OBJECTS) kernel.bin
+	@echo "[REMOVE] $(OBJECTS) $(BOOTOBJS) kernel.bin"; \
+		rm $(OBJECTS) $(BOOTOBJS) bootloader.bin kernel.bin
 
 help:
 	@echo "****************************************************************"
 	@echo "Before the build process, please setup the following variables:"
 	@echo "    ARCH  - Target architecture(see directory names under arch)"
 	@echo "    CROSS - Cross compiler prefix"
-	@echo "Then type: make kernel.bin"
+	@echo "Then type: make all"
 	@echo "****************************************************************"
 
 # Standard Procedures
