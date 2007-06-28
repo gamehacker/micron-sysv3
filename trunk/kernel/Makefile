@@ -1,6 +1,6 @@
 ###############################################################################
-# Micron Kernel Build Environment
-# Copyright (C) 2007, Martin Tang
+# Micron System V3 Kernel Build Environment
+# Copyright (C) 2007, Huaxin Tang
 # martintang25 AT gmail.com
 ###############################################################################
 
@@ -31,11 +31,9 @@ all: bootloader kernel
 
 bootloader: $(BOOTOBJS)
 	@echo "[TARGETLD] $@"; $(LD) $(BOOTOBJS) -T$(BLLDSCRIPT) -o$@.bin
-	@echo; echo "=== BOOTLOADER COMPLETED ==="; echo
 
 kernel:$(OBJECTS)
 	@echo "[TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
-	@echo; echo "=== KERNEL COMPLETED ==="; echo
 
 clean:
 	@echo "[REMOVE] $(OBJECTS) $(BOOTOBJS) kernel.bin"; \
