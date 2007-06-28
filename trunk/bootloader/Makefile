@@ -1,5 +1,5 @@
 ###############################################################################
-# Micron System V3 Kernel Build Environment
+# Micron System V3 Bootloader Build Environment
 # Copyright (C) 2007, Huaxin Tang
 # martintang25 AT gmail.com
 ###############################################################################
@@ -21,20 +21,20 @@ LD=$(CROSS)-ld  $(LDFLAGS)
 export AS CC CXX LD
 
 # Include Target Platform Makefile
-include arch/$(ARCH)/Makefile
+include $(ARCH)/Makefile
 
-# Portable Kernel Objective Code Targets
+# Portable Objective Code Targets
 OBJECTS+=
 
 # Targets
-all: kernel
+all: bootloader
 
-kernel:$(OBJECTS)
+bootloader:$(OBJECTS)
 	@echo "  [TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
 
 clean:
-	@echo "  [REMOVE] $(OBJECTS) kernel.bin"; \
-		rm $(OBJECTS) kernel.bin
+	@echo "  [REMOVE] $(OBJECTS) bootloader.bin"; \
+		rm $(OBJECTS) bootloader.bin
 
 help:
 	@echo "****************************************************************"

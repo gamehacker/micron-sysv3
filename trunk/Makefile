@@ -1,0 +1,32 @@
+###############################################################################
+# Micron System V3 Platform Builder
+# Copyright (C) 2007, Huaxin Tang
+# martintang25 AT gmail.com
+###############################################################################
+
+all:
+	@echo "Building bootloader..."; \
+		make --no-print-directory -C bootloader
+	@echo "Building kernel..."; \
+		make --no-print-directory -C kernel
+	@echo "Building library..."; \
+		make --no-print-directory -C library
+	@echo "Building application..."; \
+		make --no-print-directory -C application
+	@echo "Installing bootloader..."; \
+		cp bootloader/bootloader.bin rootfs/system/
+	@echo "Installing kernel..."; \
+		cp kernel/kernel.bin rootfs/system/
+
+clean:
+	@-echo "Cleaning rootfs..."; \
+		rm -r rootfs/system/* rootfs/program/*
+	@-echo "Cleaning bootloader..."; \
+		make --no-print-directory -C bootloader clean
+	@-echo "Cleaning kernel..."; \
+		make --no-print-directory -C kernel clean
+	@-echo "Cleaning library..."; \
+		make --no-print-directory -C library clean
+	@-echo "Cleaning application..."; \
+		make --no-print-directory -C application clean
+
