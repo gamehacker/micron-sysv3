@@ -30,10 +30,10 @@ OBJECTS+=
 all: bootloader
 
 bootloader:$(OBJECTS)
-	@echo "  [TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
+	@echo "[TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
 
 clean:
-	@echo "  [REMOVE] $(OBJECTS) bootloader.bin"; \
+	@echo "[REMOVE] $(OBJECTS) bootloader.bin"; \
 		rm $(OBJECTS) bootloader.bin
 
 help:
@@ -46,11 +46,11 @@ help:
 
 # Standard Procedures
 .s.o:
-	@echo "  [TARGETAS] $@"; $(AS) -o $@ $<
+	@echo "[TARGETAS] $@"; $(AS) -o $@ $<
 
 .c.o:
-	@echo "  [TARGETCC] $@"; $(CC) -c -o $@ $<
+	@echo "[TARGETCC] $@"; $(CC) -c -o $@ $<
 
 .cc.o:
-	@echo "  [TARGETCXX] $@"; $(CXX) -c -o $@ $<
+	@echo "[TARGETCXX] $@"; $(CXX) -c -o $@ $<
 

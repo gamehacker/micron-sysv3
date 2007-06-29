@@ -17,16 +17,16 @@ OBJECTS=main.o mfs.o
 
 # Targets
 all:$(OBJECTS)
-	@echo "  [HOSTCC] image"; $(CC) -o image.exe $?
+	@echo "[HOSTCC] image"; $(CC) -o image.exe $?
 
 clean:
-	@echo "  [REMOVE] $(OBJECTS) image.exe"; rm $(OBJECTS) image.exe
+	@echo "[REMOVE] $(OBJECTS) image.exe"; rm $(OBJECTS) image.exe
 
 # Standard Procedures
 .c.o:
-	@echo "  [HOSTCC] $@"; $(CC) -c -o $@ $<
+	@echo "[HOSTCC] $@"; $(CC) -c -o $@ $<
 
 .cc.o:
-	@echo "  [HOSTCXX] $@"; $(CXX) -c -o $@ $<
+	@echo "[HOSTCXX] $@"; $(CXX) -c -o $@ $<
 
 
