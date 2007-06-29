@@ -15,10 +15,11 @@ all:
 		make --no-print-directory -C application
 	@echo "Building image tool..."; \
 		make --no-print-directory -C image
-	@echo "Installing bootloader..."; \
-		cp bootloader/bootloader.bin rootfs/system/
 	@echo "Installing kernel..."; \
 		cp kernel/kernel.bin rootfs/system/
+	@echo "Building root file system image..."; \
+		./image/image.exe -v -r rootfs -f mfs -o micron.img \
+		-b bootloader/bootloader.bin
 
 clean:
 	@-echo "Cleaning rootfs..."; \
