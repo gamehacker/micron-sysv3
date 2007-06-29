@@ -34,8 +34,9 @@ struct xbuff
 // NOTE: Only a subset of FS functions needed
 struct fslib
 {
+	int (*l_new  )(char *outname, char debug);
+	int (*l_end  )();
 	int (*l_mkdir)(char *name);
-	int (*l_chdir)(char *name);
 	int (*l_write)(char *name, char *buff, int size);
 }fslib;
 
@@ -54,49 +55,49 @@ int xbuff_read(char *name)
 }
 
 // Pack a directory tree into target image
-int packdir(char *dirname, char *olddirname)
+int cutsize;
+int packdir(char *dirname)
 {
-	DIR *dir;
-	struct dirent *dp;
-	struct stat buf;
-	char curdirname[256];
+	DIR *dir;		// directory descriptor
+	struct dirent *dp;	// dirent pointer
+	struct stat buf;	// file status buffer
+	char path[512];		// current directory path
+	char pathtemp[512];	// temp path buffer
 
 	// Process relative directory strings
-	curdirname[0]='\0';
-	if(strcmp(olddirname, "")) {
-		strcpy(curdirname, olddirname);
+	if(cutsize==0) {
+		cutsize=strlen(dirname);
 	}
-	strcat(curdirname, dirname);
-	strcat(curdirname, "/");
+	strcpy(path, dirname);
+	strcat(path, "/");
 
-	// Open target directory for reading items
-	if((dir = opendir(dirname)) == NULL) {
-		printf("ERROR: No such dir: %s\n", dirname);
-		return -1;
+	// Read directory conteits
+	if((dir=opendir(dirname)) == NULL) {
+		printf("ERROR: Target directory not exist: %s\n", dirname);
+		exit(-1);
 	}
 
-	// Process items one by one
-	chdir(dirname);	while((dp=readdir(dir)) != NULL) {
-		// Ignore "." and ".."
-		if(!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, ".."))
+	// Parse through directory entries
+	while((dp = readdir(dir)) != NULL) {
+		strcpy(pathtemp, path);
+		strcat(pathtemp, dp->d_name);
+		stat(  pathtemp, &buf);
+		if(!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, "..")) {
 			continue;
-		// Stat the file's type
-		stat(dp->d_name, &buf);
-		if(buf.st_mode & S_IFDIR) {
-			fslib.l_mkdir(dp->d_name);
-			fslib.l_chdir(dp->d_name);
-			packdir(dp->d_name, curdirname);
-			fslib.l_chdir("..");
-		}else if(buf.st_mode & S_IFREG) {
-			xbuff_read(dp->d_name);
-			fslib.l_write(dp->d_name, xbuff.b_buff, xbuff.b_size);
-			if(config.c_verbose) {
-				printf("%s%s\n", curdirname, dp->d_name);
-			}
+		}else if(S_ISDIR(buf.st_mode)) {
+			if(config.c_verbose)
+				printf("%s\n", &pathtemp[cutsize]);
+			fslib.l_mkdir(&pathtemp[cutsize]);
+			packdir(pathtemp);
+		}else if(S_ISREG(buf.st_mode)) {
+			if(config.c_verbose)
+				printf("%s\n", &pathtemp[cutsize]);
+			xbuff_read(pathtemp);
+			fslib.l_write(&pathtemp[cutsize], xbuff.b_buff, xbuff.b_size);
 		}
 	}
-	chdir("..");
 	closedir(dir);
+
 	return 0;
 }
 
@@ -141,6 +142,7 @@ int main(int argc, char *argv[])
 	if(config.c_debug) {
 		printf("* debug *************************************\n");
 		printf(" showhelp= %d\n", config.c_showhelp);
+		printf(" verbose = %d\n", config.c_verbose);
 		printf(" bootload= %s\n", config.c_boot);
 		printf(" format  = %s\n", config.c_fmt);
 		printf(" rootdir = %s\n", config.c_root);
@@ -160,8 +162,8 @@ int main(int argc, char *argv[])
 		printf(" -v, --verbose           Verbosely display the file names being processed\n");
 		printf(" -b, --boot   BOOTSECT   Specify the bootloader file write to boot sector\n");
 		printf(" -f, --fmt    TYPE       Target file system format, see Supported Formats\n");
-		printf(" -r, --root   DIRECTORY  Specify the directory to create the image\n");
-		printf(" -o, --output FILENAME   Specify the image's filename\n");
+		printf(" -r, --root   DIRECTORY  Specify the root directory\n");
+		printf(" -o, --output FILENAME   Specify output filename\n");
 		printf("Supported Formats:\n");
 		printf("  mfs, e2fs, vfat, ntfs\n");
 		return 0;
@@ -172,21 +174,40 @@ int main(int argc, char *argv[])
 		printf("ERROR: File system format not specified\n");
 		return -1;
 	}else if(!strcmp(config.c_fmt, "mfs")) {
+		fslib.l_new   = mfs_new;
+		fslib.l_end   = mfs_end;
 		fslib.l_mkdir = mfs_mkdir;
-		fslib.l_chdir = mfs_chdir;
 		fslib.l_write = mfs_write;
 	} // Add new fs format support here
 
 	// Image creation process
+	printf("Creating image...\n");
 	if(config.c_root==0) {
 		printf("ERROR: Root directory not specified\n");
 		return -1;
 	}
-	if(fslib.l_mkdir==0 || fslib.l_chdir==0 || fslib.l_write==0) {
+	if(fslib.l_mkdir==0 || fslib.l_write==0) {
 		printf("ERROR: File system format specified not supported\n");
 		return -1;
 	}
-	packdir(config.c_root, "");
+	if(config.c_image==0) {
+		printf("ERROR: Output image file name not specified\n");
+		return -1;
+	}
+	fslib.l_new(config.c_image, config.c_debug);
+	packdir(config.c_root);
+	fslib.l_end();
+
+	// Write the bootloader into image
+	printf("Installing bootloader...\n");
+	if(config.c_boot!=0) {
+		xbuff_read(config.c_boot);
+		int output=open(config.c_image, O_RDWR);
+		lseek(output, 0, SEEK_SET);
+		write(output, xbuff.b_buff, xbuff.b_size);
+		close(output);
+	}
+	printf("Image creation completed\n");
 
 	return 0;
 }
