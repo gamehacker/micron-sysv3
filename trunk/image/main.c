@@ -1,4 +1,10 @@
+///////////////////////////////////////////////////////////////////////////////
+// Micron System V3 System Image Build Utility
+// Copyright (C) 2007, Martin Tang
+// martintang25 AT gmail.com
+///////////////////////////////////////////////////////////////////////////////
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <dirent.h>
 #include <sys/stat.h>
@@ -37,8 +43,12 @@ struct fslib
 int xbuff_read(char *name)
 {
 	int fildes=open(name, O_RDONLY);
-	
-	lseek(fildes, 0, SEEK_END);
+	int filcnt=lseek(fildes, 0, SEEK_END);
+	lseek(fildes, 0, SEEK_SET);
+	free(xbuff.b_buff);
+	xbuff.b_size=filcnt;
+	xbuff.b_buff=malloc(filcnt);
+	read(fildes, xbuff.b_buff, filcnt);
 	close(fildes);
 	return 0;
 }
@@ -153,7 +163,7 @@ int main(int argc, char *argv[])
 		printf(" -r, --root   DIRECTORY  Specify the directory to create the image\n");
 		printf(" -o, --output FILENAME   Specify the image's filename\n");
 		printf("Supported Formats:\n");
-		printf("  mfs\n");
+		printf("  mfs, e2fs, vfat, ntfs\n");
 		return 0;
 	}
 
@@ -165,11 +175,15 @@ int main(int argc, char *argv[])
 		fslib.l_mkdir = mfs_mkdir;
 		fslib.l_chdir = mfs_chdir;
 		fslib.l_write = mfs_write;
-	}
+	} // Add new fs format support here
 
 	// Image creation process
 	if(config.c_root==0) {
 		printf("ERROR: Root directory not specified\n");
+		return -1;
+	}
+	if(fslib.l_mkdir==0 || fslib.l_chdir==0 || fslib.l_write==0) {
+		printf("ERROR: File system format specified not supported\n");
 		return -1;
 	}
 	packdir(config.c_root, "");

@@ -1,5 +1,10 @@
-
+///////////////////////////////////////////////////////////////////////////////
+// Micron System V3 System Image Build Utility
+// Copyright (C) 2007, Martin Tang
+// martintang25 AT gmail.com
+///////////////////////////////////////////////////////////////////////////////
 #define MFS_NAMELEN 16		// MFS supported file name length
+#define MFS_BLKSIZE 1024	// MFS block size
 
 // MFS Data Type Definitions (currently i386)
 typedef unsigned int   mfs_u32;
@@ -24,8 +29,8 @@ struct mfs_inode {
 	mfs_u32 i_atime;	// Last access time
 
 	// Ownership
-	mfs_u32 i_uid;		// Owner user ID
-	mfs_u32 i_gid;		// Owner group ID
+	mfs_u16 i_uid;		// Owner user ID
+	mfs_u16 i_gid;		// Owner group ID
 	mfs_u32 i_access;	// Access control bits
 
 	// File allocation
