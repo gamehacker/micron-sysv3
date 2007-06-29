@@ -3,9 +3,36 @@
 // Copyright (C) 2007, Martin Tang
 // martintang25 AT gmail.com
 ///////////////////////////////////////////////////////////////////////////////
+#ifndef __IMAGE_MFS_H__
+#define __IMAGE_MFS_H__
+
 // Configurations
 #define MFS_NAMELEN 16		// MFS supported file name length
 #define MFS_BLKSIZE 1024	// MFS block size
+
+// Definitions
+#ifndef S_IRWXU
+#define	S_IRWXU 	0x00000007
+#define		S_IRUSR 0x00000001	// Read permission, owner
+#define		S_IWUSR 0x00000002	// Write permission, owner
+#define		S_IXUSR 0x00000004	// Execute/search permission, owner
+#define	S_IRWXG		0x00000070	// Read, write, execute/search by group 
+#define		S_IRGRP	0x00000010	// Read permission, group
+#define 	S_IWGRP	0x00000020	// Write permission, group
+#define		S_IXGRP	0x00000040	// Execute/search permission, group
+#define	S_IRWXO		0x00000700	// Read, write, execute/search by others
+#define		S_IROTH	0x00000100	// Read permission, others
+#define		S_IWOTH	0x00000200	// Write permission, others
+#define		S_IXOTH	0x00000400	// Execute/search permission, others
+#define	S_IFMT		0x000FF000	//Type of file. 
+#define		S_IFBLK	0x00001000	//Block special. 
+#define		S_IFCHR	0x00002000	//Character special. 
+#define		S_IFIFO	0x00003000	//FIFO special. 
+#define		S_IFREG	0x00004000	//Regular. 
+#define		S_IFDIR	0x00005000	//Directory. 
+#define		S_IFLNK	0x00006000	//Symbolic link. 
+#define		S_IFSOCK 0x00007000	//Socket.  
+#endif
 
 // MFS Data Type Definitions (currently i386)
 typedef unsigned int   mfs_u32;
@@ -36,6 +63,7 @@ struct mfs_inode {
 	// Identifiers
 	mfs_u8  i_name[MFS_NAMELEN];	// File name
 	mfs_u32 i_mode;			// Inode mode
+	mfs_u32 i_sn;			// Inode serial number
 
 	// Time
 	mfs_u32 i_ctime;	// File creation time
@@ -45,7 +73,6 @@ struct mfs_inode {
 	// Ownership
 	mfs_u16 i_uid;		// Owner user ID
 	mfs_u16 i_gid;		// Owner group ID
-	mfs_u32 i_access;	// Access control bits
 
 	// Structure linking (all storage are block indexes)
 	mfs_u32 i_level;	// Level inode index
@@ -61,6 +88,7 @@ struct mfs_inode {
 // Exporting library functions
 extern int mfs_new(char *outname, char debug);
 extern int mfs_end();
-extern int mfs_mkdir(char *name);
-extern int mfs_write(char *name, char *buff, int size);
+extern int mfs_mkdir(char *path, char *name);
+extern int mfs_write(char *path, char *name, char *buff, int size);
 
+#endif

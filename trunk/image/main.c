@@ -36,8 +36,8 @@ struct fslib
 {
 	int (*l_new  )(char *outname, char debug);
 	int (*l_end  )();
-	int (*l_mkdir)(char *name);
-	int (*l_write)(char *name, char *buff, int size);
+	int (*l_mkdir)(char *path, char *name);
+	int (*l_write)(char *path, char *name, char *buff, int size);
 }fslib;
 
 // Read a file into dynamic transfer buffer
@@ -82,18 +82,19 @@ int packdir(char *dirname)
 		strcpy(pathtemp, path);
 		strcat(pathtemp, dp->d_name);
 		stat(  pathtemp, &buf);
-		if(!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, "..")) {
+	//	if(!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, "..")) {
+		if(dp->d_name[0]=='.') {
 			continue;
 		}else if(S_ISDIR(buf.st_mode)) {
 			if(config.c_verbose)
 				printf("%s\n", &pathtemp[cutsize]);
-			fslib.l_mkdir(&pathtemp[cutsize]);
+			fslib.l_mkdir(&path[cutsize], dp->d_name);
 			packdir(pathtemp);
 		}else if(S_ISREG(buf.st_mode)) {
 			if(config.c_verbose)
 				printf("%s\n", &pathtemp[cutsize]);
 			xbuff_read(pathtemp);
-			fslib.l_write(&pathtemp[cutsize], xbuff.b_buff, xbuff.b_size);
+			fslib.l_write(&path[cutsize], dp->d_name, xbuff.b_buff, xbuff.b_size);
 		}
 	}
 	closedir(dir);
