@@ -65,7 +65,7 @@ int mfs_new(char *outname, char debug)
 	// Create the output file
 	if(mfs_data.m_debug)
 		printf("[MFS]: Creating image file: %s\n", outname);
-	mfs_data.m_outfile= open(outname, O_TRUNC|O_RDWR|O_CREAT);
+	mfs_data.m_outfile= open(outname, O_TRUNC|O_BINARY|O_RDWR|O_CREAT);
 
 	// Allocate the blocks
 	mfs_data.m_blocks[0] = malloc(MFS_BLKSIZE);	// the boot block
@@ -113,6 +113,16 @@ int mfs_end()
 
 	if(mfs_data.m_debug)
 		printf("[MFS]: Quiting MFS module\n");
+	return 0;
+}
+
+int mfs_lboot(char *bootname)
+{
+	int fboot = open(bootname, O_RDONLY|O_BINARY);
+	int fsize = lseek(fboot, 0, SEEK_END);
+	lseek(fboot, 0, SEEK_SET);
+	read(fboot, mfs_data.m_blocks[0], fsize);
+	close(fboot);
 	return 0;
 }
 

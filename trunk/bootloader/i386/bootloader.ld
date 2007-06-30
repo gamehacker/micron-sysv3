@@ -1,7 +1,7 @@
 OUTPUT_FORMAT(binary)
 ENTRY(init)
 
-boot_begin = 0x100000;
+boot_begin = 0;
 
 SECTIONS
 {

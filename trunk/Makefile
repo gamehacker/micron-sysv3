@@ -14,6 +14,12 @@ all:
 	@image/image.exe -v -r rootfs -f mfs -o micron.img \
 		-b bootloader/bootloader.bin
 
+qemu:
+	@qemu -L /qemu -hda micron.img -s -no-kqemu
+
+dqemu:
+	@qemu -L /qemu -hda micron.img -s -no-kqemu -S
+
 clean:
 	@-rm -r rootfs/system/* rootfs/program/* micron.img
 	@make --no-print-directory -C bootloader clean

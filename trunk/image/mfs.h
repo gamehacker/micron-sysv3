@@ -88,6 +88,7 @@ struct mfs_inode {
 // Exporting library functions
 extern int mfs_new(char *outname, char debug);
 extern int mfs_end();
+extern int mfs_lboot(char *bootname);
 extern int mfs_mkdir(char *path, char *name);
 extern int mfs_write(char *path, char *name, char *buff, int size);
 

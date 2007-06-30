@@ -36,6 +36,7 @@ struct fslib
 {
 	int (*l_new  )(char *outname, char debug);
 	int (*l_end  )();
+	int (*l_lboot)(char *bootname);
 	int (*l_mkdir)(char *path, char *name);
 	int (*l_write)(char *path, char *name, char *buff, int size);
 }fslib;
@@ -43,7 +44,7 @@ struct fslib
 // Read a file into dynamic transfer buffer
 int xbuff_read(char *name)
 {
-	int fildes=open(name, O_RDONLY);
+	int fildes=open(name, O_RDONLY|O_BINARY);
 	int filcnt=lseek(fildes, 0, SEEK_END);
 	lseek(fildes, 0, SEEK_SET);
 	free(xbuff.b_buff);
@@ -179,6 +180,7 @@ int main(int argc, char *argv[])
 		fslib.l_end   = mfs_end;
 		fslib.l_mkdir = mfs_mkdir;
 		fslib.l_write = mfs_write;
+		fslib.l_lboot = mfs_lboot;
 	} // Add new fs format support here
 
 	// Image creation process
@@ -196,20 +198,15 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	fslib.l_new(config.c_image, config.c_debug);
+	if(config.c_boot) {
+		printf("Installing bootloader...\n");
+		fslib.l_lboot(config.c_boot);
+	}
+	printf("Packing directories...\n");
 	packdir(config.c_root);
 	fslib.l_end();
 
-	// Write the bootloader into image
-	printf("Installing bootloader...\n");
-	if(config.c_boot!=0) {
-		xbuff_read(config.c_boot);
-		int output=open(config.c_image, O_RDWR);
-		lseek(output, 0, SEEK_SET);
-		write(output, xbuff.b_buff, xbuff.b_size);
-		close(output);
-	}
 	printf("Image creation completed\n");
-
 	return 0;
 }
 
