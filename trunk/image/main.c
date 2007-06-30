@@ -83,8 +83,7 @@ int packdir(char *dirname)
 		strcpy(pathtemp, path);
 		strcat(pathtemp, dp->d_name);
 		stat(  pathtemp, &buf);
-	//	if(!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, "..")) {
-		if(dp->d_name[0]=='.') {
+		if(!strcmp(dp->d_name, ".") || !strcmp(dp->d_name, "..")) {
 			continue;
 		}else if(S_ISDIR(buf.st_mode)) {
 			if(config.c_verbose)
@@ -106,6 +105,7 @@ int packdir(char *dirname)
 int main(int argc, char *argv[])
 {
 	// Scaning arguments
+	printf("test\n");
 	config.c_showhelp=1;
 	int argci=1;
 	while(argci<argc) {

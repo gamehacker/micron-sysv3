@@ -95,6 +95,7 @@ int mfs_new(char *outname, char debug)
 	struct mfs_inode *ip = (struct mfs_inode*)mfs_data.m_blocks[4];
 	mfs_markbmp(mfs_data.m_blocks[2], 0, 1);
 	strcpy(ip[0].i_name, "root");
+	ip[0].i_mode = S_IFDIR|S_IRWXU|S_IRWXG|S_IROTH;
 
 	return 0;
 }
@@ -187,6 +188,10 @@ int mfs_mkdir(char *path, char *name)
 
 	// seek for a empty inode
 	indexi=mfs_seekbmp(mfs_data.m_blocks[2], 0, MFS_BLKSIZE*8);
+	if(indexi==-1) {
+		printf("ERROR: Out of inode\n");
+		exit(-1);
+	}
 	mfs_markbmp(mfs_data.m_blocks[2], indexi, 1);	// mark used
 	strcpy(iblk[indexi].i_name, name);
 	iblk[indexi].i_mode  = S_IFDIR|S_IRWXU|S_IRWXG|S_IROTH;
@@ -209,7 +214,7 @@ int mfs_mkdir(char *path, char *name)
 
 int mfs_write(char *path, char *name, char *buff, int size)
 {
-	int indexi, pathi, dblki, dblkr;
+	int indexi, pathi, dblki=0, dblkr;
 	struct mfs_inode *iblk;
 
 	// error checks
@@ -228,11 +233,16 @@ int mfs_write(char *path, char *name, char *buff, int size)
 		printf("ERROR: bug inside mfs.c : mfs_mkdir() : 1\n");
 		exit(-1);
 	}else if((iblk[pathi].i_mode & S_IFDIR) != S_IFDIR) {
-		printf("ERROR: but inside mfs.c : mfs_mkdir() : 2\n");
+		printf("ERROR: bug inside mfs.c : mfs_mkdir() : 2\n");
+		exit(-1);
 	}
 
 	// seek for a empty inode
 	indexi = mfs_seekbmp(mfs_data.m_blocks[2], 0, MFS_BLKSIZE*8);
+	if(indexi==-1) {
+		printf("ERROR: Out of inode\n");
+		exit(-1);
+	}
 	mfs_markbmp(mfs_data.m_blocks[2], indexi, 1);	// mark used
 	strcpy(iblk[indexi].i_name, name);
 	iblk[indexi].i_mode  = S_IFREG|S_IRWXU|S_IRWXG|S_IROTH;
@@ -261,6 +271,10 @@ int mfs_write(char *path, char *name, char *buff, int size)
 	// allocate blocks
 	while(dblkr--) {
 		dblki = mfs_seekbmp(mfs_data.m_blocks[3], 0, MFS_BLKSIZE*8);
+		if(dblki==-1) {
+			printf("ERROR: Out of data block\n");
+			exit(-1);
+		}
 		mfs_markbmp(mfs_data.m_blocks[3], dblki, 1);	// mark used
 	}
 	iblk[indexi].i_blk      = dblki - iblk[indexi].i_blk_count + 1;
@@ -268,6 +282,7 @@ int mfs_write(char *path, char *name, char *buff, int size)
 		printf("[MFS]: Beginning from block: %d\n", iblk[indexi].i_blk);
 
 	// writing blocks
+	printf("+++++++++++\n");
 	memcpy(&mfs_data.m_blocks[5][iblk[indexi].i_blk * MFS_BLKSIZE], \
 		buff, size);
 	return 0;
