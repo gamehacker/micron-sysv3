@@ -121,6 +121,9 @@ int mfs_lboot(char *bootname)
 {
 	int fboot = open(bootname, O_RDONLY|O_BINARY);
 	int fsize = lseek(fboot, 0, SEEK_END);
+	if(fsize>MFS_BLKSIZE) {
+		printf("ERROR: Bootloader size too big\n");
+	}
 	lseek(fboot, 0, SEEK_SET);
 	read(fboot, mfs_data.m_blocks[0], fsize);
 	close(fboot);

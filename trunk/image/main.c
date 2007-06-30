@@ -105,7 +105,6 @@ int packdir(char *dirname)
 int main(int argc, char *argv[])
 {
 	// Scaning arguments
-	printf("test\n");
 	config.c_showhelp=1;
 	int argci=1;
 	while(argci<argc) {
@@ -184,7 +183,6 @@ int main(int argc, char *argv[])
 	} // Add new fs format support here
 
 	// Image creation process
-	printf("Creating image...\n");
 	if(config.c_root==0) {
 		printf("ERROR: Root directory not specified\n");
 		return -1;
@@ -198,6 +196,7 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	fslib.l_new(config.c_image, config.c_debug);
+	printf("Creating image...\n");
 	if(config.c_boot) {
 		printf("Installing bootloader...\n");
 		fslib.l_lboot(config.c_boot);
