@@ -18,7 +18,7 @@ AS=$(CROSS)-as  $(ASFLAGS)
 CC=$(CROSS)-gcc $(CCFLAGS)
 CXX=$(CROSS)-c++ $(CXXFLAGS)
 LD=$(CROSS)-ld  $(LDFLAGS)
-export AS CC CXX LD
+OC=$(CROSS)-objcopy
 
 # Include Target Platform Makefile
 include arch/$(ARCH)/Makefile
@@ -30,11 +30,13 @@ OBJECTS+=
 all: kernel
 
 kernel:$(OBJECTS)
-	@echo "[TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
+	@echo "[BUILD   ] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
+	@cp $@.bin $@.elf
+	@$(OC) -Obinary kernel.bin
 
 clean:
 	@echo "[REMOVE] $(OBJECTS) kernel.bin"; \
-		rm $(OBJECTS) kernel.bin
+		rm $(OBJECTS) kernel.bin kernel.elf
 
 help:
 	@echo "****************************************************************"

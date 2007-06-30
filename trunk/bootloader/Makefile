@@ -18,7 +18,6 @@ AS=$(CROSS)-as  $(ASFLAGS)
 CC=$(CROSS)-gcc $(CCFLAGS)
 CXX=$(CROSS)-c++ $(CXXFLAGS)
 LD=$(CROSS)-ld  $(LDFLAGS)
-export AS CC CXX LD
 
 # Include Target Platform Makefile
 include $(ARCH)/Makefile
@@ -30,7 +29,7 @@ OBJECTS+=
 all: bootloader
 
 bootloader:$(OBJECTS)
-	@echo "[TARGETLD] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
+	@echo "[BUILD   ] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
 
 clean:
 	@echo "[REMOVE] $(OBJECTS) bootloader.bin"; \

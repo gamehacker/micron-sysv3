@@ -17,7 +17,7 @@ OBJECTS=main.o mfs.o
 
 # Targets
 all:$(OBJECTS)
-	@echo "[HOSTCC] image"; $(CC) -o image.exe $?
+	@echo "[BUILD   ] image"; $(CC) -o image.exe $?
 
 clean:
 	@echo "[REMOVE] $(OBJECTS) image.exe"; rm $(OBJECTS) image.exe

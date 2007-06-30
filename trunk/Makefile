@@ -15,10 +15,11 @@ all:
 		-b bootloader/bootloader.bin
 
 qemu:
-	@qemu -L /qemu -hda micron.img -s -no-kqemu
+	@qemu -L /qemu -hda micron.img -s -no-kqemu &
 
-dqemu:
-	@qemu -L /qemu -hda micron.img -s -no-kqemu -S
+debug:
+	@qemu -L /qemu -hda micron.img -s -no-kqemu -S &
+	@gdb kernel/kernel.elf
 
 clean:
 	@-rm -r rootfs/system/* rootfs/program/* micron.img
