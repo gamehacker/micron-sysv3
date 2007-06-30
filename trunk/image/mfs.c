@@ -282,7 +282,6 @@ int mfs_write(char *path, char *name, char *buff, int size)
 		printf("[MFS]: Beginning from block: %d\n", iblk[indexi].i_blk);
 
 	// writing blocks
-	printf("+++++++++++\n");
 	memcpy(&mfs_data.m_blocks[5][iblk[indexi].i_blk * MFS_BLKSIZE], \
 		buff, size);
 	return 0;
