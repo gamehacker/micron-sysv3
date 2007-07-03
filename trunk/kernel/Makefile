@@ -30,12 +30,11 @@ OBJECTS+=
 all: kernel
 
 kernel:$(OBJECTS)
-	@echo "[BUILD   ] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.bin
-	@cp $@.bin $@.elf
-	@$(OC) -Obinary kernel.bin
+	@echo "[BUILD   ] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.elf
+	@$(OC) -Obinary $@.elf $@.bin
 
 clean:
-	@echo "[REMOVE] $(OBJECTS) kernel.bin"; \
+	@echo "[REMOVE] $(OBJECTS) kernel.bin kernel.elf"; \
 		rm $(OBJECTS) kernel.bin kernel.elf
 
 help:
