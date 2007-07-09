@@ -89,7 +89,9 @@ int mfs_new(char debug)
 	sblk->s_magic[0]='M';
 	sblk->s_magic[1]='F';
 	sblk->s_magic[2]='S';
-	sblk->s_ibmp    =2            + NKBLK;
+	sblk->s_kblk    =2;
+	sblk->s_kblkcnt =NKBLK;
+	sblk->s_ibmp    =sblk->s_kblk + NKBLK;
 	sblk->s_ibmpcnt =NIBMP;
 	sblk->s_dbmp    =sblk->s_ibmp + NIBMP;
 	sblk->s_dbmpcnt =NDBMP;

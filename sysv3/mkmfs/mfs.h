@@ -48,6 +48,8 @@ struct mfs_superblk {
 	mfs_u8  s_magic[3];	// Magic identifier
 
 	// block location
+	mfs_u32 s_kblk;		// Inode bitmap block
+	mfs_u32 s_kblkcnt;	// Inode bitmap block count
 	mfs_u32 s_ibmp;		// Inode bitmap block
 	mfs_u32 s_ibmpcnt;	// Inode bitmap block count
 	mfs_u32 s_dbmp;		// Data bitmap block
