@@ -199,6 +199,7 @@ int main(int argc, char *argv[])
 		printf(" showhelp= %d\n", config.c_showhelp);
 		printf(" verbose = %d\n", config.c_verbose);
 		printf(" bootload= %s\n", config.c_boot);
+		printf(" kernel  = %s\n", config.c_kern);
 		printf(" format  = %s\n", config.c_fmt);
 		printf(" rootdir = %s\n", config.c_root);
 		printf(" output  = %s\n", config.c_image);

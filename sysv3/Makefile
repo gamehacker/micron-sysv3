@@ -14,7 +14,7 @@ all:
 	@chmod +rwx micron.img
 
 qemu:
-	@qemu -hda micron.img -s -no-kqemu &
+	@qemu -L /qemu -hda micron.img -s -no-kqemu &
 
 kdbg:
 	@qemu -L /qemu -hda micron.img -s -no-kqemu -S &
