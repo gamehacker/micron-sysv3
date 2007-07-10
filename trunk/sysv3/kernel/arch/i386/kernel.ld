@@ -23,12 +23,6 @@ SECTIONS
 		*(.data)
 		. = ALIGN(page_align);
 	}
-	.bss : AT(kernel_begin + (bss - code))
-	{
-		bss = . ;
-		*(.bss)
-		. = ALIGN(page_align);
-	}
 	.inittab : AT(kernel_begin + (inittab - code))
 	{
 		inittab = . ;
@@ -45,6 +39,12 @@ SECTIONS
 	{
 		exporttab = . ;
 		*(.exporttab)
+		. = ALIGN(page_align);
+	}
+	.bss : AT(kernel_begin + (bss - code))
+	{
+		bss = . ;
+		*(.bss)
 		. = ALIGN(page_align);
 	}
 	kernel_end = . ;

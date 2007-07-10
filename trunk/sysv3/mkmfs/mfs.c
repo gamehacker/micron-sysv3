@@ -8,7 +8,7 @@
  *   1 inode bmp blk = 8192 inodes = 1048576 bytes = 1024 blocks
  *   1 data bmp blk  = 8192 blocks
  *****************************************************************************/
- #define NKBLK	500					// kernel size in kb
+ #define NKBLK	512					// kernel size in kb
  #define NIBMP	1					// inode no ctl
  #define NDBMP	1					// data blk no ctl
  #define NIBLK	(NIBMP*8*sizeof(struct mfs_inode))
