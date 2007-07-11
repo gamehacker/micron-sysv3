@@ -7,7 +7,7 @@ OUTPUT_FORMAT(elf32-i386)
 ENTRY(_start)
 
 kernel_begin = 0x100000;
-page_align = 0x1000;
+page_align = 0;
 
 SECTIONS
 {

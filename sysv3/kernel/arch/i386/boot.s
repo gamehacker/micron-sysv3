@@ -61,44 +61,109 @@
 /* Tell the assembler that we are generating 16 bit code */
 .code16
 
-/* This is our entry point, everything starts here */
-/* Buggy BIOSes should add initialization codes later */
+/* 
+ * This is our entry point, everything starts here
+ * Buggy BIOSes should add initialization codes later
+ */
 .global _start; _start:
-	movb %dl, b_devi/* dl stores the boot device id */
-	test %dl, 0x80	/* which is passed from BIOS */
-	jz  boot_fdd	/* goto floppy disk startup */
-	jmp boot_hdd	/* goto hard disk startup */
+	movb %dl, b_devi	/* dl stores the boot device id */
+	test $0x80, %dl		/* which is passed from BIOS */
+	jz  boot_fdd		/* goto floppy disk startup */
+	jmp boot_hdd		/* goto hard disk startup */
 	hlt
 
 /* Booted from floppy disk */
-boot_fdd:		/* TODO: Write floppy specified boot method */
-	hlt		/*       currently there's no specification for */
-			/*       floppy in MFS standard, to be written later */
+boot_fdd:			/* TODO: Write floppy specified boot */
+	hlt			/*       there's no specification for */
+				/*       floppy in MFS now*/
 
 /* Booted from hard disk */
 boot_hdd:		
-	call stat_dev 	/* detect boot device attribute */
-	call kern_copy	/* copy kernel from disk to buffer */
-	jmp  entr_pm	/* enter protected mode */
+	call stat_dev 		/* detect boot device attribute */
+	call stat_ksize		/* get kernel storage info on dev */
+	call kern_copy		/* copy kernel from disk to buffer */
+	jmp  entr_pm		/* enter protected mode */
 	ret
 
-/* Acquire the information about geometry of boot disk */
-stat_dev:		/* TODO: Add int 0x13 call for dev status here */
+/* 
+ * Acquire the information about geometry of boot disk
+ * should be fesiable for both floppy and hdd
+ */
+stat_dev:
+	movb $0x08, %ah		/* function number */
+	movb b_devi,%dl		/* drive number */
+	int  $0x13
+	jc   error		/* we don't want this to happen */
+	movb %bl,   b_devt	/* store dev type if is floppy */
+	movb %ch,   b_devc	/* low 8 bits of max cyl number */
+	movb %cl,   b_devs	/* max sector number (bits 5-0) */
+	andb $0x3F, b_devs
+	orw  $0xC0, %cx		/* get high 2 bits of max cyl number */
+	shlw $0x02, %cx		/* align it to position */
+	addw %cx,   b_devc	/* add up to the cyl number data */
+	movb %dh,   b_devh	/* max head number */
+	movb %dl,   b_devh	/* number of drives */
 	ret
 
-/* Read from disk to kernel buffer */
-kern_copy:		/* TODO: Add int 0x13 call for kern copy here */
-	movb $0x02, %ah	/* function number */
-	movb $0xFF, %al	/* number of sectors to read  */
+/* Copy kernel to buffer */
+kern_copy:
+	ret
+
+/* 
+ * Function to acquire kernel size to copy, result in sectors, store
+ * to b_ksec and b_kcnt.
+ */
+stat_ksize:
+	movb $0x02,      %al	/* read super block, 2 sectors */
+	movw $0x00,      %bx
+	movb $0x00,      %dh
+	movb $0x03,      %cl	/* sector 3 */
+	movb b_devi,     %dl
+	push %cs
+	pop  %es
+	movw $buf,       %si
+	call copy_block
+	movw %es:4(%bx), %ax	/* s_kblk */
+	movw $0x02,      %cx	/* 2 sectors per block in MFS */
+	mulw %cx
+	movw %ax,        b_ksec
+	movw %es:6(%bx), %ax	/* s_kblkcnt */
+	movw $0x02,      %cx	/* same as above */
+	mulw %cx
+	movw %ax,        b_kcnt
+	ret
+
+/* 
+ * Function to read specified CHS to dest memory
+ * Specifications: 
+ *
+ * Inputs:
+ *
+ *   AL    : Sectors to read
+ *   BX    : Cylinder
+ *   DH    : Head
+ *   CL    : Sector
+ *   DL    : Drive
+ *   ES:SI : Destination
+ */
+copy_block:
+	mov  $0x02, %ah
+	shlb $0x06, %bh		/* process high 2 bits of cylinder */
+	orb  %bh,   %cl
+	movb %bl,   %ch
+	movw %si,   %bx
+	int  $0x13
+	jc   error
 	ret
 	
 /* Function to enter protected mode */
 entr_pm:
-	lgdt b_gdtr
-	movl %cr0,  %eax/* enable protected mode */
+	cli			/* from here on, we disable interrupts */
+	lgdt b_gdtr		/* load GDT register */
+	movl %cr0,  %eax	/* enable protected mode */
 	orl  $0x01, %eax
 	movl %eax,  %cr0
-	movw $0x10, %ax	/* setup value of various segments */
+	movw $0x10, %ax		/* setup value of various segments */
 	movw %ax,   %ds
 	movw %ax,   %es
 	movw %ax,   %fs
@@ -106,15 +171,20 @@ entr_pm:
 	movw %ax,   %ss
 	ljmp $0x08, $_start32	/* flush instruction pipe */
 
+/* error handler */
+error:
+	hlt			/* when error is met, just halt */
+
 /* Tell the assembler that we are generating 32 bit code */
 .code32
 
 /* Entry point of 32 bit mode */
 _start32:
 	call kern_move
-	jmp .
-	jmp *0x100000	/* jump to kernel entry point */
-			/* this is the point of no return */
+	movb $'A', 0xb8000
+	hlt
+	jmp *0x100000		/* jump to kernel entry point */
+				/* this is the point of no return */
 
 /* Kernel Loader */
 kern_move:
@@ -132,10 +202,15 @@ kern_move:
 	ret
 
 /* Boot up information storage */
-b_devi: .byte 0		/* boot device indicator */
-b_devc: .word 0		/* boot device cylinder number */
-b_devh: .byte 0		/* boot device head number */
-b_devs: .byte 0		/* boot device sector number */
+.global b_devi, b_devt, b_devn, b_devc, b_devh, b_devs, b_ksec, b_kcnt
+b_devi: .byte 0			/* boot device indicator */
+b_devt: .byte 0			/* boot device type for floppy only */
+b_devn: .byte 0			/* number of drives */
+b_devc: .word 0			/* boot device cylinder number */
+b_devh: .byte 0			/* boot device head number */
+b_devs: .byte 0			/* boot device sector number */
+b_ksec: .long 0			/* kernel beginning sector */
+b_kcnt: .long 0			/* kernel size in sector(s) */
 
 /* Boot up temporary GDT, abandoned by kernel */
 b_gdt:
@@ -145,20 +220,20 @@ b_gdt:
 .long 0
 
 /* 0x08 code segment */
-.word 0xFFFF		/* segment limit 0..15 */
-.word 0x0000		/* base address  0..15 */
-.byte 0x00		/* base address 16..23 */
-.byte 0x9E		/* P=1, DPL=0, code, Conforming, Read */
-.byte 0xCF		/* 4 kb, 32bit code, segment limit 16..19=1111B */
-.byte 0x00		/* base address 24..31=00H */
+.word 0xFFFF			/* limit 0..15 */
+.word 0x0000			/* base  0..15 */
+.byte 0x00			/* base 16..23 */
+.byte 0x9E			/* P=1, DPL=0, code, Conforming, Read */
+.byte 0xCF			/* 4 kb, 32bit code, limit 16..19=1111B */
+.byte 0x00			/* base 24..31=00H */
 
 /* 0x10 data segment */
-.word 0xFFFF		/* segment limit 0..15 */
-.word 0x0000		/* base address  0..15 */
-.byte 0x00		/* base address 16..23 */
-.byte 0x92		/* P=1, DPL=0, data, Read/Write */
-.byte 0xCF		/* 4 kb, 32bit stack, segment limit 16..19=1111B */
-.byte 0x00		/* base address 24..31=00H */
+.word 0xFFFF			/* limit 0..15 */
+.word 0x0000			/* base  0..15 */
+.byte 0x00			/* base 16..23 */
+.byte 0x92			/* P=1, DPL=0, data, Read/Write */
+.byte 0xCF			/* 4 kb, 32bit stack, limit 16..19=1111B */
+.byte 0x00			/* base 24..31=00H */
 
 /* GDT Register data */
 b_gdtr:
@@ -168,4 +243,5 @@ b_gdtr:
 /* Write our boot signature here so that BIOS can recongnize */
 .org  510
 .word 0xaa55
+buf:				/* Temporary buffer for reading super blk */
 
