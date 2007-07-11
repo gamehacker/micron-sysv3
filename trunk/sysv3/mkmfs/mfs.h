@@ -45,11 +45,11 @@ typedef char           mfs_s8;
 // MFS Super block data structure
 struct mfs_superblk {
 	// identifiers
-	mfs_u8  s_magic[3];	// Magic identifier
+	mfs_u8  s_magic[4];	// Magic identifier
 
 	// block location
-	mfs_u32 s_kblk;		// Inode bitmap block
-	mfs_u32 s_kblkcnt;	// Inode bitmap block count
+	mfs_u16 s_kblk;		// Inode bitmap block
+	mfs_u16 s_kblkcnt;	// Inode bitmap block count
 	mfs_u32 s_ibmp;		// Inode bitmap block
 	mfs_u32 s_ibmpcnt;	// Inode bitmap block count
 	mfs_u32 s_dbmp;		// Data bitmap block
