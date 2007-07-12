@@ -16,9 +16,12 @@ all:
 qemu:
 	@qemu -L /qemu -hda micron.img -s -no-kqemu &
 
+qemudbg:
+	@qemu -L /qemu -hda micron.img -s -S -no-kqemu &
+
 kdbg:
 	@qemu -L /qemu -hda micron.img -s -no-kqemu -S &
-	@i686-elf-gdb kernel/kernel.elf
+	@i686-elf-gdb kernel/micron.elf
 
 bdbg:
 	@qemu -L /qemu -hda micron.img -s -no-kqemu -S &
