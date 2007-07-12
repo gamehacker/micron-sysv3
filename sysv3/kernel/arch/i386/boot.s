@@ -94,19 +94,65 @@ stat_dev:
 	movb b_devi,%dl		/* drive number */
 	int  $0x13
 	jc   error		/* we don't want this to happen */
-	movb %bl,   b_devt	/* store dev type if is floppy */
-	movb %ch,   b_devc	/* low 8 bits of max cyl number */
-	movb %cl,   b_devs	/* max sector number (bits 5-0) */
-	andb $0x3F, b_devs
-	orw  $0xC0, %cx		/* get high 2 bits of max cyl number */
-	shlw $0x02, %cx		/* align it to position */
-	addw %cx,   b_devc	/* add up to the cyl number data */
-	movb %dh,   b_devh	/* max head number */
-	movb %dl,   b_devh	/* number of drives */
+	movb %bl,    b_devt	/* store dev type if is floppy */
+	movb %ch,    b_devc	/* low 8 bits of max cyl number */
+	movb %cl,    b_devs	/* max sector number (bits 5-0) */
+	andb $0x3F,  b_devs
+	orw  $0xC0,  %cx	/* get high 2 bits of max cyl number */
+	shlw $0x02,  %cx	/* align it to position */
+	addw %cx,    b_devc	/* add up to the cyl number data */
+	movb %dh,    b_devh	/* max head number */
+	movb %dl,    b_devh	/* number of drives */
+	movw b_devs, %ax	/* calculate bytes per head */
+	movw $512,   %bx
+	mulw %bx
+	movw %ax,    b_sizh	/* store size per head */
 	ret
+	
 
-/* Copy kernel to buffer */
+/* Copy kernel from disk to buffer */
 kern_copy:
+	movw  b_kcnt,  %di	/* number of sectors to transfer */
+	movb  b_devi,  %dl	/* boot device i */
+	movb  b_devs,  %al	/* sectors to transfer per time */
+	movw  $0,      %bx	/* start cylinder number */
+	movb  $0,      %dh	/* start head number */
+	movb  b_ksec,  %cl	/* start sector number */
+	pushw $0x1000		/* set ES segment to 0x10000 */
+	pop   %es
+	movw  $0,      %si	/* beginning from 0x10000 */
+	pushw %ax		/* save values for next time */
+	pushw %bx
+	pushw %cx
+	pushw %dx
+	pushw %es
+	pushw %si
+1:	call  copy_block
+	popw  %si		/* restore values */
+	popw  %es
+	popw  %dx
+	popw  %cx
+	popw  %bx
+	popw  %ax
+	ret
+	push  %bp
+	push  %ax
+	movw  b_sizh,  %bp	/* get transfered size to add to seg disp */
+	shrw  $4,      %bp
+	movw  %es,     %ax
+	addw  %bp,     %ax
+	movw  %ax,     %es
+	pop   %ax
+	pop   %bp
+	subw  b_devs,  %di	/* subtract moved sector num from requested */
+	incb  %dh		/* move to next head */
+	cmpb  b_devh,  %dh	/* if head number reaches maximum */
+	jz    2f		/* goto clear head num and increase cyl num */
+	jmp   1b		/* or just simply continue the copy */
+2:	orb   %dh,     %dh	/* clear head number */
+	incw  %bx		/* increase cylinder number */
+	cmpw  $0,      %di	/* test remaining sectors to copy */
+	jns   1b		/* if not zero, continue the copy */
 	ret
 
 /* 
@@ -147,13 +193,13 @@ stat_ksize:
  *   ES:SI : Destination
  */
 copy_block:
-	mov  $0x02, %ah
-	shlb $0x06, %bh		/* process high 2 bits of cylinder */
-	orb  %bh,   %cl
-	movb %bl,   %ch
-	movw %si,   %bx
-	int  $0x13
-	jc   error
+	mov   $0x02, %ah
+	shlb  $0x06, %bh	/* process high 2 bits of cylinder */
+	orb   %bh,   %cl
+	movb  %bl,   %ch
+	movw  %si,   %bx
+	int   $0x13
+	jc    error
 	ret
 	
 /* Function to enter protected mode */
@@ -182,24 +228,21 @@ error:
 _start32:
 	call kern_move
 	movb $'A', 0xb8000
-	hlt
-	jmp *0x100000		/* jump to kernel entry point */
+	ljmp $0x08, $0x100000	/* jump to kernel entry point */
 				/* this is the point of no return */
 
 /* Kernel Loader */
 kern_move:
 	movl $0x10000,  %esi
 	movl $0x100000, %edi
-1:
-	movl (%esi),    %eax
+1:	movl (%esi),    %eax
 	movl %eax,      (%edi)
 	cmpl $0x90000,  %esi
 	jz   2f
 	addl $0x04,     %esi
 	addl $0x04,     %edi
 	jmp  1b
-2:
-	ret
+2:	ret
 
 /* Boot up information storage */
 .global b_devi, b_devt, b_devn, b_devc, b_devh, b_devs, b_ksec, b_kcnt
@@ -209,6 +252,7 @@ b_devn: .byte 0			/* number of drives */
 b_devc: .word 0			/* boot device cylinder number */
 b_devh: .byte 0			/* boot device head number */
 b_devs: .byte 0			/* boot device sector number */
+b_sizh: .word 0			/* bytes per head */
 b_ksec: .long 0			/* kernel beginning sector */
 b_kcnt: .long 0			/* kernel size in sector(s) */
 

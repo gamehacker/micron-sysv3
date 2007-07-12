@@ -3,7 +3,8 @@
  * Copyright (C) 2007, Huaxin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
-void _start()
-{
-}
+
+.global _start; _start:
+	movb $'B', 0xb8000
+	hlt
 
