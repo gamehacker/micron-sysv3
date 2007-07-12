@@ -98,62 +98,61 @@ stat_dev:
 	movb %ch,    b_devc	/* low 8 bits of max cyl number */
 	movb %cl,    b_devs	/* max sector number (bits 5-0) */
 	andb $0x3F,  b_devs
-	orw  $0xC0,  %cx	/* get high 2 bits of max cyl number */
+	andw $0xC0,  %cx	/* get high 2 bits of max cyl number */
 	shlw $0x02,  %cx	/* align it to position */
 	addw %cx,    b_devc	/* add up to the cyl number data */
 	movb %dh,    b_devh	/* max head number */
-	movb %dl,    b_devh	/* number of drives */
+	movb %dl,    b_devn	/* number of drives */
 	movw b_devs, %ax	/* calculate bytes per head */
 	movw $512,   %bx
 	mulw %bx
 	movw %ax,    b_sizh	/* store size per head */
 	ret
-	
+
+copy_c:	.word 0
+copy_h:	.byte 0
+copy_s:	.byte 0
+copy_n:	.byte 0
+copy_d:	.word 0x1000
 
 /* Copy kernel from disk to buffer */
 kern_copy:
-	movw  b_kcnt,  %di	/* number of sectors to transfer */
-	movb  b_devi,  %dl	/* boot device i */
-	movb  b_devs,  %al	/* sectors to transfer per time */
-	movw  $0,      %bx	/* start cylinder number */
-	movb  $0,      %dh	/* start head number */
-	movb  b_ksec,  %cl	/* start sector number */
-	pushw $0x1000		/* set ES segment to 0x10000 */
+	movw  b_ksec,  %ax	/* only for the first time */
+	movb  b_devs,  %bl
+	subb  %al,     %bl
+	movb  %bl,     copy_n
+	movb  %al,     copy_s
+1:	movb  b_devi,  %dl	/* boot device i */
+	movb  copy_n,  %al	/* sectors to transfer per time */
+	movw  copy_c,  %bx	/* start cylinder number */
+	movb  copy_h,  %dh	/* start head number */
+	movb  copy_s,  %cl	/* start sector number */
+	addb  $1,      %cl
+	push  copy_d
 	pop   %es
 	movw  $0,      %si	/* beginning from 0x10000 */
-	pushw %ax		/* save values for next time */
-	pushw %bx
-	pushw %cx
-	pushw %dx
-	pushw %es
-	pushw %si
-1:	call  copy_block
-	popw  %si		/* restore values */
-	popw  %es
-	popw  %dx
-	popw  %cx
-	popw  %bx
-	popw  %ax
-	ret
-	push  %bp
-	push  %ax
-	movw  b_sizh,  %bp	/* get transfered size to add to seg disp */
-	shrw  $4,      %bp
-	movw  %es,     %ax
-	addw  %bp,     %ax
-	movw  %ax,     %es
-	pop   %ax
-	pop   %bp
-	subw  b_devs,  %di	/* subtract moved sector num from requested */
-	incb  %dh		/* move to next head */
-	cmpb  b_devh,  %dh	/* if head number reaches maximum */
-	jz    2f		/* goto clear head num and increase cyl num */
-	jmp   1b		/* or just simply continue the copy */
-2:	orb   %dh,     %dh	/* clear head number */
-	incw  %bx		/* increase cylinder number */
-	cmpw  $0,      %di	/* test remaining sectors to copy */
-	jns   1b		/* if not zero, continue the copy */
-	ret
+	call  copy_block
+	movw  b_kcnt,  %ax
+	subw  copy_n,  %ax
+	js    3f
+	movw  %ax,     b_kcnt
+	movw  b_sizh,  %ax
+	shrw  $4,      %ax
+	addw  %ax,     copy_d
+	movb  b_devs,  %al
+	movb  %al,     copy_n
+	movb  $0,      copy_s
+	movb  copy_h,  %al
+	incb  %al
+	cmpb  b_devh,  %al
+	jz    2f
+	jmp   1b
+2:	movw  copy_c,  %ax
+	incw  %ax
+	cmpw  b_devc,  %ax
+	jz    error
+	jmp   1b
+3:	ret
 
 /* 
  * Function to acquire kernel size to copy, result in sectors, store
