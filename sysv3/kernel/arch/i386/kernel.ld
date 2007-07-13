@@ -8,6 +8,7 @@ OUTPUT_FORMAT(elf32-i386)
 ENTRY(_start)
 
 kernel_begin = 0x100000;
+page_size    = 0x1000;
 stack_size   = 0x1000;
 
 SECTIONS
@@ -16,36 +17,43 @@ SECTIONS
 	{
 		code = . ;
 		*(.text)
+		. = ALIGN(page_size);
 	}
 	.data : AT(kernel_begin + (data - code))
 	{
 		data = . ;
 		*(.data)
+		. = ALIGN(page_size);
 	}
 	.inittab : AT(kernel_begin + (inittab - code))
 	{
 		inittab = . ;
 		*(.inittab)
+		. = ALIGN(page_size);
 	}
 	.exittab : AT(kernel_begin + (exittab - code))
 	{
 		exittab = . ;
 		*(.exittab)
+		. = ALIGN(page_size);
 	}
 	.exporttab : AT(kernel_begin + (exporttab - code))
 	{
 		exporttab = . ;
 		*(.exporttab)
+		. = ALIGN(page_size);
 	}
 	.bss : AT(kernel_begin + (bss - code))
 	{
 		bss = . ;
 		*(.bss)
+		. = ALIGN(page_size);
 	}
 	.stack : AT(kernel_begin +(stack_end - code))
 	{
 		stack_end = . ;
 		stack = stack_end + stack_size;
+		. = ALIGN(page_size);
 	}
 	kernel_end = . ;
 }

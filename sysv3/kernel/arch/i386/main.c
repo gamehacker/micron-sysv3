@@ -4,10 +4,11 @@
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
+#include <init.h>
 
 void kmain()
 {
-	char *ch = (char*)0xb8000;
-	ch[2]='F';
+	modinit();
+	modexit();
 }
 
