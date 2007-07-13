@@ -1,5 +1,6 @@
 ###############################################################################
 # Micron System V3 Kernel Build Environment
+# Copyright (C) 2007, Micron System Team
 # Copyright (C) 2007, Martin Tang
 # PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
 ###############################################################################
@@ -38,7 +39,7 @@ micron:$(OBJECTS)
 	@echo "[BUILDING] $@"; $(OC) -Obinary $@.elf $@
 
 clean:
-	@echo "[REMOVE] $(OBJECTS) $(BOOTSECT) boot kernel"; \
+	@echo "[REMOVE] $(OBJECTS) $(BOOTSECT) boot micron"; \
 		rm $(OBJECTS) $(BOOTSECT) \
 		boot.elf boot micron.elf micron
 

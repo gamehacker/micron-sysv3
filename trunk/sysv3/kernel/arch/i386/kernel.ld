@@ -1,5 +1,6 @@
 /*****************************************************************************
- * Micron System V3 - i386 Processor Driver Build Sub-system
+ * Micron System V3 - I386 Architecture Driver
+ * Copyright (C) 2007, Micron System Team
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
@@ -7,7 +8,7 @@ OUTPUT_FORMAT(elf32-i386)
 ENTRY(_start)
 
 kernel_begin = 0x100000;
-page_align = 0;
+stack_size   = 0x1000;
 
 SECTIONS
 {
@@ -15,37 +16,37 @@ SECTIONS
 	{
 		code = . ;
 		*(.text)
-		. = ALIGN(page_align);
 	}
 	.data : AT(kernel_begin + (data - code))
 	{
 		data = . ;
 		*(.data)
-		. = ALIGN(page_align);
 	}
 	.inittab : AT(kernel_begin + (inittab - code))
 	{
 		inittab = . ;
 		*(.inittab)
-		. = ALIGN(page_align);
 	}
 	.exittab : AT(kernel_begin + (exittab - code))
 	{
 		exittab = . ;
 		*(.exittab)
-		. = ALIGN(page_align);
 	}
 	.exporttab : AT(kernel_begin + (exporttab - code))
 	{
 		exporttab = . ;
 		*(.exporttab)
-		. = ALIGN(page_align);
 	}
 	.bss : AT(kernel_begin + (bss - code))
 	{
 		bss = . ;
 		*(.bss)
-		. = ALIGN(page_align);
+	}
+	.stack : AT(kernel_begin +(stack_end - code))
+	{
+		stack_end = . ;
+		stack = stack_end + stack_size;
 	}
 	kernel_end = . ;
 }
+
