@@ -30,4 +30,7 @@ struct _exportitem
 	int  value;
 };
 
+extern int modinit();
+extern int modexit();
+
 #endif
