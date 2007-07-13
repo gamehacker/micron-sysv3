@@ -1,5 +1,6 @@
 /******************************************************************************
  * Micron System V3 System Image Build Utility
+ * Copyright (C) 2007, Micron System Team
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
@@ -218,6 +219,7 @@ int main(int argc, char *argv[])
 		printf(" -h, --help              Show this help and exit\n");
 		printf(" -v, --verbose           Verbosely display the file names being processed\n");
 		printf(" -b, --boot   BOOTSECT   Specify the bootloader file write to boot sector\n");
+		printf(" -k, --kernel KERNEL     Specify the kernel file to copy to special section\n");
 		printf(" -f, --fmt    TYPE       Target file system format, see Supported Formats\n");
 		printf(" -r, --root   DIRECTORY  Specify the root directory\n");
 		printf(" -o, --output FILENAME   Specify output filename\n");

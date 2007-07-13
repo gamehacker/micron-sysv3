@@ -1,5 +1,6 @@
 ###############################################################################
 # Micron System V3 File System Image Creator Build System
+# Copyright (C) 2007, Micron System Team
 # Copyright (C) 2007, Martin Tang
 # PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
 ###############################################################################
