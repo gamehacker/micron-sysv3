@@ -4,11 +4,10 @@
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
-#include <init.h>
+#include <module.h>
 
 void kmain()
 {
 	modinit();
-	modexit();
 }
 

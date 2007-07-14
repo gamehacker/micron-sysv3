@@ -13,26 +13,25 @@
 
 // Definitions
 #ifndef S_IRWXU
-#define	S_IRWXU 	0x00000007
-#define		S_IRUSR 0x00000001	// Read permission, owner
-#define		S_IWUSR 0x00000002	// Write permission, owner
-#define		S_IXUSR 0x00000004	// Execute/search permission, owner
-#define	S_IRWXG		0x00000070	// Read, write, execute/search by group 
-#define		S_IRGRP	0x00000010	// Read permission, group
-#define 	S_IWGRP	0x00000020	// Write permission, group
-#define		S_IXGRP	0x00000040	// Execute/search permission, group
-#define	S_IRWXO		0x00000700	// Read, write, execute/search by others
-#define		S_IROTH	0x00000100	// Read permission, others
-#define		S_IWOTH	0x00000200	// Write permission, others
-#define		S_IXOTH	0x00000400	// Execute/search permission, others
-#define	S_IFMT		0x000FF000	//Type of file. 
-#define		S_IFBLK	0x00001000	//Block special. 
-#define		S_IFCHR	0x00002000	//Character special. 
-#define		S_IFIFO	0x00003000	//FIFO special. 
-#define		S_IFREG	0x00004000	//Regular. 
-#define		S_IFDIR	0x00005000	//Directory. 
-#define		S_IFLNK	0x00006000	//Symbolic link. 
-#define		S_IFSOCK 0x00007000	//Socket.  
+#define	S_IRWXU 	0x0007
+#define		S_IRUSR 0x0001	// Read permission, owner
+#define		S_IWUSR 0x0002	// Write permission, owner
+#define		S_IXUSR 0x0004	// Execute/search permission, owner
+#define	S_IRWXG		0x0070	// Read, write, execute/search by group 
+#define		S_IRGRP	0x0010	// Read permission, group
+#define 	S_IWGRP	0x0020	// Write permission, group
+#define		S_IXGRP	0x0040	// Execute/search permission, group
+#define	S_IRWXO		0x0700	// Read, write, execute/search by others
+#define		S_IROTH	0x0100	// Read permission, others
+#define		S_IWOTH	0x0200	// Write permission, others
+#define		S_IXOTH	0x0400	// Execute/search permission, others
+#define	S_IFMT		0xF000	//Type of file. 
+#define		S_IFBLK	0x1000	//Block special. 
+#define		S_IFCHR	0x2000	//Character special. 
+#define		S_IFIFO	0x3000	//FIFO special. 
+#define		S_IFREG	0x4000	//Regular. 
+#define		S_IFDIR	0x5000	//Directory. 
+#define		S_IFLNK	0x6000	//Symbolic link. 
 #endif
 
 // MFS Data Type Definitions (currently i386)
@@ -65,7 +64,8 @@ struct mfs_superblk {
 struct mfs_inode {
 	// Identifiers
 	mfs_u8  i_name[MFS_NAMELEN];	// File name
-	mfs_u32 i_mode;			// Inode mode
+	mfs_u16 i_mode;			// Inode mode
+	mfs_u16 i_nlinks;		// Number of linked files
 	mfs_u32 i_sn;			// Inode serial number
 
 	// Time

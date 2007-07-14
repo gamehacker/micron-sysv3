@@ -30,18 +30,21 @@ SECTIONS
 		inittab = . ;
 		*(.inittab)
 		. = ALIGN(page_size);
+		inittab_end = . ;
 	}
 	.exittab : AT(kernel_begin + (exittab - code))
 	{
 		exittab = . ;
 		*(.exittab)
 		. = ALIGN(page_size);
+		exittab_end = . ;
 	}
 	.exporttab : AT(kernel_begin + (exporttab - code))
 	{
 		exporttab = . ;
 		*(.exporttab)
 		. = ALIGN(page_size);
+		exporttab_end = . ;
 	}
 	.bss : AT(kernel_begin + (bss - code))
 	{
