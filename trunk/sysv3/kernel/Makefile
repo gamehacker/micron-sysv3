@@ -25,7 +25,9 @@ OC=$(CROSS)objcopy
 include arch/$(ARCH)/Makefile
 
 # Portable Kernel Objective Code Targets
-OBJECTS+=driver/modinit.o
+OBJECTS+=lib/module.o \
+	 lib/export.o \
+	 driver/device.o
 
 # Targets
 all: boot micron

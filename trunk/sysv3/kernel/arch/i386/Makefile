@@ -6,7 +6,7 @@
 ###############################################################################
 
 # Compiler Flags
-CCFLAGS+=-I include/arch-i386
+CCFLAGS+= -I include/arch-i386
 CXXFLAGS+=-I include/arch-i386
 
 # Linker Script Selection
@@ -18,8 +18,9 @@ LDSCRIPT=arch/i386/kernel.ld		# Kernel Linker Script
 BOOTSECT=arch/i386/boot/boot.o
 
 # kernel objectives
-OBJECTS+=arch/i386/init.o \
-	 arch/i386/main.o \
-	 arch/i386/idt.o \
-	 arch/i386/gdt.o
+OBJECTS+=arch/i386/init/init.o \
+	 arch/i386/init/main.o \
+	 arch/i386/cpu/idt.o \
+	 arch/i386/cpu/gdt.o \
+	 driver/chrdev/tty.o		# Add PC tty driver
 
