@@ -14,15 +14,15 @@ all:
 	        -b kernel/boot -k kernel/micron -o micron.img
 	@chmod +rwx micron.img
 
-qemu:
-	@qemu -L /qemu -hda micron.img -s -no-kqemu &
+run:
+	@start bochs -q -f scripts/run.bxrc
 
 kdbg:
-	@qemu -L /qemu -hda micron.img -s -no-kqemu -S &
+	@start bochs -q -f scripts/dbg.bxrc
 	@i686-elf-gdb kernel/micron.elf
 
 bdbg:
-	@qemu -L /qemu -hda micron.img -s -no-kqemu -S &
+	@start bochs -q -f scripts/dbg.bxrc
 	@i686-elf-gdb kernel/boot.elf
 
 clean:

@@ -38,6 +38,7 @@ int cleanpass(int id, int pos_jmp)
 		tty_data[MINOR(id)].buf[pos_jmp] = ' '|(0xf0<<8);
 		return 0;
 	}
+	return 0;
 }
 
 int bufscroll(id_t id)
