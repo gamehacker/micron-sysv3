@@ -31,8 +31,7 @@ void *DeviceAlloc(enum DevType type)
 
 int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 {
-	switch(type)
-	{
+	switch(type) {
 	case CHRDEV:
 		// Check if device exists
 		if(ChrDev[MAJOR(dID)].open == 0) {
@@ -50,8 +49,7 @@ int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 
 int DeviceClose(enum DevType type, id_t dID)
 {
-	switch(type)
-	{
+	switch(type) {
 	case CHRDEV:
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
@@ -71,8 +69,7 @@ int DeviceClose(enum DevType type, id_t dID)
 
 int DeviceRead (enum DevType type, id_t dID, char *buf, size_t cnt)
 {
-	switch(type)
-	{
+	switch(type) {
 	case CHRDEV:
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
@@ -92,8 +89,7 @@ int DeviceRead (enum DevType type, id_t dID, char *buf, size_t cnt)
 
 int DeviceWrite(enum DevType type, id_t dID, char *buf, size_t cnt)
 {
-	switch(type)
-	{
+	switch(type) {
 	case CHRDEV:
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
@@ -113,8 +109,7 @@ int DeviceWrite(enum DevType type, id_t dID, char *buf, size_t cnt)
 
 int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
 {
-	switch(type)
-	{
+	switch(type) {
 	case CHRDEV:
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
