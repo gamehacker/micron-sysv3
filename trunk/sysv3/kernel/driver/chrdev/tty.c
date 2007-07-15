@@ -35,8 +35,7 @@ int cleanpass(int id, int pos_jmp)
 	int pos = tty_data[MINOR(id)].pos_y*tty_data[MINOR(id)].max_x+tty_data[MINOR(id)].pos_x;
 	for(;pos_jmp<pos;pos_jmp++)
 	{
-		tty_data[MINOR(id)].buf[pos_jmp] = ' '|(0xf0<<8);
-		return 0;
+		tty_data[MINOR(id)].buf[pos_jmp] = ' '|(0x0f<<8);
 	}
 	return 0;
 }
@@ -122,7 +121,7 @@ int tty_write(id_t id, char *buf, size_t cnt)
 		default:
 			{
 		       int pos = tty_data[MINOR(id)].pos_y*tty_data[MINOR(id)].max_x+tty_data[MINOR(id)].pos_x;
-		       tty_data[MINOR(id)].buf[pos]=buf[i]|(0xf0<<8);
+		       tty_data[MINOR(id)].buf[pos]=buf[i]|(0x0f<<8);
 			if(tty_data[MINOR(id)].pos_x<(tty_data[MINOR(id)].max_x-1))
 			{
 				tty_data[MINOR(id)].pos_x+=1;
