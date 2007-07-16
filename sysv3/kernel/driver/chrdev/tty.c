@@ -44,7 +44,7 @@ int bufscroll(id_t id)
 {
 	int max_num = tty_data[MINOR(id)].max_x*tty_data[MINOR(id)].max_y;
 	int init = 0;
-	for( ;init<(max_num - tty_data[MINOR(id)].max_x+1);init++)
+	for( ;init<(max_num - tty_data[MINOR(id)].max_x);init++)
 	{
 	   tty_data[MINOR(id)].buf[init] = tty_data[MINOR(id)].buf[init+tty_data[MINOR(id)].max_x];
 	}
@@ -54,7 +54,7 @@ int bufscroll(id_t id)
 		tty_data[MINOR(id)].buf[init] = '\0';
 	}
 	tty_data[MINOR(id)].pos_x = 0;
-	tty_data[MINOR(id)].pos_y = max_num - tty_data[MINOR(id)].max_x+1;
+	tty_data[MINOR(id)].pos_y = tty_data[MINOR(id)].max_y-1;
 	return 0;
 }
 
@@ -82,7 +82,7 @@ int tty_write(id_t id, char *buf, size_t cnt)
 		switch( buf[i] )
 		{
 		case '\n':
-			if(tty_data[MINOR(id)].pos_y<tty_data[MINOR(id)].max_y)
+			if(tty_data[MINOR(id)].pos_y<tty_data[MINOR(id)].max_y-1)
 			{
 				tty_data[MINOR(id)].pos_y += 1;
 				tty_data[MINOR(id)].pos_x = 0;
@@ -94,14 +94,14 @@ int tty_write(id_t id, char *buf, size_t cnt)
 			}
 			break;
 		case '\t':
-			if(tty_data[MINOR(id)].pos_x<(tty_data[MINOR(id)].max_x-7))
+			if(tty_data[MINOR(id)].pos_x<(tty_data[MINOR(id)].max_x-8))
 			{
 				tty_data[MINOR(id)].pos_x+=8;
 				cleanpass(id,pos_rmb);
 			}
 			else
 			{
-			     if(tty_data[MINOR(id)].pos_y<25)
+			     if(tty_data[MINOR(id)].pos_y<tty_data[MINOR(id)].max_y-1)
 			      {
 				tty_data[MINOR(id)].pos_y += 1;
 				tty_data[MINOR(id)].pos_x = 0;
@@ -128,7 +128,7 @@ int tty_write(id_t id, char *buf, size_t cnt)
 			}
 			else
 			{
-			     if(tty_data[MINOR(id)].pos_y<25)
+			     if(tty_data[MINOR(id)].pos_y<tty_data[MINOR(id)].max_y-1)
 			      {
 				tty_data[MINOR(id)].pos_y += 1;
 				tty_data[MINOR(id)].pos_x = 0;
