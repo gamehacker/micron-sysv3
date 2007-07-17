@@ -13,7 +13,7 @@
  #define NIBMP	1					// inode no ctl
  #define NDBMP	1					// data blk no ctl
  #define NIBLK	(NIBMP*8*sizeof(struct mfs_inode))
- #define NDBLK	NIBLK					//(NDBMP*8*MFS_BLKSIZE)
+ #define NDBLK	(NDBMP*8*MFS_BLKSIZE)
 /*****************************************************************************/
 #include <stdio.h>
 #include <stdlib.h>

@@ -17,7 +17,8 @@
  *   5. V8086 data segment
  *   6. V8086 stack segment
  *   7. Application code segment
- *   8. Application data segment *   9. Application stack segment
+ *   8. Application data segment
+ *   9. Application stack segment
  *  10. Task switch selector(TSS) segment
  *
  * Developer Reference:
@@ -28,19 +29,25 @@
 
 struct i386_gdt
 {
-	unsigned int slim_l:16;	/* segment limit 15..0 */
-	unsigned int badd_l:16;	/* base address 15..0 */
-	unsigned int badd_m:8;	/* base address 23..16 */
-	unsigned int type:5;	/* segment type */
-	unsigned int dpl:2;	/* descriptor privilege level */
-	unsigned int p:1;	/* segment present */
-	unsigned int slim_h:4;	/* segment limit 19..16 */
-	unsigned int avl:1;	/* available for use by system software */
-	unsigned int l:1;	/* 64bit code segment */
-	unsigned int db:1;	/* default operation syze */
-	unsigned int g:1;	/* granularity */
-	unsigned int badd_h:8;	/* base address 31..24 */
-}i386_gdt[10];
+	unsigned slim_l:16;	/* segment limit 15..0 */
+	unsigned badd_l:16;	/* base address 15..0 */
+	unsigned badd_m:8;	/* base address 23..16 */
+	unsigned type:5;	/* segment type */
+	unsigned dpl:2;		/* descriptor privilege level */
+	unsigned p:1;		/* segment present */
+	unsigned slim_h:4;	/* segment limit 19..16 */
+	unsigned avl:1;		/* available for use by system software */
+	unsigned l:1;		/* 64bit code segment */
+	unsigned db:1;		/* default operation syze */
+	unsigned g:1;		/* granularity */
+	unsigned badd_h:8;	/* base address 31..24 */
+}__attribute__((packed)) i386_gdt[10];
+
+struct i386_gdtr
+{
+	unsigned limit:16;
+	unsigned base:32;
+}__attribute__((packed)) i386_gdtr;
 
 enum i386_gdt_s
 {
@@ -56,8 +63,8 @@ enum i386_gdt_db
 
 enum i386_gdt_gran
 {
-	LIMIT_1B_UNIT,		/* segment limit in 1byte unit */
-	LIMIT_4KB_UNIT		/* segment limit in 4KB unit */
+	UNIT_1B,		/* segment limit in 1byte unit */
+	UNIT_4K			/* segment limit in 4KB unit */
 };
 
 enum i386_gdt_type
@@ -97,23 +104,76 @@ enum i386_gdt_type
 };
 
 /* GDT entry modifier */
-int i386_gdt_edit(int index,			/* GDT Index */
-		  int address,			/* segment address */
-		  int limit,			/* segment limit */
-		  int present,			/* segment present */
+int i386_gdt_edit(unsigned index,		/* GDT Index */
+		  unsigned address,		/* segment address */
+		  unsigned limit,		/* segment limit */
+		  unsigned present,		/* segment present */
+		  unsigned dpl,			/* descriptor privilege */
 		  enum i386_gdt_db   db,	/* default data length */
 		  enum i386_gdt_type type, 	/* descriptor type */
 		  enum i386_gdt_gran gran)	/* data granularity */
 {
-	if(index > GDT_ENTRIES) {
-	}
+	if(index > GDT_ENTRIES)
+		return -1;			/* no such GDT entry */
+	i386_gdt[index].slim_l = limit & 0xFFFF;
+	i386_gdt[index].slim_h = (limit>>16) & 0xF;
+	i386_gdt[index].badd_l = address & 0xFFFF;
+	i386_gdt[index].badd_m = (address>>16) & 0xFF;
+	i386_gdt[index].badd_h = (address>>24) & 0xFF;
+	i386_gdt[index].p      = present;
+	i386_gdt[index].dpl    = dpl;
+	i386_gdt[index].db     = db;
+	i386_gdt[index].type   = type;
+	i386_gdt[index].g      = gran;
+	i386_gdt[index].l      = 0;
+	i386_gdt[index].avl    = 0;
 	return 0;
 }
 
+void i386_gdt_load()
+{
+	i386_gdtr.base = (unsigned)&i386_gdt;
+	i386_gdtr.limit= sizeof(i386_gdt) - 1;
+	asm("lgdt i386_gdtr");
+	asm("movw $0x18, %ax");
+	asm("movw %ax,   %ss");
+	asm("movw $0x10, %ax");
+	asm("movw %ax,   %ds");
+	asm("movw %ax,   %es");
+	asm("movw %ax,   %fs");
+	asm("movw %ax,   %gs");
+	asm("ljmp $0x08, $newgdt");
+	asm("newgdt:");
+}
 
 /* GDT manager initialization */
-int i386_gdt_init()
+void i386_gdt_init()
 {
-	return 0;
+	/* Null GDT entry */
+	i386_gdt_edit(0,0,0,0,0,0,0,0);
+
+	/* Kernel segments */
+	i386_gdt_edit(1,0,0xFFFFF,1,0,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
+	i386_gdt_edit(2,0,0xFFFFF,1,0,BITS32,DATA_READ_WRITE,UNIT_4K);
+	i386_gdt_edit(3,0,0xFFFFF,1,0,BITS32,DATA_READ_WRITE,UNIT_4K);
+
+	/* V8086 segments */
+	i386_gdt_edit(4,0,0xFFFFF,1,0,BITS16,CODE_READ_EXEC_CONFORM,UNIT_1B);
+	i386_gdt_edit(5,0,0xFFFFF,1,0,BITS16,DATA_READ_WRITE,UNIT_1B);
+	i386_gdt_edit(6,0,0xFFFFF,1,0,BITS16,DATA_READ_WRITE,UNIT_1B);
+
+	/* Application segments */
+	i386_gdt_edit(7,0,0xFFFFF,1,3,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
+	i386_gdt_edit(8,0,0xFFFFF,1,3,BITS32,DATA_READ_WRITE,UNIT_4K);
+	i386_gdt_edit(9,0,0xFFFFF,1,3,BITS32,DATA_READ_WRITE,UNIT_4K);
+
+	/* Load new GDT */
+	i386_gdt_load();
+}
+
+/* Install a TSS to segment */
+void i386_gdt_tss(unsigned tadd, unsigned size)
+{
+	i386_gdt_edit(10,tadd,size,1,0,BITS32,SYST_BITS32_TSS_AVAL,UNIT_1B);
 }
 
