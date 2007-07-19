@@ -1,3 +1,22 @@
 
+Phase 1:
+1.I386 bootloader;				FINISHED
 
+Phase 2:
+
+1.Add GDT management system;			FINISHED
+2.Add IDT management system;			FINISHED
+3.Add up interrupt handler entries;		GOING
+4.Add up TSS management unit;
+5.Design task switching interface;
+6.Add MMU driver;
+7.Add page based memory allocation interface;
+8.Add system call registering mechanism;
+9.I386 architecture driver integrity check;
+
+Phase 3:
+
+1.Kernel unix layer design
+
+TO BE CONTINUED...
 
