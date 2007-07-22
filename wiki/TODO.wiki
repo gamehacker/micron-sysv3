@@ -1,0 +1,28 @@
+= TODO List =
+
+||1. I386 GDT Support                                 ||COMPLETED||
+||2. I386 IDT Support                                 ||COMPLETED||
+||3. I386 ISR Handle                                  ||COMPLETED||
+||4. I386 TSS Handle                                  ||WAITING  ||
+||5. I386 MMU Driver                                  ||WAITING  ||
+||6. I386 DMA Driver                                  ||WAITING  ||
+||7. I386 TTY Driver(MOD)                             ||COMPLETED||
+||8. libc tool func                                   ||ACTIVE   ||
+||9. Common Architectural Task Interface Design       ||WAITING  ||
+||10.Common Architectural Interrupt Interface Design  ||WAITING  ||
+||11.Common Architectural MMU Interface Design        ||WAITING  ||
+||12.Common Architectural DMA Interface Design        ||WAITING  ||
+||13.Common Architectural Syscall Interface Design    ||WAITING  ||
+||14.Architectural Integrity Check                    ||INACTIVE ||
+||15.Unix Kernel Layer Design                         ||WAITING  ||
+
+
+= Details =
+
+||COMPLETED||task has already finished.||
+||WAITING  ||task is still waitting to be implemented(available)||
+||ACTIVE   ||task is being developmented by someone||
+||INACTIVE ||task is still not suitable to be done(depending on other task)||
+
+*All WAIT tasks are available for anyone to take*
+
