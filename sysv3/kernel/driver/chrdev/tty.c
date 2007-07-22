@@ -15,6 +15,7 @@
  *   cmd	arg		function
  *   1		page index	display page n
  *   2		color		set display color
+ *   3		any		clear screen
  *****************************************************************************/
 #include <device.h>
 #include <io.h>
@@ -122,12 +123,21 @@ int tty_write(id_t id, char *buf, size_t cnt)
 
 int tty_ioctl(id_t id, int cmd, int arg)
 {
+	int i;
+	unsigned short *p = tty_disp[MINOR(id)].buf;
 	switch(cmd) {
 	case 1:				/* change current display page */
 		tty_setpage(arg);
 		break;
 	case 2:
 		tty_disp[MINOR(id)].color = arg;
+		break;
+	case 3:
+		for(i=0; 
+		    i<tty_disp[MINOR(id)].max_x * tty_disp[MINOR(id)].max_y;
+		    i++) {
+		   p[i] = ' '|0x0f00;
+		}
 		break;
 	}
 	return 0;
@@ -164,6 +174,9 @@ int tty_init()
 		tty_disp[i].max_y = 25;
 		tty_disp[i].buf   = (unsigned short*)0xb8000 + 80*25*2*i;
 	}
+	
+	/* clean screen get ready for use */
+	tty_ioctl(0, 3, 0);
 	return 0;
 }
 
