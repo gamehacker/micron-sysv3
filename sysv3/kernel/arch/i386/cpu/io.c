@@ -9,7 +9,7 @@
  *****************************************************************************/
 #include <io.h>
 
-unsigned char inportb(unsigned short port)
+unsigned char inport(unsigned short port)
 {
 	unsigned char rv;
 	__asm__ __volatile__ ("inb %1, %0" : "=a"(rv) : "dN"(port));

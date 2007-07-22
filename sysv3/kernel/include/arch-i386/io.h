@@ -7,8 +7,8 @@
 #ifndef __MICRON_KERNEL_IO_H__
 #define __MICRON_KERNEL_IO_H__
 
-extern unsigned char inportb(unsigned short port);
-extern void outportb(unsigned short port, unsigned char data);
+extern unsigned char inport(unsigned short port);
+extern void outport(unsigned short port, unsigned char data);
 
 #endif
 

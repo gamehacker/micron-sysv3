@@ -21,6 +21,7 @@ BOOTSECT=arch/i386/boot/boot.o
 OBJECTS+=arch/i386/init/init.o \
 	 arch/i386/init/main.o \
 	 arch/i386/cpu/idt.o \
+	 arch/i386/cpu/irq.o \
 	 arch/i386/cpu/isr.o \
 	 arch/i386/cpu/gdt.o \
 	 arch/i386/cpu/tss.o \
