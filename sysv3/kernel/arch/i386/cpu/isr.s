@@ -81,6 +81,7 @@ isr_handler:
 	mov %ax, %fs
 	mov %ax, %gs
 
+	movl  %esp, %eax
 	pushl %eax
 	movl  $isr_entry, %eax
 	call *%eax

@@ -19,6 +19,7 @@
  *****************************************************************************/
 #include <device.h>
 #include <io.h>
+#include <libc.h>
 
 struct ChrDev *tty_dev;
 
@@ -97,20 +98,21 @@ int tty_write(id_t id, char *buf, size_t cnt)
 		buf++;
 		break;
 	case '\t':
+		disp->pos_x = ((disp->pos_x/8) + (disp->pos_x%8)?1:0)*8;
 		buf++;
 		break;
 	default:
-		if(disp->pos_x == disp->max_x) {
+		if(disp->pos_x >= disp->max_x) {
 			disp->pos_x = 0;
 			disp->pos_y++;
 		}
-		if(disp->pos_y == disp->max_y) {
+		if(disp->pos_y >= disp->max_y) {
 			tty_scroll(MINOR(id));
 			disp->pos_y--;
 		}
 		disp->buf[disp->pos_x+disp->pos_y*disp->max_x] = 
 			*buf|(disp->color<<8);
-		tty_setcursor(MINOR(id), disp->pos_x, disp->pos_y);
+		tty_setcursor(MINOR(id), disp->pos_x+1, disp->pos_y);
 
 		/* prepare for next character */
 		disp->pos_x++;
@@ -177,6 +179,8 @@ int tty_init()
 	
 	/* clean screen get ready for use */
 	tty_ioctl(0, 3, 0);
+
+	kprintf("TTY Driver V1.0 Initialized Successfully\n");
 	return 0;
 }
 

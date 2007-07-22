@@ -27,6 +27,7 @@ include arch/$(ARCH)/Makefile
 # Portable Kernel Objective Code Targets
 OBJECTS+=lib/module.o \
 	 lib/export.o \
+	 lib/libc.o \
 	 driver/device.o
 
 # Targets

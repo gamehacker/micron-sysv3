@@ -10,7 +10,7 @@
  *   Bran's Kernel Development Tutorial
  *****************************************************************************/
 #include <io.h>
-#include <device.h>
+#include <libc.h>
 
 struct isr_regs
 {
@@ -22,8 +22,8 @@ struct isr_regs
 
 void isr_entry(struct isr_regs *regs)
 {
-	DeviceWrite(CHRDEV, DEVID(0, 0), "Interrupt Occured\n", 18);
-	DeviceWrite(CHRDEV, DEVID(0, 0), "TODO: cpu/irq.c  \n", 18);
+	kprintf("WARNNING: unhandled ");
+	kprintf("IRQ: %d, Error: %x\n", regs->int_no, regs->err_code); 
 	while(1);
 }
 
