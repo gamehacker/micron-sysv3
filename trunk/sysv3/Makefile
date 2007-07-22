@@ -19,11 +19,11 @@ run:
 
 kdbg:
 	@start bochs -q -f scripts/dbg.bxrc
-	@i686-elf-gdb kernel/micron.elf
+	@i686-elf-gdb --command scripts/gdb kernel/micron.elf
 
 bdbg:
 	@start bochs -q -f scripts/dbg.bxrc
-	@i686-elf-gdb kernel/boot.elf
+	@i686-elf-gdb --command scripts/gdb kernel/boot.elf
 
 clean:
 	-rm micron.img

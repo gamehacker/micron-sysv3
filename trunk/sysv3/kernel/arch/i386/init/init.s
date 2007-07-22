@@ -10,8 +10,10 @@
 .extern stack
 .extern i386_gdt_init
 .extern i386_idt_init
+.extern i386_irq_init
 	movl $stack, %esp	/* setup stack for kernel */
 	call i386_gdt_init	/* install new gdt managed by kernel */
 	call i386_idt_init	/* install new gdt managed by kernel */
+	call i386_irq_init	/* initialize IRQ */
 	call kmain
 	hlt			/* kmain function should never return */

@@ -4,6 +4,7 @@
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
+#include <io.h>
 
 #define IDT_ENTRIES 256
 
