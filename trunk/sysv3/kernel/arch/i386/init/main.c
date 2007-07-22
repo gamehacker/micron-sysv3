@@ -10,6 +10,6 @@
 void kmain()
 {
 	modinit();
-//	asm("sti");
+	asm("sti");
 }
 
