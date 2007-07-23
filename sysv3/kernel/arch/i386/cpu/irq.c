@@ -11,20 +11,27 @@
  *****************************************************************************/
 #include <io.h>
 #include <libc.h>
+#include <irq.h>
 
-struct isr_regs
+void i386_pic_eoi()
 {
-	unsigned int gs, fs, es, ds, ss;
-	unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;
-	unsigned int int_no, err_code;
-	unsigned int eip, cs, eflags, useresp, userss; // only valid from ring 3
-};
+	outport(0x20, 0x20);
+	outport(0xA0, 0x20);
+}
+
+unsigned i=0;
 
 void isr_entry(struct isr_regs *regs)
 {
-	kprintf("WARNNING: unhandled ");
-	kprintf("IRQ: %d, Error: %x\n", regs->int_no, regs->err_code); 
-	while(1);
+	if(regs->int_no == 32) {
+		i++;
+		if(i%1000 == 0)
+			kprintf("Timer clock interrupted:%d\n", i);
+		i386_pic_eoi();
+	} else {
+		kprintf("WARNNING: unhandled ");
+		kprintf("IRQ: %d, Error: %x\n", regs->int_no, regs->err_code); 
+	}
 }
 
 void i386_pic_init()

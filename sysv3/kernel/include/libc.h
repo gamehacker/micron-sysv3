@@ -7,8 +7,11 @@
 #ifndef __MICRON_KERNEL_LIBC_H__
 #define __MICRON_KERNEL_LIBC_H__
 
+#include <types.h>
+
 extern char *itoa(int value, char *str, int radix);
 extern int strlen(char *str);
+extern char *memcpy(char *dest, char *src, size_t cnt);
 extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 
 #endif
