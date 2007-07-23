@@ -19,18 +19,53 @@ void i386_pic_eoi()
 	outport(0xA0, 0x20);
 }
 
-unsigned i=0;
+void (*i386_isr_handler[32])(struct isr_regs*);
 
-void isr_entry(struct isr_regs *regs)
+void (*i386_irq_handler[16])(struct isr_regs*);
+
+void (*i386_isr_syscall)(struct isr_regs*);
+
+void i386_isr_install(int index, void (*handler)(struct isr_regs*))
 {
-	if(regs->int_no == 32) {
-		i++;
-		if(i%1000 == 0)
-			kprintf("Timer clock interrupted:%d\n", i);
+	i386_isr_handler[index] = handler;
+}
+
+void i386_irq_install(int index, void (*handler)(struct isr_regs*))
+{
+	i386_irq_handler[index] = handler;
+}
+
+void i386_isr_install_syscall(void (*handler)(struct isr_regs*))
+{
+	i386_isr_syscall = handler;
+}
+
+void i386_isr_entry(struct isr_regs *regs)
+{
+	if((regs->intn >= 0) && (regs->intn <= 31)) {
+		if(i386_isr_handler[regs->intn] == 0) {
+			kprintf("WARNNING: No isr, system may be unstable\n");
+			kprintf("ISR: %d, ERR: %x\n", regs->intn, regs->err);
+			while(1);
+		} else {
+			i386_isr_handler[regs->intn](regs);
+		}
+	} else if((regs->intn >= 32) && (regs->intn <= 47)) {
+		if(i386_isr_handler[regs->intn] == 0) {
+			kprintf("WARNNING: No isr, system may be unstable\n");
+			kprintf("ISR: %d, ERR: %x\n", regs->intn, regs->err);
+			while(1);
+		} else {
+			i386_irq_handler[regs->intn-32](regs);
+		}
 		i386_pic_eoi();
-	} else {
-		kprintf("WARNNING: unhandled ");
-		kprintf("IRQ: %d, Error: %x\n", regs->int_no, regs->err_code); 
+	}else if(regs->intn == 0x80) {
+		if(i386_isr_syscall == 0) {
+			kprintf("PANIC: No system call installed\n");
+			while(1);
+		} else {
+			i386_isr_handler[regs->intn](regs);
+		}
 	}
 }
 

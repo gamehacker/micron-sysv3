@@ -5,6 +5,7 @@
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
 #include <module.h>
+#include <device.h>
 
 void kmain()
 {

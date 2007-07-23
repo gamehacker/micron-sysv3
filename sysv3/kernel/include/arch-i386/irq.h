@@ -11,10 +11,13 @@ struct isr_regs
 {
 	unsigned int gs, fs, es, ds, ss;
 	unsigned int edi, esi, ebp, esp, ebx, edx, ecx, eax;
-	unsigned int int_no, err_code;
+	unsigned int intn, err;
 	unsigned int eip, cs, eflags, useresp, userss; // only valid from ring 3
 };
 
+extern void i386_isr_install(int index, void (*)(struct isr_regs*));
+extern void i386_irq_install(int index, void (*)(struct isr_regs*));
+extern void i386_isr_install_syscall(void (*)(struct isr_regs*));
 
 #endif
 
