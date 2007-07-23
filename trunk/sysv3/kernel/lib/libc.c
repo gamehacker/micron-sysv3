@@ -44,6 +44,14 @@ int strlen(char *str)
 	return len;
 }
 
+char *memcpy(char *dest, char *src, size_t cnt)
+{
+	while(cnt--) {
+		*dest++ = *src++;
+	}
+	return dest;
+}
+
 int __attribute__((format(printf, 1, 2)))
 kprintf(char *fmt, ...)
 {
