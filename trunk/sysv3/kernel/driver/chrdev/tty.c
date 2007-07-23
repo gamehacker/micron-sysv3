@@ -174,7 +174,8 @@ int tty_init()
 		tty_disp[i].pos_y = 0;
 		tty_disp[i].max_x = 80;
 		tty_disp[i].max_y = 25;
-		tty_disp[i].buf   = (unsigned short*)0xb8000 + 80*25*2*i;
+		tty_disp[i].buf   = (unsigned short*)(0xb8000 + 
+			tty_disp[i].max_x * tty_disp[i].max_y * 2 * i);
 	}
 	
 	/* clean screen get ready for use */
