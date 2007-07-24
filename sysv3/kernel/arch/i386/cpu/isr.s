@@ -73,9 +73,8 @@ isr_handler:
 	pushl %es
 	pushl %fs
 	pushl %gs
-	mov $0x18, %ax
-	mov %ax, %ss
 	mov $0x10, %ax
+	mov %ax, %ss
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %fs

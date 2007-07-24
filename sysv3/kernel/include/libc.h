@@ -14,5 +14,13 @@ extern int strlen(char *str);
 extern char *memcpy(char *dest, char *src, size_t cnt);
 extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 
+/* debug functions */
+#define PANIC(cond, str) \
+		if(cond) {\
+			kprintf("%CPANIC:%s: %s\n%C",0x0C,str,#cond,0X0F); \
+			while(1); \
+		}
+#define DEBUG(data)      kprintf("%CDEBUG:%s= %d\n%C",0x0C,#data,data,0x0F);
+
 #endif
 

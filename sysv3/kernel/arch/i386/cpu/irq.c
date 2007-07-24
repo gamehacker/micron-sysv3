@@ -43,29 +43,15 @@ void i386_isr_install_syscall(void (*handler)(struct isr_regs*))
 void i386_isr_entry(struct isr_regs *regs)
 {
 	if((regs->intn >= 0) && (regs->intn <= 31)) {
-		if(i386_isr_handler[regs->intn] == 0) {
-			kprintf("WARNNING: No isr, system may be unstable\n");
-			kprintf("ISR: %d, ERR: %x\n", regs->intn, regs->err);
-			while(1);
-		} else {
-			i386_isr_handler[regs->intn](regs);
-		}
+		PANIC(i386_isr_handler[regs->intn] == 0,"I386:cpu/irq.c:46");
+		i386_isr_handler[regs->intn](regs);
 	} else if((regs->intn >= 32) && (regs->intn <= 47)) {
-		if(i386_isr_handler[regs->intn] == 0) {
-			kprintf("WARNNING: No isr, system may be unstable\n");
-			kprintf("ISR: %d, ERR: %x\n", regs->intn, regs->err);
-			while(1);
-		} else {
-			i386_irq_handler[regs->intn-32](regs);
-		}
+		PANIC(i386_irq_handler[regs->intn-32] == 0,"I386:cpu/irq.c:49");
+		i386_irq_handler[regs->intn-32](regs);
 		i386_pic_eoi();
 	}else if(regs->intn == 0x80) {
-		if(i386_isr_syscall == 0) {
-			kprintf("PANIC: No system call installed\n");
-			while(1);
-		} else {
-			i386_isr_handler[regs->intn](regs);
-		}
+		PANIC(i386_isr_syscall == 0,"I386:cpu/irq.c:53");
+		i386_isr_handler[regs->intn](regs);
 	}
 }
 
