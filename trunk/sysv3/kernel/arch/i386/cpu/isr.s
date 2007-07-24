@@ -96,294 +96,244 @@ isr_handler:
 	iret
 
 .global isr0; isr0:
-	cli
 	pushl $0
 	pushl $0
 	jmp isr_handler
 
 .global isr1; isr1:
-	cli
 	pushl $0
 	pushl $1
 	jmp isr_handler
 	
 .global isr2; isr2:
-	cli
 	pushl $0
 	pushl $2
 	jmp isr_handler
 	
 .global isr3; isr3:
-	cli
 	pushl $0
 	pushl $3
 	jmp isr_handler
 	
 .global isr4; isr4:
-	cli
 	pushl $0
 	pushl $4
 	jmp isr_handler
 
 .global isr5; isr5:
-	cli
 	pushl $0
 	pushl $5
 	jmp isr_handler
 
 .global isr6; isr6:
-	cli
 	pushl $0
 	pushl $6
 	jmp isr_handler
 
 .global isr7; isr7:
-	cli
 	pushl $0
 	pushl $7
 	jmp isr_handler
 
 .global isr8; isr8:
-	cli
 	pushl $8
 	jmp isr_handler
 
 .global isr9; isr9:
-	cli
 	pushl $0
 	pushl $9
 	jmp isr_handler
 
 .global isr10; isr10:
-	cli
 	pushl $10
 	jmp isr_handler
 
 .global isr11; isr11:
-	cli
 	pushl $11
 	jmp isr_handler
 
 .global isr12; isr12:
-	cli
 	pushl $12
 	jmp isr_handler
 	
 .global isr13; isr13:
-	cli
 	pushl $13
 	jmp isr_handler
 	
 .global isr14; isr14:
-	cli
 	pushl $14
 	jmp isr_handler
 
 .global isr15; isr15:
-	cli
 	pushl $0
 	pushl $15
 	jmp isr_handler
 
 .global isr16; isr16:
-	cli
 	pushl $0
 	pushl $16
 	jmp isr_handler
 
 .global isr17; isr17:
-	cli
 	pushl $17
 	jmp isr_handler
 
 .global isr18; isr18:
-	cli
 	pushl $0
 	pushl $18
 	jmp isr_handler
 
 .global isr19; isr19:
-	cli
 	pushl $0
 	pushl $19
 	jmp isr_handler
 
 .global isr20; isr20:
-	cli
 	pushl $0
 	pushl $20
 	jmp isr_handler
 
 .global isr21; isr21:
-	cli
 	pushl $0
 	pushl $21
 	jmp isr_handler
 
 .global isr22; isr22:
-	cli
 	pushl $0
 	pushl $22
 	jmp isr_handler
 	
 .global isr23; isr23:
-	cli
 	pushl $0
 	pushl $23
 	jmp isr_handler
 	
 .global isr24; isr24:
-	cli
 	pushl $0
 	pushl $24
 	jmp isr_handler
 
 .global isr25; isr25:
-	cli
 	pushl $0
 	pushl $25
 	jmp isr_handler
 
 .global isr26; isr26:
-	cli
 	pushl $0
 	pushl $26
 	jmp isr_handler
 
 .global isr27; isr27:
-	cli
 	pushl $0
 	pushl $27
 	jmp isr_handler
 
 .global isr28; isr28:
-	cli
 	pushl $0
 	pushl $28
 	jmp isr_handler
 
 .global isr29; isr29:
-	cli
 	pushl $0
 	pushl $29
 	jmp isr_handler
 
 .global isr30; isr30:
-	cli
 	pushl $0
 	pushl $30
 	jmp isr_handler
 
 .global isr31; isr31:
-	cli
 	pushl $0
 	pushl $31
 	jmp isr_handler
 
 .global isr32; isr32:
-	cli
 	pushl $0
 	pushl $32
 	jmp isr_handler
 	
 .global isr33; isr33:
-	cli
 	pushl $0
 	pushl $33
 	jmp isr_handler
 	
 .global isr34; isr34:
-	cli
 	pushl $0
 	pushl $34
 	jmp isr_handler
 
 .global isr35; isr35:
-	cli
 	pushl $0
 	pushl $35
 	jmp isr_handler
 
 .global isr36; isr36:
-	cli
 	pushl $0
 	pushl $36
 	jmp isr_handler
 
 .global isr37; isr37:
-	cli
 	pushl $0
 	pushl $37
 	jmp isr_handler
 
 .global isr38; isr38:
-	cli
 	pushl $0
 	pushl $38
 	jmp isr_handler
 
 .global isr39; isr39:
-	cli
 	pushl $0
 	pushl $39
 	jmp isr_handler
 
 .global isr40; isr40:
-	cli
 	pushl $0
 	pushl $40
 	jmp isr_handler
 
 .global isr41; isr41:
-	cli
 	pushl $0
 	pushl $41
 	jmp isr_handler
 
 .global isr42; isr42:
-	cli
 	pushl $0
 	pushl $42
 	jmp isr_handler
 	
 .global isr43; isr43:
-	cli
 	pushl $0
 	pushl $43
 	jmp isr_handler
 	
 .global isr44; isr44:
-	cli
 	pushl $0
 	pushl $44
 	jmp isr_handler
 
 .global isr45; isr45:
-	cli
 	pushl $0
 	pushl $45
 	jmp isr_handler
 
 .global isr46; isr46:
-	cli
 	pushl $0
 	pushl $46
 	jmp isr_handler
 
 .global isr47; isr47:
-	cli
 	pushl $0
 	pushl $47
 	jmp isr_handler
 
 .global isr_invalid; isr_invalid:
-	cli
 	pushl $0
 	pushl $0xFF
 	jmp isr_handler
 
 .global isr_syscall; isr_syscall:
-	cli
 	pushl $0
 	pushl $0x80
 	jmp isr_handler
