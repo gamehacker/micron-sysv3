@@ -20,6 +20,8 @@ BOOTSECT=arch/i386/boot/boot.o
 # kernel objectives
 OBJECTS+=arch/i386/init/init.o \
 	 arch/i386/init/main.o \
+	 arch/i386/init/memsize.o \
+	 arch/i386/init/config.o \
 	 arch/i386/cpu/idt.o \
 	 arch/i386/cpu/irq.o \
 	 arch/i386/cpu/isr.o \
