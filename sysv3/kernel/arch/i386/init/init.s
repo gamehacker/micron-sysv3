@@ -12,11 +12,13 @@
 .extern i386_gdt_init
 .extern i386_idt_init
 .extern i386_irq_init
+.extern i386_mem_size
 .extern i386_rtc_init
 .extern i386_page_init
 	movl $stack, %esp	/* setup stack for kernel */
 	call i386_idt_init	/* install new gdt managed by kernel */
 	call i386_irq_init	/* initialize IRQ */
+	call i386_mem_size	/* get memory size info */
 	call i386_rtc_init	/* initialize RTC */
 	call i386_gdt_init	/* install new gdt managed by kernel */
 	call i386_page_init	/* initialize RTC */

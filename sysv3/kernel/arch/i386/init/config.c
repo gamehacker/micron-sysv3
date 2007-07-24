@@ -4,12 +4,6 @@
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
-#include <config.h>
-#include <libc.h>
 
-void kmain()
-{
-	kprintf("System Memory: %d\n", arch_memsize);
-	asm("sti");
-}
+unsigned arch_memsize;		/* architecture memory size */
 
