@@ -1,0 +1,318 @@
+<html>
+<head>
+<title>mkmfs/main.c</title>
+<meta name='robots' content='noindex,nofollow'>
+<meta name='generator' content='GLOBAL-5.5'>
+</head>
+<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>
+<a name='TOP'><h2><a href='../mains.html'>root</a>/<a href='../files/58.html'>mkmfs</a>/main.c</h2>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L68'>[^]</a><a href='#L146'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+<hr>
+<h2>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L68' title='Defined at 68.'>xbuff_read</a>
+<li><a href='#L94' title='Defined at 94.'>packdir</a>
+<li><a href='#L146' title='Defined at 146.'>main</a>
+</ol>
+<hr>
+<pre>
+<a name='L1'><i><font color='green'>/******************************************************************************</font></i>
+<a name='L2'><i><font color='green'> * Micron System V3 System Image Build Utility</font></i>
+<a name='L3'><i><font color='green'> * Copyright (C) 2007, Micron System Team</font></i>
+<a name='L4'><i><font color='green'> * Copyright (C) 2007, Martin Tang</font></i>
+<a name='L5'><i><font color='green'> * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.</font></i>
+<a name='L6'><i><font color='green'> *****************************************************************************/</font></i>
+<a name='L7'><font color='darkred'>#include</font> &lt;stdio.h&gt;
+<a name='L8'><font color='darkred'>#include</font> &lt;stdlib.h&gt;
+<a name='L9'><font color='darkred'>#include</font> &lt;string.h&gt;
+<a name='L10'><font color='darkred'>#include</font> &lt;dirent.h&gt;
+<a name='L11'><font color='darkred'>#include</font> &lt;sys/stat.h&gt;
+<a name='L12'><font color='darkred'>#include</font> &lt;fcntl.h&gt;
+<a name='L13'><font color='darkred'>#include</font> "<a href='43.html'>mfs.h</a>"
+<a name='L14'><font color='darkred'>#include</font> "<a href='39.html'>license.h</a>"
+<a name='L15'>
+<a name='L16'><i><font color='green'>// Parameter scan result storage</font></i>
+<a name='L17'><b>struct</b> config
+<a name='L18'><font color='red'>{</font>
+<a name='L19'>        <b>char</b>  c_showhelp;       <i><font color='green'>// just show help and exit</font></i>
+<a name='L20'>        <b>char</b>  c_showlic;        <i><font color='green'>// show license agreement and exit</font></i>
+<a name='L21'>        <b>char</b>  c_debug;          <i><font color='green'>// show debug imfo ?</font></i>
+<a name='L22'>        <b>char</b>  c_verbose;        <i><font color='green'>// verbosely list files processed</font></i>
+<a name='L23'>        <b>char</b> *c_boot;           <i><font color='green'>// selected boot section file name</font></i>
+<a name='L24'>        <b>char</b> *c_kern;           <i><font color='green'>// selected kernel section file name</font></i>
+<a name='L25'>        <b>char</b> *c_fmt;            <i><font color='green'>// selected file system format</font></i>
+<a name='L26'>        <b>char</b> *c_root;           <i><font color='green'>// root dir to copy to new image</font></i>
+<a name='L27'>        <b>char</b> *c_image;          <i><font color='green'>// output filename</font></i>
+<a name='L28'><font color='red'>}</font>config;
+<a name='L29'>
+<a name='L30'><i><font color='green'>// The dynamic transfer buffer structure</font></i>
+<a name='L31'><b>struct</b> xbuff
+<a name='L32'><font color='red'>{</font>
+<a name='L33'>        <b>int</b> b_size;
+<a name='L34'>        <b>char</b> *b_buff;
+<a name='L35'><font color='red'>}</font>xbuff;
+<a name='L36'>
+<a name='L37'><i><font color='green'>// The output file system format library connector</font></i>
+<a name='L38'><i><font color='green'>// NOTE: Only a subset of FS functions needed</font></i>
+<a name='L39'><b>struct</b> fslib
+<a name='L40'><font color='red'>{</font>
+<a name='L41'>        <i><font color='green'>// File system library initialization function</font></i>
+<a name='L42'>        <i><font color='green'>// create the target file, and setup the debug sign</font></i>
+<a name='L43'>        <b>int</b> (*l_new  )(<b>char</b> debug);
+<a name='L44'>
+<a name='L45'>        <i><font color='green'>// File system library finalization function</font></i>
+<a name='L46'>        <i><font color='green'>// Write the blocks and save the file</font></i>
+<a name='L47'>        <b>int</b> (*l_end  )(<b>char</b> *outname);
+<a name='L48'>
+<a name='L49'>        <i><font color='green'>// Install the target bootloader file specified by</font></i>
+<a name='L50'>        <i><font color='green'>// bootname variable</font></i>
+<a name='L51'>        <b>int</b> (*l_lboot)(<b>char</b> *bootname);
+<a name='L52'>
+<a name='L53'>        <i><font color='green'>// Install the target kernel file specified by</font></i>
+<a name='L54'>        <i><font color='green'>// kernname variable</font></i>
+<a name='L55'>        <b>int</b> (*l_lkern)(<b>char</b> *kernname);
+<a name='L56'>
+<a name='L57'>        <i><font color='green'>// Create a directory into target image, with real path = path and</font></i>
+<a name='L58'>        <i><font color='green'>// directory name = name</font></i>
+<a name='L59'>        <b>int</b> (*l_mkdir)(<b>char</b> *path, <b>char</b> *name);
+<a name='L60'>
+<a name='L61'>        <i><font color='green'>// Write a regular file into target image, with real path = path</font></i>
+<a name='L62'>        <i><font color='green'>// and file name = name, data comes from buff, and with buffer size</font></i>
+<a name='L63'>        <i><font color='green'>// equals size</font></i>
+<a name='L64'>        <b>int</b> (*l_write)(<b>char</b> *path, <b>char</b> *name, <b>char</b> *buff, <b>int</b> size);
+<a name='L65'><font color='red'>}</font>fslib;
+<a name='L66'>
+<a name='L67'><i><font color='green'>// Read a file into dynamic transfer buffer</font></i>
+<a name='L68'><b>int</b> <a href='../S/40.html#L137' title='Refered from 137 in mkmfs/main.c.'>xbuff_read</a>(<b>char</b> *name)
+<a name='L69'><font color='red'>{</font>
+<a name='L70'>        <b>int</b> fildes=open(name, O_RDONLY|O_BINARY);
+<a name='L71'>        
+<a name='L72'>        <i><font color='green'>// Get the target file's size so that we can allocate a suitable</font></i>
+<a name='L73'>        <i><font color='green'>// buffer to store the data</font></i>
+<a name='L74'>        <b>int</b> filcnt=lseek(fildes, 0, SEEK_END);
+<a name='L75'>
+<a name='L76'>        <i><font color='green'>// Return to the beginning of the file</font></i>
+<a name='L77'>        lseek(fildes, 0, SEEK_SET);
+<a name='L78'>
+<a name='L79'>        <i><font color='green'>// Release origional buffer (abandon)</font></i>
+<a name='L80'>        free(xbuff.b_buff);
+<a name='L81'>
+<a name='L82'>        <i><font color='green'>// Now do the malloc</font></i>
+<a name='L83'>        xbuff.b_size=filcnt;
+<a name='L84'>        xbuff.b_buff=malloc(filcnt);
+<a name='L85'>
+<a name='L86'>        <i><font color='green'>// Copy data into buffer</font></i>
+<a name='L87'>        read(fildes, xbuff.b_buff, filcnt);
+<a name='L88'>        close(fildes);
+<a name='L89'>        <b>return</b> 0;
+<a name='L90'><font color='red'>}</font>
+<a name='L91'>
+<a name='L92'><i><font color='green'>// Pack a directory tree into target image</font></i>
+<a name='L93'><b>int</b> cutsize;
+<a name='L94'><b>int</b> <a href='../R/76.html' title='Multiple refered from 2 places.'>packdir</a>(<b>char</b> *dirname)
+<a name='L95'><font color='red'>{</font>
+<a name='L96'>        DIR *dir;               <i><font color='green'>// directory descriptor</font></i>
+<a name='L97'>        <b>struct</b> dirent *dp;      <i><font color='green'>// dirent pointer</font></i>
+<a name='L98'>        <b>struct</b> stat buf;        <i><font color='green'>// file status buffer</font></i>
+<a name='L99'>        <b>char</b> path[512];         <i><font color='green'>// current directory path</font></i>
+<a name='L100'>        <b>char</b> pathtemp[512];     <i><font color='green'>// temp path buffer</font></i>
+<a name='L101'>
+<a name='L102'>        <i><font color='green'>// Process relative directory path strings</font></i>
+<a name='L103'>        <b>if</b>(cutsize==0) <font color='red'>{</font>
+<a name='L104'>                cutsize=<a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(dirname);
+<a name='L105'>        <font color='red'>}</font>
+<a name='L106'>        strcpy(path, dirname);
+<a name='L107'>        strcat(path, "/");
+<a name='L108'>
+<a name='L109'>        <i><font color='green'>// Open the directory contents for read</font></i>
+<a name='L110'>        <b>if</b>((dir=opendir(dirname)) == NULL) <font color='red'>{</font>
+<a name='L111'>                printf("ERROR: Target directory not exist: %s\n", dirname);
+<a name='L112'>                exit(-1);
+<a name='L113'>        <font color='red'>}</font>
+<a name='L114'>
+<a name='L115'>        <i><font color='green'>// Parse through directory entries</font></i>
+<a name='L116'>        <b>while</b>((dp = readdir(dir)) != NULL) <font color='red'>{</font>
+<a name='L117'>
+<a name='L118'>                <i><font color='green'>// Make up the complete path for current file</font></i>
+<a name='L119'>                strcpy(pathtemp, path);
+<a name='L120'>                strcat(pathtemp, dp-&gt;d_name);
+<a name='L121'>                stat(  pathtemp, &amp;buf);
+<a name='L122'>                <b>if</b>(!strcmp(dp-&gt;d_name, ".") || !strcmp(dp-&gt;d_name, "..")) <font color='red'>{</font>
+<a name='L123'>                        <b>continue</b>;
+<a name='L124'>
+<a name='L125'>                <i><font color='green'>// If the current file is a directory, then we go recursively</font></i>
+<a name='L126'>                <i><font color='green'>// into this directory</font></i>
+<a name='L127'>                <font color='red'>}</font><b>else</b> <b>if</b>(S_ISDIR(buf.st_mode)) <font color='red'>{</font>
+<a name='L128'>                        <b>if</b>(config.c_verbose)
+<a name='L129'>                                printf("%s\n", &amp;pathtemp[cutsize]);
+<a name='L130'>                        fslib.l_mkdir(&amp;path[cutsize], dp-&gt;d_name);
+<a name='L131'>                        <a href='../S/40.html#L94' title='Defined at 94 in mkmfs/main.c.'>packdir</a>(pathtemp);
+<a name='L132'>
+<a name='L133'>                <i><font color='green'>// If the file is a ordinary file, just store it in data blocks</font></i>
+<a name='L134'>                <font color='red'>}</font><b>else</b> <b>if</b>(S_ISREG(buf.st_mode)) <font color='red'>{</font>
+<a name='L135'>                        <b>if</b>(config.c_verbose)
+<a name='L136'>                                printf("%s\n", &amp;pathtemp[cutsize]);
+<a name='L137'>                        <a href='../S/40.html#L68' title='Defined at 68 in mkmfs/main.c.'>xbuff_read</a>(pathtemp);
+<a name='L138'>                        fslib.l_write(&amp;path[cutsize], dp-&gt;d_name, xbuff.b_buff, xbuff.b_size);
+<a name='L139'>                <font color='red'>}</font>
+<a name='L140'>        <font color='red'>}</font>
+<a name='L141'>        closedir(dir);
+<a name='L142'>
+<a name='L143'>        <b>return</b> 0;
+<a name='L144'><font color='red'>}</font>
+<a name='L145'>
+<a name='L146'><b>int</b> main(<b>int</b> argc, <b>char</b> *argv[])
+<a name='L147'><font color='red'>{</font>
+<a name='L148'>        <i><font color='green'>// Scaning arguments</font></i>
+<a name='L149'>        config.c_showhelp=1;
+<a name='L150'>        <b>int</b> argci=1;
+<a name='L151'>        <b>while</b>(argci&lt;argc) <font color='red'>{</font>
+<a name='L152'>                <b>if</b>(!strcmp(argv[argci], "-d") ||
+<a name='L153'>                   !strcmp(argv[argci], "--debug")) <font color='red'>{</font>
+<a name='L154'>                        config.c_debug=1;
+<a name='L155'>                        <i><font color='green'>// Don't show help so that it won't exit</font></i>
+<a name='L156'>                        config.c_showhelp=0;
+<a name='L157'>                <font color='red'>}</font><b>else</b> <b>if</b>(!strcmp(argv[argci], "-v") ||
+<a name='L158'>                   !strcmp(argv[argci], "--verbose")) <font color='red'>{</font>
+<a name='L159'>                        config.c_verbose=1;
+<a name='L160'>                <font color='red'>}</font><b>else</b> <b>if</b>(!strcmp(argv[argci], "-b") ||
+<a name='L161'>                   !strcmp(argv[argci], "--boot")) <font color='red'>{</font>
+<a name='L162'>                        config.c_boot=argv[argci+1];
+<a name='L163'>                        config.c_showhelp=0;
+<a name='L164'>                        argci++;
+<a name='L165'>                <font color='red'>}</font><b>else</b> <b>if</b>(!strcmp(argv[argci], "-k") ||
+<a name='L166'>                   !strcmp(argv[argci], "--kernel")) <font color='red'>{</font>
+<a name='L167'>                        config.c_kern=argv[argci+1];
+<a name='L168'>                        config.c_showhelp=0;
+<a name='L169'>                        argci++;
+<a name='L170'>                <font color='red'>}</font><b>else</b> <b>if</b>(!strcmp(argv[argci], "-f") ||
+<a name='L171'>                   !strcmp(argv[argci], "--fmt")) <font color='red'>{</font>
+<a name='L172'>                        config.c_fmt=argv[argci+1];
+<a name='L173'>                        config.c_showhelp=0;
+<a name='L174'>                        argci++;
+<a name='L175'>                <font color='red'>}</font><b>else</b> <b>if</b>(!strcmp(argv[argci], "-r") ||
+<a name='L176'>                   !strcmp(argv[argci], "--root")) <font color='red'>{</font>
+<a name='L177'>                        config.c_root=argv[argci+1];
+<a name='L178'>                        config.c_showhelp=0;
+<a name='L179'>                        argci++;
+<a name='L180'>                <font color='red'>}</font><b>else</b> <b>if</b>(!strcmp(argv[argci], "-o") ||
+<a name='L181'>                   !strcmp(argv[argci], "--output")) <font color='red'>{</font>
+<a name='L182'>                        config.c_image=argv[argci+1];
+<a name='L183'>                        config.c_showhelp=0;
+<a name='L184'>                        argci++;
+<a name='L185'>                <font color='red'>}</font><b>else</b> <b>if</b>(!strcmp(argv[argci], "-l") ||
+<a name='L186'>                   !strcmp(argv[argci], "--license")) <font color='red'>{</font>
+<a name='L187'>                        config.c_showlic=1;
+<a name='L188'>                <font color='red'>}</font>
+<a name='L189'>                argci++;
+<a name='L190'>        <font color='red'>}</font>
+<a name='L191'>
+<a name='L192'>        <b>if</b>(config.c_showlic) <font color='red'>{</font>
+<a name='L193'>                printf("%s\n", license);
+<a name='L194'>                <b>return</b> 0;
+<a name='L195'>        <font color='red'>}</font>
+<a name='L196'>
+<a name='L197'>        <i><font color='green'>// Argument section debug information</font></i>
+<a name='L198'>        <b>if</b>(config.c_debug) <font color='red'>{</font>
+<a name='L199'>                printf("* debug *************************************\n");
+<a name='L200'>                printf(" showhelp= %d\n", config.c_showhelp);
+<a name='L201'>                printf(" verbose = %d\n", config.c_verbose);
+<a name='L202'>                printf(" bootload= %s\n", config.c_boot);
+<a name='L203'>                printf(" kernel  = %s\n", config.c_kern);
+<a name='L204'>                printf(" format  = %s\n", config.c_fmt);
+<a name='L205'>                printf(" rootdir = %s\n", config.c_root);
+<a name='L206'>                printf(" output  = %s\n", config.c_image);
+<a name='L207'>                printf("*********************************************\n");
+<a name='L208'>        <font color='red'>}</font>
+<a name='L209'>
+<a name='L210'>        <i><font color='green'>// Showing the help and quit</font></i>
+<a name='L211'>        <b>if</b>(config.c_showhelp) <font color='red'>{</font>
+<a name='L212'>                printf("Micron System V3 Root File System Builder, V1.0\n");
+<a name='L213'>                printf("  Copyright (C) 2007, Martin Tang\n");
+<a name='L214'>                printf("  PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.\n");
+<a name='L215'>                printf("Useage:\n");
+<a name='L216'>                printf("  mkmfs [--help] [--boot BOOTSECT] [--fmt TYPE] [--root DIRECTORY] \n");
+<a name='L217'>                printf("        [--image FILENAME]\n");
+<a name='L218'>                printf("Options:\n");
+<a name='L219'>                printf(" -h, --help              Show this help and exit\n");
+<a name='L220'>                printf(" -v, --verbose           Verbosely display the file names being processed\n");
+<a name='L221'>                printf(" -b, --boot   BOOTSECT   Specify the bootloader file write to boot sector\n");
+<a name='L222'>                printf(" -k, --kernel KERNEL     Specify the kernel file to copy to special section\n");
+<a name='L223'>                printf(" -f, --fmt    TYPE       Target file system format, see Supported Formats\n");
+<a name='L224'>                printf(" -r, --root   DIRECTORY  Specify the root directory\n");
+<a name='L225'>                printf(" -o, --output FILENAME   Specify output filename\n");
+<a name='L226'>                printf(" -l, --license           Print license agreement and quit\n");
+<a name='L227'>                printf("Supported Formats:\n");
+<a name='L228'>                printf("  mfs, #ext2fs, #vfat, #ntfs\n");
+<a name='L229'>                <b>return</b> 0;
+<a name='L230'>        <font color='red'>}</font>
+<a name='L231'>
+<a name='L232'>        <i><font color='green'>// Setup output file format</font></i>
+<a name='L233'>        <b>if</b>(config.c_fmt==0) <font color='red'>{</font>
+<a name='L234'>                printf("ERROR: File system format not specified\n");
+<a name='L235'>                <b>return</b> -1;
+<a name='L236'>        <font color='red'>}</font><b>else</b> <b>if</b>(!strcmp(config.c_fmt, "mfs")) <font color='red'>{</font>
+<a name='L237'>                <i><font color='green'>// install the target file system image creation library's</font></i>
+<a name='L238'>                <i><font color='green'>// operation handlers:</font></i>
+<a name='L239'>                fslib.l_new   = <a href='../S/42.html#L66' title='Defined at 66 in mkmfs/mfs.c.'>mfs_new</a>;
+<a name='L240'>                fslib.l_end   = <a href='../S/42.html#L127' title='Defined at 127 in mkmfs/mfs.c.'>mfs_end</a>;
+<a name='L241'>                fslib.l_mkdir = <a href='../S/42.html#L218' title='Defined at 218 in mkmfs/mfs.c.'>mfs_mkdir</a>;
+<a name='L242'>                fslib.l_write = <a href='../S/42.html#L268' title='Defined at 268 in mkmfs/mfs.c.'>mfs_write</a>;
+<a name='L243'>                fslib.l_lboot = <a href='../S/42.html#L153' title='Defined at 153 in mkmfs/mfs.c.'>mfs_lboot</a>;
+<a name='L244'>                fslib.l_lkern = <a href='../S/42.html#L167' title='Defined at 167 in mkmfs/mfs.c.'>mfs_lkern</a>;
+<a name='L245'>        <font color='red'>}</font> <i><font color='green'>// to add a new file system's support, just type in another else if</font></i>
+<a name='L246'>          <i><font color='green'>// here and install its corresponding operation handlers.</font></i>
+<a name='L247'>
+<a name='L248'>        <i><font color='green'>// Image creation process</font></i>
+<a name='L249'>        <b>if</b>(config.c_root==0) <font color='red'>{</font>
+<a name='L250'>                printf("ERROR: Root directory not specified\n");
+<a name='L251'>                <b>return</b> -1;
+<a name='L252'>        <font color='red'>}</font>
+<a name='L253'>        
+<a name='L254'>        <i><font color='green'>// Check if the fs operation handlers are set ok, or program crashes :(</font></i>
+<a name='L255'>        <b>if</b>(fslib.l_mkdir==0 || fslib.l_write==0) <font color='red'>{</font>
+<a name='L256'>                printf("ERROR: File system format specified not supported\n");
+<a name='L257'>                <b>return</b> -1;
+<a name='L258'>        <font color='red'>}</font>
+<a name='L259'>
+<a name='L260'>        <i><font color='green'>// check if the target output's name is setup</font></i>
+<a name='L261'>        <b>if</b>(config.c_image==0) <font color='red'>{</font>
+<a name='L262'>                printf("ERROR: Output image file name not specified\n");
+<a name='L263'>                <b>return</b> -1;
+<a name='L264'>        <font color='red'>}</font>
+<a name='L265'>
+<a name='L266'>        <i><font color='green'>// Call fs lib's initialization operation, create the target</font></i>
+<a name='L267'>        <i><font color='green'>// file and the debug sign (show debug messages)</font></i>
+<a name='L268'>        fslib.l_new(config.c_debug);
+<a name='L269'>        printf("Creating image...\n");
+<a name='L270'>
+<a name='L271'>        <i><font color='green'>// Call fs lib's bootloader installation operation</font></i>
+<a name='L272'>        <b>if</b>(config.c_boot) <font color='red'>{</font>
+<a name='L273'>                printf("Installing boot... ");
+<a name='L274'>                fslib.l_lboot(config.c_boot);
+<a name='L275'>        <font color='red'>}</font>
+<a name='L276'>
+<a name='L277'>        <i><font color='green'>// Call fs lib's kernel installation operation</font></i>
+<a name='L278'>        <b>if</b>(config.c_kern) <font color='red'>{</font>
+<a name='L279'>                printf("Installing kernel... ");
+<a name='L280'>                fslib.l_lkern(config.c_kern);
+<a name='L281'>        <font color='red'>}</font>
+<a name='L282'>
+<a name='L283'>        <i><font color='green'>// Packup the directory contents</font></i>
+<a name='L284'>        printf("Packing directories...\n");
+<a name='L285'>        <a href='../S/40.html#L94' title='Defined at 94 in mkmfs/main.c.'>packdir</a>(config.c_root);
+<a name='L286'>        
+<a name='L287'>        <i><font color='green'>// Close the output file and end procession</font></i>
+<a name='L288'>        fslib.l_end(config.c_image);
+<a name='L289'>
+<a name='L290'>        printf("Image creation completed\n");
+<a name='L291'>        <b>return</b> 0;
+<a name='L292'><font color='red'>}</font>
+<a name='L293'>
+</pre>
+<hr>
+<a name='BOTTOM'>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L68'>[^]</a><a href='#L146'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+</body>
+</html>

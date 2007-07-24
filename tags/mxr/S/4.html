@@ -1,0 +1,45 @@
+<html>
+<head>
+<title>kernel/arch/i386/cpu/clock.c</title>
+<meta name='robots' content='noindex,nofollow'>
+<meta name='generator' content='GLOBAL-5.5'>
+</head>
+<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>
+<a name='TOP'><h2><a href='../mains.html'>root</a>/<a href='../files/47.html'>kernel</a>/<a href='../files/48.html'>arch</a>/<a href='../files/49.html'>i386</a>/<a href='../files/51.html'>cpu</a>/clock.c</h2>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L9'>[^]</a><a href='#L17'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+<hr>
+<h2>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L9' title='Defined at 9.'>i386_rtc_freq</a>
+<li><a href='#L17' title='Defined at 17.'>i386_rtc_init</a>
+</ol>
+<hr>
+<pre>
+<a name='L1'><i><font color='green'>/*****************************************************************************</font></i>
+<a name='L2'><i><font color='green'> * Micron System Version 3 - I386 Architecture Driver</font></i>
+<a name='L3'><i><font color='green'> * Copyright (C) 2007, Micron System Team</font></i>
+<a name='L4'><i><font color='green'> * Copyright (C) 2007, Martin Tang</font></i>
+<a name='L5'><i><font color='green'> * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT</font></i>
+<a name='L6'><i><font color='green'> *****************************************************************************/</font></i>
+<a name='L7'><font color='darkred'>#include</font> &lt;<a href='22.html'>io.h</a>&gt;
+<a name='L8'>
+<a name='L9'><b>void</b> <a href='../S/4.html#L19' title='Refered from 19 in kernel/arch/i386/cpu/clock.c.'>i386_rtc_freq</a>(<b>unsigned</b> freq)
+<a name='L10'><font color='red'>{</font>
+<a name='L11'>        <b>unsigned</b> div = 1193180/freq;
+<a name='L12'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x43, 0x36);
+<a name='L13'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x40, div &amp; 0xFF);
+<a name='L14'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x40, div&gt;&gt;8);
+<a name='L15'><font color='red'>}</font>
+<a name='L16'>
+<a name='L17'><b>void</b> i386_rtc_init()
+<a name='L18'><font color='red'>{</font>
+<a name='L19'>        <a href='../S/4.html#L9' title='Defined at 9 in kernel/arch/i386/cpu/clock.c.'>i386_rtc_freq</a>(1000);
+<a name='L20'><font color='red'>}</font>
+<a name='L21'>
+</pre>
+<hr>
+<a name='BOTTOM'>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L9'>[^]</a><a href='#L17'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+</body>
+</html>

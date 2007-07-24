@@ -1,0 +1,47 @@
+<html>
+<head>
+<title>kernel/include/libc.h</title>
+<meta name='robots' content='noindex,nofollow'>
+<meta name='generator' content='GLOBAL-5.5'>
+</head>
+<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>
+<a name='TOP'><h2><a href='../mains.html'>root</a>/<a href='../files/47.html'>kernel</a>/<a href='../files/55.html'>include</a>/libc.h</h2>
+<i><font color='green'>/* [&lt;][&gt;][^][v][top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+<hr>
+<h2><a href='../J/25.html' title='Multiple included from 5 places.'>INCLUDED FROM</a></h2>
+<hr>
+<pre>
+<a name='L1'><i><font color='green'>/*****************************************************************************</font></i>
+<a name='L2'><i><font color='green'> * Micron System Version 3 - System Core</font></i>
+<a name='L3'><i><font color='green'> * Copyright (C) 2007, Micron System Team</font></i>
+<a name='L4'><i><font color='green'> * Copyright (C) 2007, Martin Tang</font></i>
+<a name='L5'><i><font color='green'> * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT</font></i>
+<a name='L6'><i><font color='green'> *****************************************************************************/</font></i>
+<a name='L7'><font color='darkred'>#ifndef</font> <a href='../S/29.html#L8' title='Defined at 8 in kernel/include/libc.h.'>__MICRON_KERNEL_LIBC_H__</a>
+<a name='L8'><font color='darkred'>#define</font> <a href='../S/29.html#L7' title='Refered from 7 in kernel/include/libc.h.'>__MICRON_KERNEL_LIBC_H__</a>
+<a name='L9'>
+<a name='L10'><font color='darkred'>#include</font> &lt;<a href='24.html'>types.h</a>&gt;
+<a name='L11'>
+<a name='L12'><b>extern</b> <b>char</b> *<a href='../S/32.html#L10' title='Defined at 10 in kernel/lib/libc.c.'>itoa</a>(<b>int</b> value, <b>char</b> *str, <b>int</b> radix);
+<a name='L13'><b>extern</b> <b>int</b> <a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(<b>char</b> *str);
+<a name='L14'><b>extern</b> <b>char</b> *<a href='../S/32.html#L47' title='Defined at 47 in kernel/lib/libc.c.'>memcpy</a>(<b>char</b> *dest, <b>char</b> *src, <a href='../S/24.html#L20' title='Defined at 20 in kernel/include/arch-i386/types.h.'>size_t</a> cnt);
+<a name='L15'><b>extern</b> <b>int</b> <b>__attribute__</b>((format(printf, 1, 2))) <a href='../S/32.html#L56' title='Defined at 56 in kernel/lib/libc.c.'>kprintf</a>(<b>char</b> *fmt, ...);
+<a name='L16'>
+<a name='L17'><i><font color='green'>/* debug functions */</font></i>
+<a name='L18'><font color='darkred'>#define</font> <a href='../R/24.html' title='Multiple refered from 3 places.'>PANIC</a>(cond, str...) \
+<a name='L19'>                <b>if</b>(cond) <font color='red'>{</font>\
+<a name='L20'>                        <a href='../S/32.html#L56' title='Defined at 56 in kernel/lib/libc.c.'>kprintf</a>("%CPANIC: %s: ", 0x0C, #cond); \
+<a name='L21'>                        <a href='../S/32.html#L56' title='Defined at 56 in kernel/lib/libc.c.'>kprintf</a>(str); \
+<a name='L22'>                        <a href='../S/32.html#L56' title='Defined at 56 in kernel/lib/libc.c.'>kprintf</a>("\n%C", 0x0F); \
+<a name='L23'>                        <b>while</b>(1); \
+<a name='L24'>                <font color='red'>}</font>
+<a name='L25'><font color='darkred'>#define</font> DEBUG(data)      <a href='../S/32.html#L56' title='Defined at 56 in kernel/lib/libc.c.'>kprintf</a>("%CDEBUG:%s= %d\n%C",0x0C,#data,data,0x0F);
+<a name='L26'>
+<a name='L27'><font color='darkred'>#endif</font>
+<a name='L28'>
+</pre>
+<hr>
+<a name='BOTTOM'>
+<i><font color='green'>/* [&lt;][&gt;][^][v]<a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+</body>
+</html>

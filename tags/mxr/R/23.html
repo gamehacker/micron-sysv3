@@ -1,0 +1,18 @@
+<html>
+<head>
+<title>NKBLK</title>
+<meta name='robots' content='noindex,nofollow'>
+<meta name='generator' content='GLOBAL-5.5'>
+</head>
+<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>
+<pre>
+<a href='../S/42.html#L75'>NKBLK</a>              75 mkmfs/mfs.c    	mfs_data.m_blocks[2] = malloc(MFS_BLKSIZE*NKBLK);// the kernel block
+<a href='../S/42.html#L82'>NKBLK</a>              82 mkmfs/mfs.c    	memset(mfs_data.m_blocks[2], 0, MFS_BLKSIZE*NKBLK);
+<a href='../S/42.html#L94'>NKBLK</a>              94 mkmfs/mfs.c    	sblk-&gt;s_kblkcnt =NKBLK;
+<a href='../S/42.html#L95'>NKBLK</a>              95 mkmfs/mfs.c    	sblk-&gt;s_ibmp    =sblk-&gt;s_kblk + NKBLK;
+<a href='../S/42.html#L106'>NKBLK</a>             106 mkmfs/mfs.c    		printf("[KBLK]: i=%-8dcnt=%-8d", 2, NKBLK);
+<a href='../S/42.html#L139'>NKBLK</a>             139 mkmfs/mfs.c    	write(out, mfs_data.m_blocks[2], MFS_BLKSIZE*NKBLK);
+<a href='../S/42.html#L172'>NKBLK</a>             172 mkmfs/mfs.c    	if(fsize&gt;NKBLK*MFS_BLKSIZE) {
+</pre>
+</body>
+</html>

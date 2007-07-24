@@ -1,0 +1,376 @@
+<html>
+<head>
+<title>mkmfs/mfs.c</title>
+<meta name='robots' content='noindex,nofollow'>
+<meta name='generator' content='GLOBAL-5.5'>
+</head>
+<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>
+<a name='TOP'><h2><a href='../mains.html'>root</a>/<a href='../files/58.html'>mkmfs</a>/mfs.c</h2>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L32'>[^]</a><a href='#L268'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+<hr>
+<h2>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L32' title='Defined at 32.'>mfs_markbmp</a>
+<li><a href='#L42' title='Defined at 42.'>mfs_seekbmp</a>
+<li><a href='#L66' title='Defined at 66.'>mfs_new</a>
+<li><a href='#L127' title='Defined at 127.'>mfs_end</a>
+<li><a href='#L153' title='Defined at 153.'>mfs_lboot</a>
+<li><a href='#L167' title='Defined at 167.'>mfs_lkern</a>
+<li><a href='#L181' title='Defined at 181.'>mfs_iget</a>
+<li><a href='#L218' title='Defined at 218.'>mfs_mkdir</a>
+<li><a href='#L268' title='Defined at 268.'>mfs_write</a>
+</ol>
+<hr>
+<pre>
+<a name='L1'><i><font color='green'>/******************************************************************************</font></i>
+<a name='L2'><i><font color='green'> * Micron System V3 System Image Build Utility</font></i>
+<a name='L3'><i><font color='green'> * Copyright (C) 2007, Micron System Team</font></i>
+<a name='L4'><i><font color='green'> * Copyright (C) 2007, Martin Tang</font></i>
+<a name='L5'><i><font color='green'> * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.</font></i>
+<a name='L6'><i><font color='green'> ******************************************************************************</font></i>
+<a name='L7'><i><font color='green'> * Note:</font></i>
+<a name='L8'><i><font color='green'> *   1 inode struct  = 128 bytes</font></i>
+<a name='L9'><i><font color='green'> *   1 inode bmp blk = 8192 inodes = 1048576 bytes = 1024 blocks</font></i>
+<a name='L10'><i><font color='green'> *   1 data bmp blk  = 8192 blocks</font></i>
+<a name='L11'><i><font color='green'> *****************************************************************************/</font></i>
+<a name='L12'><font color='darkred'> #define</font> <a href='../R/23.html' title='Multiple refered from 7 places.'>NKBLK</a>  512                                     <i><font color='green'>// kernel size in kb</font></i>
+<a name='L13'><font color='darkred'> #define</font> <a href='../R/22.html' title='Multiple refered from 7 places.'>NIBMP</a>  1                                       <i><font color='green'>// inode no ctl</font></i>
+<a name='L14'><font color='darkred'> #define</font> <a href='../R/19.html' title='Multiple refered from 5 places.'>NDBMP</a>  1                                       <i><font color='green'>// data blk no ctl</font></i>
+<a name='L15'><font color='darkred'> #define</font> <a href='../R/21.html' title='Multiple refered from 6 places.'>NIBLK</a>  (<a href='../S/42.html#L13' title='Defined at 13 in mkmfs/mfs.c.'>NIBMP</a>*8*<b>sizeof</b>(<b>struct</b> mfs_inode))
+<a name='L16'><font color='darkred'> #define</font> <a href='../R/18.html' title='Multiple refered from 5 places.'>NDBLK</a>  <a href='../S/42.html#L15' title='Defined at 15 in mkmfs/mfs.c.'>NIBLK</a> <i><font color='green'>//(NDBMP*8*MFS_BLKSIZE)</font></i>
+<a name='L17'><i><font color='green'>/*****************************************************************************/</font></i>
+<a name='L18'><font color='darkred'>#include</font> &lt;stdio.h&gt;
+<a name='L19'><font color='darkred'>#include</font> &lt;stdlib.h&gt;
+<a name='L20'><font color='darkred'>#include</font> &lt;string.h&gt;
+<a name='L21'><font color='darkred'>#include</font> &lt;time.h&gt;
+<a name='L22'><font color='darkred'>#include</font> &lt;fcntl.h&gt;
+<a name='L23'><font color='darkred'>#include</font> "<a href='43.html'>mfs.h</a>"
+<a name='L24'>
+<a name='L25'><i><font color='green'>// MFS image creation operation platform</font></i>
+<a name='L26'><b>struct</b> mfs_data
+<a name='L27'><font color='red'>{</font>
+<a name='L28'>        <b>char</b>  m_debug;          <i><font color='green'>// show debug informartion flag</font></i>
+<a name='L29'>        <b>char</b> *m_blocks[7];      <i><font color='green'>// block serial buffer</font></i>
+<a name='L30'><font color='red'>}</font>mfs_data;
+<a name='L31'>
+<a name='L32'><b>int</b> <a href='../R/64.html' title='Multiple refered from 4 places.'>mfs_markbmp</a>(<b>char</b> *bmp, <b>int</b> index, <b>char</b> stat)
+<a name='L33'><font color='red'>{</font>
+<a name='L34'>        <b>if</b>(stat==0) <font color='red'>{</font>
+<a name='L35'>                bmp[index/8] &amp;=~(1&lt;&lt;(7-index%8));
+<a name='L36'>        <font color='red'>}</font> <b>else</b> <font color='red'>{</font>
+<a name='L37'>                bmp[index/8] |=(1&lt;&lt;(7-index%8));
+<a name='L38'>        <font color='red'>}</font>
+<a name='L39'>        <b>return</b> 0;
+<a name='L40'><font color='red'>}</font>
+<a name='L41'>
+<a name='L42'><b>int</b> <a href='../R/67.html' title='Multiple refered from 3 places.'>mfs_seekbmp</a>(<b>char</b> *bmp, <b>int</b> begin, <b>int</b> end)
+<a name='L43'><font color='red'>{</font>
+<a name='L44'>        <b>int</b> bbegin=begin/8;
+<a name='L45'>        <b>int</b> bend  =end/8;
+<a name='L46'>        <b>int</b> temp, index=0;
+<a name='L47'>
+<a name='L48'>        <i><font color='green'>// search by byte</font></i>
+<a name='L49'>        <b>for</b>(; bbegin &lt; bend; bbegin++) <font color='red'>{</font>
+<a name='L50'>                <b>if</b>((<b>unsigned</b> <b>char</b>)bmp[bbegin]!=0xff) <font color='red'>{</font>
+<a name='L51'>                        <b>goto</b> search_byte;
+<a name='L52'>                <font color='red'>}</font>
+<a name='L53'>        <font color='red'>}</font>
+<a name='L54'>        <b>return</b> -1;
+<a name='L55'>
+<a name='L56'>        <i><font color='green'>// search by bit</font></i>
+<a name='L57'>search_byte:
+<a name='L58'>        temp=(<b>unsigned</b> <b>char</b>)~bmp[bbegin];
+<a name='L59'>        <b>while</b>((<b>unsigned</b> <b>char</b>)(temp&amp;0x80) != 0x80) <font color='red'>{</font>
+<a name='L60'>                temp&lt;&lt;=1;
+<a name='L61'>                index++;
+<a name='L62'>        <font color='red'>}</font>
+<a name='L63'>        <b>return</b> index+bbegin*8;
+<a name='L64'><font color='red'>}</font>
+<a name='L65'>
+<a name='L66'><b>int</b> <a href='../R/66.html' title='Multiple refered from 2 places.'>mfs_new</a>(<b>char</b> debug)
+<a name='L67'><font color='red'>{</font>
+<a name='L68'>        mfs_data.m_debug= debug;
+<a name='L69'>        <b>if</b>(mfs_data.m_debug)
+<a name='L70'>                printf("[MFS]: Entering MFS module\n");
+<a name='L71'>
+<a name='L72'>        <i><font color='green'>// Allocate the blocks</font></i>
+<a name='L73'>        mfs_data.m_blocks[0] = malloc(<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);      <i><font color='green'>// the boot block</font></i>
+<a name='L74'>        mfs_data.m_blocks[1] = malloc(<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);      <i><font color='green'>// the super block</font></i>
+<a name='L75'>        mfs_data.m_blocks[2] = malloc(<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L12' title='Defined at 12 in mkmfs/mfs.c.'>NKBLK</a>);<i><font color='green'>// the kernel block</font></i>
+<a name='L76'>        mfs_data.m_blocks[3] = malloc(<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L13' title='Defined at 13 in mkmfs/mfs.c.'>NIBMP</a>);<i><font color='green'>// the inode bitmap blk</font></i>
+<a name='L77'>        mfs_data.m_blocks[4] = malloc(<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L14' title='Defined at 14 in mkmfs/mfs.c.'>NDBMP</a>);<i><font color='green'>// the data bitmap blk</font></i>
+<a name='L78'>        mfs_data.m_blocks[5] = malloc(<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L15' title='Defined at 15 in mkmfs/mfs.c.'>NIBLK</a>);<i><font color='green'>// the inode blk</font></i>
+<a name='L79'>        mfs_data.m_blocks[6] = malloc(<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L16' title='Defined at 16 in mkmfs/mfs.c.'>NDBLK</a>);<i><font color='green'>// the data blk</font></i>
+<a name='L80'>        memset(mfs_data.m_blocks[0], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L81'>        memset(mfs_data.m_blocks[1], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L82'>        memset(mfs_data.m_blocks[2], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L12' title='Defined at 12 in mkmfs/mfs.c.'>NKBLK</a>);
+<a name='L83'>        memset(mfs_data.m_blocks[3], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L13' title='Defined at 13 in mkmfs/mfs.c.'>NIBMP</a>);
+<a name='L84'>        memset(mfs_data.m_blocks[4], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L14' title='Defined at 14 in mkmfs/mfs.c.'>NDBMP</a>);
+<a name='L85'>        memset(mfs_data.m_blocks[5], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L15' title='Defined at 15 in mkmfs/mfs.c.'>NIBLK</a>);
+<a name='L86'>        memset(mfs_data.m_blocks[6], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L16' title='Defined at 16 in mkmfs/mfs.c.'>NDBLK</a>);
+<a name='L87'>
+<a name='L88'>        <i><font color='green'>// Setup super block info</font></i>
+<a name='L89'>        <b>struct</b> mfs_superblk *sblk = (<b>struct</b> mfs_superblk*)mfs_data.m_blocks[1];
+<a name='L90'>        sblk-&gt;s_magic[0]='M';
+<a name='L91'>        sblk-&gt;s_magic[1]='F';
+<a name='L92'>        sblk-&gt;s_magic[2]='S';
+<a name='L93'>        sblk-&gt;s_kblk    =2;
+<a name='L94'>        sblk-&gt;s_kblkcnt =<a href='../S/42.html#L12' title='Defined at 12 in mkmfs/mfs.c.'>NKBLK</a>;
+<a name='L95'>        sblk-&gt;s_ibmp    =sblk-&gt;s_kblk + <a href='../S/42.html#L12' title='Defined at 12 in mkmfs/mfs.c.'>NKBLK</a>;
+<a name='L96'>        sblk-&gt;s_ibmpcnt =<a href='../S/42.html#L13' title='Defined at 13 in mkmfs/mfs.c.'>NIBMP</a>;
+<a name='L97'>        sblk-&gt;s_dbmp    =sblk-&gt;s_ibmp + <a href='../S/42.html#L13' title='Defined at 13 in mkmfs/mfs.c.'>NIBMP</a>;
+<a name='L98'>        sblk-&gt;s_dbmpcnt =<a href='../S/42.html#L14' title='Defined at 14 in mkmfs/mfs.c.'>NDBMP</a>;
+<a name='L99'>        sblk-&gt;s_iblk    =sblk-&gt;s_dbmp + <a href='../S/42.html#L14' title='Defined at 14 in mkmfs/mfs.c.'>NDBMP</a>;
+<a name='L100'>        sblk-&gt;s_iblkcnt =<a href='../S/42.html#L15' title='Defined at 15 in mkmfs/mfs.c.'>NIBLK</a>;
+<a name='L101'>        sblk-&gt;s_dblk    =sblk-&gt;s_iblk + <a href='../S/42.html#L15' title='Defined at 15 in mkmfs/mfs.c.'>NIBLK</a>;
+<a name='L102'>        sblk-&gt;s_dblkcnt =<a href='../S/42.html#L16' title='Defined at 16 in mkmfs/mfs.c.'>NDBLK</a>;
+<a name='L103'>        <b>if</b>(mfs_data.m_debug) <font color='red'>{</font>
+<a name='L104'>                printf("[SBLK]: i=%-8dcnt=%-8d", 1, 1);
+<a name='L105'>                printf("add=0x%-8x\n", 1*<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L106'>                printf("[KBLK]: i=%-8dcnt=%-8d", 2, <a href='../S/42.html#L12' title='Defined at 12 in mkmfs/mfs.c.'>NKBLK</a>);
+<a name='L107'>                printf("add=0x%-8x\n", 2*<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L108'>                printf("[IBMP]: i=%-8dcnt=%-8d", sblk-&gt;s_ibmp, sblk-&gt;s_ibmpcnt);
+<a name='L109'>                printf("add=0x%-8x\n", sblk-&gt;s_ibmp*<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L110'>                printf("[DBMP]: i=%-8dcnt=%-8d", sblk-&gt;s_dbmp, sblk-&gt;s_dbmpcnt);
+<a name='L111'>                printf("add=0x%-8x\n", sblk-&gt;s_dbmp*<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L112'>                printf("[IBLK]: i=%-8dcnt=%-8d", sblk-&gt;s_iblk, sblk-&gt;s_iblkcnt);
+<a name='L113'>                printf("add=0x%-8x\n", sblk-&gt;s_iblk*<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L114'>                printf("[DBLK]: i=%-8dcnt=%-8d", sblk-&gt;s_dblk, sblk-&gt;s_dblkcnt);
+<a name='L115'>                printf("add=0x%-8x\n", sblk-&gt;s_dblk*<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L116'>        <font color='red'>}</font>
+<a name='L117'>
+<a name='L118'>        <i><font color='green'>// Setup the root inode</font></i>
+<a name='L119'>        <b>struct</b> mfs_inode *ip = (<b>struct</b> mfs_inode*)mfs_data.m_blocks[5];
+<a name='L120'>        <a href='../S/42.html#L32' title='Defined at 32 in mkmfs/mfs.c.'>mfs_markbmp</a>(mfs_data.m_blocks[3], 0, 1);
+<a name='L121'>        strcpy(ip[0].i_name, "root");
+<a name='L122'>        ip[0].i_mode = <a href='../S/43.html#L33' title='Defined at 33 in mkmfs/mfs.h.'>S_IFDIR</a>|<a href='../S/43.html#L16' title='Defined at 16 in mkmfs/mfs.h.'>S_IRWXU</a>|<a href='../S/43.html#L20' title='Defined at 20 in mkmfs/mfs.h.'>S_IRWXG</a>|<a href='../S/43.html#L25' title='Defined at 25 in mkmfs/mfs.h.'>S_IROTH</a>;
+<a name='L123'>
+<a name='L124'>        <b>return</b> 0;
+<a name='L125'><font color='red'>}</font>
+<a name='L126'>
+<a name='L127'><b>int</b> <a href='../R/60.html' title='Multiple refered from 2 places.'>mfs_end</a>(<b>char</b> *outname)
+<a name='L128'><font color='red'>{</font>
+<a name='L129'>        <b>int</b> out;
+<a name='L130'>
+<a name='L131'>        <i><font color='green'>// Create the output file</font></i>
+<a name='L132'>        printf("Creating image file: %s\n", outname);
+<a name='L133'>        out = open(outname, O_TRUNC|O_BINARY|O_RDWR|O_CREAT, <a href='../S/43.html#L16' title='Defined at 16 in mkmfs/mfs.h.'>S_IRWXU</a>);
+<a name='L134'>        
+<a name='L135'>        <i><font color='green'>// Write the blocks</font></i>
+<a name='L136'>        lseek(out, 0, SEEK_SET);
+<a name='L137'>        write(out, mfs_data.m_blocks[0], <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L138'>        write(out, mfs_data.m_blocks[1], <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>);
+<a name='L139'>        write(out, mfs_data.m_blocks[2], <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L12' title='Defined at 12 in mkmfs/mfs.c.'>NKBLK</a>);
+<a name='L140'>        write(out, mfs_data.m_blocks[3], <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L13' title='Defined at 13 in mkmfs/mfs.c.'>NIBMP</a>);
+<a name='L141'>        write(out, mfs_data.m_blocks[4], <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L14' title='Defined at 14 in mkmfs/mfs.c.'>NDBMP</a>);
+<a name='L142'>        write(out, mfs_data.m_blocks[5], <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L15' title='Defined at 15 in mkmfs/mfs.c.'>NIBLK</a>);
+<a name='L143'>        write(out, mfs_data.m_blocks[6], <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L16' title='Defined at 16 in mkmfs/mfs.c.'>NDBLK</a>);
+<a name='L144'>
+<a name='L145'>        <i><font color='green'>// Close out put file and save</font></i>
+<a name='L146'>        close(out);
+<a name='L147'>
+<a name='L148'>        <b>if</b>(mfs_data.m_debug)
+<a name='L149'>                printf("[MFS]: Quiting MFS module\n");
+<a name='L150'>        <b>return</b> 0;
+<a name='L151'><font color='red'>}</font>
+<a name='L152'>
+<a name='L153'><b>int</b> <a href='../R/62.html' title='Multiple refered from 2 places.'>mfs_lboot</a>(<b>char</b> *bootname)
+<a name='L154'><font color='red'>{</font>
+<a name='L155'>        printf("%s\n", bootname);
+<a name='L156'>        <b>int</b> fboot = open(bootname, O_RDONLY|O_BINARY);
+<a name='L157'>        <b>int</b> fsize = lseek(fboot, 0, SEEK_END);
+<a name='L158'>        <b>if</b>(fsize&gt;512) <font color='red'>{</font>
+<a name='L159'>                printf("ERROR: Bootloader size too big\n");
+<a name='L160'>        <font color='red'>}</font>
+<a name='L161'>        lseek(fboot, 0, SEEK_SET);
+<a name='L162'>        read(fboot, mfs_data.m_blocks[0], fsize);
+<a name='L163'>        close(fboot);
+<a name='L164'>        <b>return</b> 0;
+<a name='L165'><font color='red'>}</font>
+<a name='L166'>
+<a name='L167'><b>int</b> <a href='../R/63.html' title='Multiple refered from 2 places.'>mfs_lkern</a>(<b>char</b> *kernname)
+<a name='L168'><font color='red'>{</font>
+<a name='L169'>        printf("%s\n", kernname);
+<a name='L170'>        <b>int</b> fkern = open(kernname, O_RDONLY|O_BINARY);
+<a name='L171'>        <b>int</b> fsize = lseek(fkern, 0, SEEK_END);
+<a name='L172'>        <b>if</b>(fsize&gt;<a href='../S/42.html#L12' title='Defined at 12 in mkmfs/mfs.c.'>NKBLK</a>*<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>) <font color='red'>{</font>
+<a name='L173'>                printf("ERROR: Bootloader size too big\n");
+<a name='L174'>        <font color='red'>}</font>
+<a name='L175'>        lseek(fkern, 0, SEEK_SET);
+<a name='L176'>        read(fkern, mfs_data.m_blocks[2], fsize);
+<a name='L177'>        close(fkern);
+<a name='L178'>        <b>return</b> 0;
+<a name='L179'><font color='red'>}</font>
+<a name='L180'>
+<a name='L181'><b>int</b> <a href='../R/61.html' title='Multiple refered from 2 places.'>mfs_iget</a>(<b>char</b> *path)
+<a name='L182'><font color='red'>{</font>
+<a name='L183'>        <b>int</b> i, j=0, ibi=0;
+<a name='L184'>        <b>struct</b> mfs_inode *iblk;
+<a name='L185'>        <b>char</b> *pathbuf, *pathent[128];   <i><font color='green'>// 128 lvl of dir</font></i>
+<a name='L186'>
+<a name='L187'>        <i><font color='green'>// parse the path entries into item</font></i>
+<a name='L188'>        pathbuf=malloc(<a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(path));
+<a name='L189'>        strcpy(pathbuf, path);
+<a name='L190'>        <b>for</b>(i=0; i&lt;<a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(path); i++) <font color='red'>{</font>
+<a name='L191'>                <b>if</b>(pathbuf[i]=='/') <font color='red'>{</font>
+<a name='L192'>                        pathbuf[i]=0;
+<a name='L193'>                        <b>if</b>(i+1 &lt; <a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(path)) <font color='red'>{</font>
+<a name='L194'>                                pathent[j++]=&amp;pathbuf[i+1];
+<a name='L195'>                        <font color='red'>}</font>
+<a name='L196'>                <font color='red'>}</font>
+<a name='L197'>        <font color='red'>}</font>
+<a name='L198'>
+<a name='L199'>        <i><font color='green'>// setup inode block access</font></i>
+<a name='L200'>        iblk=(<b>struct</b> mfs_inode*)mfs_data.m_blocks[5];
+<a name='L201'>
+<a name='L202'>        <i><font color='green'>// get entry inode sn</font></i>
+<a name='L203'>        <b>for</b>(i=0; i&lt;j; i++) <font color='red'>{</font>
+<a name='L204'>                <b>if</b>(mfs_data.m_debug)
+<a name='L205'>                        printf("[MFS]: --&gt;%s\n", pathent[i]);
+<a name='L206'><i><font color='green'>//              printf("%d-&gt;%s\n", i, pathent[i]);</font></i>
+<a name='L207'><i><font color='green'>//              printf("==%d\n", iblk[ibi].i_child);</font></i>
+<a name='L208'>                <b>for</b>(ibi=iblk[ibi].i_child; ibi!=0; ibi=iblk[ibi].i_level)
+<a name='L209'>                        <b>if</b>(!strcmp(iblk[ibi].i_name, pathent[i]))
+<a name='L210'>                                <b>break</b>;
+<a name='L211'>                <b>if</b>(strcmp(iblk[ibi].i_name, pathent[i])) <font color='red'>{</font>
+<a name='L212'>                        ibi=-1;
+<a name='L213'>                <font color='red'>}</font>
+<a name='L214'>        <font color='red'>}</font>
+<a name='L215'>        <b>return</b> ibi;
+<a name='L216'><font color='red'>}</font>
+<a name='L217'>
+<a name='L218'><b>int</b> <a href='../R/65.html' title='Multiple refered from 2 places.'>mfs_mkdir</a>(<b>char</b> *path, <b>char</b> *name)
+<a name='L219'><font color='red'>{</font>
+<a name='L220'>        <b>int</b> indexi, pathi;
+<a name='L221'>        <b>struct</b> mfs_inode *iblk;
+<a name='L222'>
+<a name='L223'>        <i><font color='green'>// error checks</font></i>
+<a name='L224'>        <b>if</b>(<a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(name)&gt;<a href='../S/43.html#L11' title='Defined at 11 in mkmfs/mfs.h.'>MFS_NAMELEN</a>) <font color='red'>{</font>
+<a name='L225'>                printf("ERROR: File name too long: %s\n", name);
+<a name='L226'>                exit(-1);
+<a name='L227'>        <font color='red'>}</font>
+<a name='L228'>        <b>if</b>(mfs_data.m_debug)
+<a name='L229'>                printf("[MFS]: Creating directory: %s\n", name);
+<a name='L230'>
+<a name='L231'>        <i><font color='green'>// setup inode block pointer</font></i>
+<a name='L232'>        iblk=(<b>struct</b> mfs_inode*)mfs_data.m_blocks[5];
+<a name='L233'>
+<a name='L234'>        <i><font color='green'>// get the path inode</font></i>
+<a name='L235'>        <b>if</b>((pathi=<a href='../S/42.html#L181' title='Defined at 181 in mkmfs/mfs.c.'>mfs_iget</a>(path))==-1) <font color='red'>{</font>
+<a name='L236'>                printf("ERROR: bug inside mfs.c : mfs_mkdir()\n");
+<a name='L237'>                exit(-1);
+<a name='L238'>        <font color='red'>}</font>
+<a name='L239'>
+<a name='L240'>        <i><font color='green'>// seek for a empty inode</font></i>
+<a name='L241'>        indexi=<a href='../S/42.html#L42' title='Defined at 42 in mkmfs/mfs.c.'>mfs_seekbmp</a>(mfs_data.m_blocks[3], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*8);
+<a name='L242'>        <b>if</b>(mfs_data.m_debug)
+<a name='L243'>                printf("[MFS]: Allocated inode %d\n", indexi);
+<a name='L244'>        <b>if</b>(indexi==-1) <font color='red'>{</font>
+<a name='L245'>                printf("ERROR: Out of inode\n");
+<a name='L246'>                exit(-1);
+<a name='L247'>        <font color='red'>}</font>
+<a name='L248'>        <a href='../S/42.html#L32' title='Defined at 32 in mkmfs/mfs.c.'>mfs_markbmp</a>(mfs_data.m_blocks[3], indexi, 1);   <i><font color='green'>// mark used</font></i>
+<a name='L249'>        strcpy(iblk[indexi].i_name, name);
+<a name='L250'>        iblk[indexi].i_mode  = <a href='../S/43.html#L33' title='Defined at 33 in mkmfs/mfs.h.'>S_IFDIR</a>|<a href='../S/43.html#L16' title='Defined at 16 in mkmfs/mfs.h.'>S_IRWXU</a>|<a href='../S/43.html#L20' title='Defined at 20 in mkmfs/mfs.h.'>S_IRWXG</a>|<a href='../S/43.html#L25' title='Defined at 25 in mkmfs/mfs.h.'>S_IROTH</a>;
+<a name='L251'>        iblk[indexi].i_sn    = indexi;
+<a name='L252'>        iblk[indexi].i_ctime = time(0);
+<a name='L253'>        iblk[indexi].i_mtime = time(0);
+<a name='L254'>        iblk[indexi].i_atime = time(0);
+<a name='L255'>        iblk[indexi].i_uid   = 0;
+<a name='L256'>        iblk[indexi].i_gid   = 0;
+<a name='L257'>        iblk[indexi].i_level = iblk[pathi].i_child;
+<a name='L258'>        iblk[indexi].i_parent= pathi;
+<a name='L259'>        iblk[indexi].i_child = 0;
+<a name='L260'>        iblk[indexi].i_file  = 0;
+<a name='L261'>        iblk[indexi].i_blk      = 0;
+<a name='L262'>        iblk[indexi].i_blk_count= 0;
+<a name='L263'>        iblk[pathi].i_child = indexi;
+<a name='L264'>
+<a name='L265'>        <b>return</b> 0;
+<a name='L266'><font color='red'>}</font>
+<a name='L267'>
+<a name='L268'><b>int</b> <a href='../R/71.html' title='Multiple refered from 2 places.'>mfs_write</a>(<b>char</b> *path, <b>char</b> *name, <b>char</b> *buff, <b>int</b> size)
+<a name='L269'><font color='red'>{</font>
+<a name='L270'>        <b>int</b> indexi, pathi, dblki=0, dblkr;
+<a name='L271'>        <b>struct</b> mfs_inode *iblk;
+<a name='L272'>
+<a name='L273'>        <i><font color='green'>// error checks</font></i>
+<a name='L274'>        <b>if</b>(<a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(name)&gt;<a href='../S/43.html#L11' title='Defined at 11 in mkmfs/mfs.h.'>MFS_NAMELEN</a>) <font color='red'>{</font>
+<a name='L275'>                printf("ERROR: File name too long: %s\n", name);
+<a name='L276'>                exit(-1);
+<a name='L277'>        <font color='red'>}</font>
+<a name='L278'>        <b>if</b>(mfs_data.m_debug)
+<a name='L279'>                printf("[MFS]: Writting file: %s\n", name);
+<a name='L280'>
+<a name='L281'>        <i><font color='green'>// setup inode block pointer</font></i>
+<a name='L282'>        iblk=(<b>struct</b> mfs_inode*)mfs_data.m_blocks[5];
+<a name='L283'>
+<a name='L284'>        <i><font color='green'>// get the path inode</font></i>
+<a name='L285'>        <b>if</b>((pathi=<a href='../S/42.html#L181' title='Defined at 181 in mkmfs/mfs.c.'>mfs_iget</a>(path))==-1) <font color='red'>{</font>
+<a name='L286'>                printf("ERROR: bug inside mfs.c : mfs_mkdir() : 1\n");
+<a name='L287'>                exit(-1);
+<a name='L288'>        <font color='red'>}</font><b>else</b> <b>if</b>((iblk[pathi].i_mode &amp; <a href='../S/43.html#L33' title='Defined at 33 in mkmfs/mfs.h.'>S_IFDIR</a>) != <a href='../S/43.html#L33' title='Defined at 33 in mkmfs/mfs.h.'>S_IFDIR</a>) <font color='red'>{</font>
+<a name='L289'>                printf("ERROR: bug inside mfs.c : mfs_mkdir() : 2\n");
+<a name='L290'>                exit(-1);
+<a name='L291'>        <font color='red'>}</font>
+<a name='L292'>
+<a name='L293'>        <i><font color='green'>// seek for a empty inode</font></i>
+<a name='L294'>        indexi = <a href='../S/42.html#L42' title='Defined at 42 in mkmfs/mfs.c.'>mfs_seekbmp</a>(mfs_data.m_blocks[3], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L13' title='Defined at 13 in mkmfs/mfs.c.'>NIBMP</a>*8);
+<a name='L295'>        <b>if</b>(mfs_data.m_debug)
+<a name='L296'>                printf("[MFS]: Allocated inode %d\n", indexi);
+<a name='L297'>        <b>if</b>(indexi==-1) <font color='red'>{</font>
+<a name='L298'>                printf("ERROR: Out of inode\n");
+<a name='L299'>                exit(-1);
+<a name='L300'>        <font color='red'>}</font>
+<a name='L301'>        <a href='../S/42.html#L32' title='Defined at 32 in mkmfs/mfs.c.'>mfs_markbmp</a>(mfs_data.m_blocks[3], indexi, 1);   <i><font color='green'>// mark used</font></i>
+<a name='L302'>        strcpy(iblk[indexi].i_name, name);
+<a name='L303'>        iblk[indexi].i_mode  = <a href='../S/43.html#L32' title='Defined at 32 in mkmfs/mfs.h.'>S_IFREG</a>|<a href='../S/43.html#L16' title='Defined at 16 in mkmfs/mfs.h.'>S_IRWXU</a>|<a href='../S/43.html#L20' title='Defined at 20 in mkmfs/mfs.h.'>S_IRWXG</a>|<a href='../S/43.html#L25' title='Defined at 25 in mkmfs/mfs.h.'>S_IROTH</a>;
+<a name='L304'>        iblk[indexi].i_sn    = indexi;
+<a name='L305'>        iblk[indexi].i_ctime = time(0);
+<a name='L306'>        iblk[indexi].i_mtime = time(0);
+<a name='L307'>        iblk[indexi].i_atime = time(0);
+<a name='L308'>        iblk[indexi].i_uid   = 0;
+<a name='L309'>        iblk[indexi].i_gid   = 0;
+<a name='L310'>        iblk[indexi].i_level = iblk[pathi].i_child;
+<a name='L311'>        iblk[indexi].i_parent= pathi;
+<a name='L312'>        iblk[indexi].i_child = 0;
+<a name='L313'>        iblk[indexi].i_file  = 0;
+<a name='L314'>        iblk[pathi].i_child = indexi;
+<a name='L315'>
+<a name='L316'>        <i><font color='green'>// allocate data block and copy data, then setup block link data</font></i>
+<a name='L317'>
+<a name='L318'>        <i><font color='green'>// count needed blocks for storage</font></i>
+<a name='L319'>        dblkr = size/<a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>;
+<a name='L320'>        <b>if</b>(size % <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>)
+<a name='L321'>                dblkr++;
+<a name='L322'>        iblk[indexi].i_blk_count= dblkr;
+<a name='L323'>        <b>if</b>(mfs_data.m_debug)
+<a name='L324'>                printf("[MFS]: Needed blocks: %d\n", dblkr);
+<a name='L325'>        
+<a name='L326'>        <i><font color='green'>// allocate blocks</font></i>
+<a name='L327'>        <i><font color='green'>// TODO: Add continuity check here, discuss: really needed??</font></i>
+<a name='L328'>        <b>while</b>(dblkr--) <font color='red'>{</font>
+<a name='L329'>                dblki=<a href='../S/42.html#L42' title='Defined at 42 in mkmfs/mfs.c.'>mfs_seekbmp</a>(mfs_data.m_blocks[4], 0, <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>*<a href='../S/42.html#L16' title='Defined at 16 in mkmfs/mfs.c.'>NDBLK</a>*8);
+<a name='L330'>                <b>if</b>(dblki==-1) <font color='red'>{</font>
+<a name='L331'>                        printf("ERROR: Out of data block\n");
+<a name='L332'>                        exit(-1);
+<a name='L333'>                <font color='red'>}</font>
+<a name='L334'>                <a href='../S/42.html#L32' title='Defined at 32 in mkmfs/mfs.c.'>mfs_markbmp</a>(mfs_data.m_blocks[4], dblki, 1);    <i><font color='green'>// mark used</font></i>
+<a name='L335'>        <font color='red'>}</font>
+<a name='L336'>        iblk[indexi].i_blk      = dblki - iblk[indexi].i_blk_count + 1;
+<a name='L337'>        <b>if</b>(mfs_data.m_debug)
+<a name='L338'>                printf("[MFS]: Beginning from block: %d\n", iblk[indexi].i_blk);
+<a name='L339'>
+<a name='L340'>        <i><font color='green'>// writing blocks</font></i>
+<a name='L341'>        <a href='../S/32.html#L47' title='Defined at 47 in kernel/lib/libc.c.'>memcpy</a>(&amp;mfs_data.m_blocks[6][iblk[indexi].i_blk * <a href='../S/43.html#L12' title='Defined at 12 in mkmfs/mfs.h.'>MFS_BLKSIZE</a>], \
+<a name='L342'>                buff, size);
+<a name='L343'>        <b>return</b> 0;
+<a name='L344'><font color='red'>}</font>
+<a name='L345'>
+</pre>
+<hr>
+<a name='BOTTOM'>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L32'>[^]</a><a href='#L268'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+</body>
+</html>

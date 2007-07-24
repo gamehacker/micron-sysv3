@@ -1,0 +1,234 @@
+<html>
+<head>
+<title>kernel/driver/chrdev/tty.c</title>
+<meta name='robots' content='noindex,nofollow'>
+<meta name='generator' content='GLOBAL-5.5'>
+</head>
+<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>
+<a name='TOP'><h2><a href='../mains.html'>root</a>/<a href='../files/47.html'>kernel</a>/<a href='../files/53.html'>driver</a>/<a href='../files/54.html'>chrdev</a>/tty.c</h2>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L36'>[^]</a><a href='#L188'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+<hr>
+<h2>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L36' title='Defined at 36.'>tty_setpage</a>
+<li><a href='#L45' title='Defined at 45.'>tty_setcursor</a>
+<li><a href='#L54' title='Defined at 54.'>tty_scroll</a>
+<li><a href='#L73' title='Defined at 73.'>tty_read</a>
+<li><a href='#L79' title='Defined at 79.'>tty_write</a>
+<li><a href='#L126' title='Defined at 126.'>tty_ioctl</a>
+<li><a href='#L148' title='Defined at 148.'>tty_open</a>
+<li><a href='#L153' title='Defined at 153.'>tty_close</a>
+<li><a href='#L158' title='Defined at 158.'>tty_init</a>
+<li><a href='#L188' title='Defined at 188.'>tty_exit</a>
+</ol>
+<hr>
+<pre>
+<a name='L1'><i><font color='green'>/*****************************************************************************</font></i>
+<a name='L2'><i><font color='green'> * Micron System V3 - I386 Driver - Console</font></i>
+<a name='L3'><i><font color='green'> * Copyright (C) 2007, Micron System Team</font></i>
+<a name='L4'><i><font color='green'> * Copyright (C) 2007, Martin Tang</font></i>
+<a name='L5'><i><font color='green'> * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.</font></i>
+<a name='L6'><i><font color='green'> *****************************************************************************</font></i>
+<a name='L7'><i><font color='green'> * Design Notes</font></i>
+<a name='L8'><i><font color='green'> *     The tty device on PC architecture should hold 8 consoles, which can be</font></i>
+<a name='L9'><i><font color='green'> *   switched to each other by the use of ioctl command. The driver should be</font></i>
+<a name='L10'><i><font color='green'> *   capable of handling escapes including but not limited to:</font></i>
+<a name='L11'><i><font color='green'> *</font></i>
+<a name='L12'><i><font color='green'> *     '\n', '\t', '\b', '\r'</font></i>
+<a name='L13'><i><font color='green'> *     </font></i>
+<a name='L14'><i><font color='green'> * Operation ioctl command list:</font></i>
+<a name='L15'><i><font color='green'> *   cmd        arg             function</font></i>
+<a name='L16'><i><font color='green'> *   1          page index      display page n</font></i>
+<a name='L17'><i><font color='green'> *   2          color           set display color</font></i>
+<a name='L18'><i><font color='green'> *   3          any             clear screen</font></i>
+<a name='L19'><i><font color='green'> *****************************************************************************/</font></i>
+<a name='L20'><font color='darkred'>#include</font> &lt;<a href='26.html'>device.h</a>&gt;
+<a name='L21'><font color='darkred'>#include</font> &lt;<a href='22.html'>io.h</a>&gt;
+<a name='L22'><font color='darkred'>#include</font> &lt;<a href='29.html'>libc.h</a>&gt;
+<a name='L23'>
+<a name='L24'><b>struct</b> ChrDev *tty_dev;
+<a name='L25'>
+<a name='L26'><b>struct</b> tty_disp
+<a name='L27'><font color='red'>{</font>
+<a name='L28'>        <b>unsigned</b> <b>short</b> *buf;    <i><font color='green'>/* frame buffer */</font></i>
+<a name='L29'>        <b>unsigned</b> <b>char</b> color;    <i><font color='green'>/* current display color */</font></i>
+<a name='L30'>        <b>unsigned</b> max_x;         <i><font color='green'>/* maximum x position */</font></i>
+<a name='L31'>        <b>unsigned</b> max_y;         <i><font color='green'>/* maximum y position */</font></i>
+<a name='L32'>        <b>unsigned</b> pos_x;         <i><font color='green'>/* x position */</font></i>
+<a name='L33'>        <b>unsigned</b> pos_y;         <i><font color='green'>/* y position */</font></i>
+<a name='L34'><font color='red'>}</font>tty_disp[8];
+<a name='L35'>
+<a name='L36'><b>void</b> <a href='../S/18.html#L132' title='Refered from 132 in kernel/driver/chrdev/tty.c.'>tty_setpage</a>(<b>int</b> index)
+<a name='L37'><font color='red'>{</font>
+<a name='L38'>        <b>unsigned</b> page = index * tty_disp[index].max_x * tty_disp[index].max_y;
+<a name='L39'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x3D4, 0x0C);
+<a name='L40'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x3D5, (page&gt;&gt;8) &amp; 0xFF);
+<a name='L41'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x3D4, 0x0D);
+<a name='L42'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x3D5, page &amp; 0xFF);
+<a name='L43'><font color='red'>}</font>
+<a name='L44'>
+<a name='L45'><b>void</b> <a href='../S/18.html#L115' title='Refered from 115 in kernel/driver/chrdev/tty.c.'>tty_setcursor</a>(<b>int</b> page, <b>int</b> pos_x, <b>int</b> pos_y)
+<a name='L46'><font color='red'>{</font>
+<a name='L47'>        <b>unsigned</b> location = pos_x + pos_y * tty_disp[page].max_x;
+<a name='L48'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x3D4, 0x0E);
+<a name='L49'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x3D5, (location&gt;&gt;8) &amp; 0xFF);
+<a name='L50'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x3D4, 0x0F);
+<a name='L51'>        <a href='../S/7.html#L19' title='Defined at 19 in kernel/arch/i386/cpu/io.c.'>outport</a>(0x3D5, location &amp; 0xFF);
+<a name='L52'><font color='red'>}</font>
+<a name='L53'>
+<a name='L54'><b>void</b> <a href='../S/18.html#L110' title='Refered from 110 in kernel/driver/chrdev/tty.c.'>tty_scroll</a>(<b>int</b> id)
+<a name='L55'><font color='red'>{</font>
+<a name='L56'>        <b>unsigned</b> <b>short</b> *src, *dest;
+<a name='L57'>        <b>unsigned</b> <b>int</b> cnt;
+<a name='L58'>        cnt = tty_disp[id].max_x * (tty_disp[id].max_y - 1);
+<a name='L59'>        src = tty_disp[id].buf + tty_disp[id].max_x;
+<a name='L60'>        dest= tty_disp[id].buf;
+<a name='L61'>        <b>while</b>(cnt--) <font color='red'>{</font>
+<a name='L62'>                *dest++ = *src++;
+<a name='L63'>        <font color='red'>}</font>
+<a name='L64'>        cnt = tty_disp[id].max_x;
+<a name='L65'>        dest= tty_disp[id].buf +
+<a name='L66'>                tty_disp[id].max_x * (tty_disp[id].max_y - 1);
+<a name='L67'>        <b>while</b>(cnt--) <font color='red'>{</font>
+<a name='L68'>                dest[cnt] = ' '|(0x0f&lt;&lt;8);
+<a name='L69'>        <font color='red'>}</font>
+<a name='L70'><font color='red'>}</font>
+<a name='L71'>
+<a name='L72'><i><font color='green'>// Keyboard input</font></i>
+<a name='L73'><b>int</b> <a href='../S/18.html#L166' title='Refered from 166 in kernel/driver/chrdev/tty.c.'>tty_read</a>(<a href='../S/24.html#L16' title='Defined at 16 in kernel/include/arch-i386/types.h.'>id_t</a> id, <b>char</b> *buf, <a href='../S/24.html#L20' title='Defined at 20 in kernel/include/arch-i386/types.h.'>size_t</a> cnt)
+<a name='L74'><font color='red'>{</font>
+<a name='L75'>        <b>return</b> 0;
+<a name='L76'><font color='red'>}</font>
+<a name='L77'>
+<a name='L78'><i><font color='green'>// Screen output</font></i>
+<a name='L79'><b>int</b> <a href='../S/18.html#L167' title='Refered from 167 in kernel/driver/chrdev/tty.c.'>tty_write</a>(<a href='../S/24.html#L16' title='Defined at 16 in kernel/include/arch-i386/types.h.'>id_t</a> id, <b>char</b> *buf, <a href='../S/24.html#L20' title='Defined at 20 in kernel/include/arch-i386/types.h.'>size_t</a> cnt)
+<a name='L80'><font color='red'>{</font>
+<a name='L81'>        <i><font color='green'>/* get target display struct */</font></i>
+<a name='L82'>        <b>struct</b> tty_disp *disp = &amp;tty_disp[<a href='../S/26.html#L28' title='Defined at 28 in kernel/include/device.h.'>MINOR</a>(id)];
+<a name='L83'>        
+<a name='L84'>        <b>while</b>(cnt--) <b>switch</b>(*buf) <font color='red'>{</font>
+<a name='L85'>        <b>case</b> '\b':
+<a name='L86'>                <b>if</b>(disp-&gt;pos_x &gt; 0)
+<a name='L87'>                        disp-&gt;pos_x--;
+<a name='L88'>                buf++;
+<a name='L89'>                <b>break</b>;
+<a name='L90'>        <b>case</b> '\r':
+<a name='L91'>                <b>if</b>(disp-&gt;pos_x &gt; 0)
+<a name='L92'>                        disp-&gt;pos_x = 0;
+<a name='L93'>                buf++;
+<a name='L94'>                <b>break</b>;
+<a name='L95'>        <b>case</b> '\n':
+<a name='L96'>                disp-&gt;pos_x = 0;
+<a name='L97'>                disp-&gt;pos_y+= 1;
+<a name='L98'>                buf++;
+<a name='L99'>                <b>break</b>;
+<a name='L100'>        <b>case</b> '\t':
+<a name='L101'>                disp-&gt;pos_x = ((disp-&gt;pos_x/8) + (disp-&gt;pos_x%8)?1:0)*8;
+<a name='L102'>                buf++;
+<a name='L103'>                <b>break</b>;
+<a name='L104'>        <b>default</b>:
+<a name='L105'>                <b>if</b>(disp-&gt;pos_x &gt;= disp-&gt;max_x) <font color='red'>{</font>
+<a name='L106'>                        disp-&gt;pos_x = 0;
+<a name='L107'>                        disp-&gt;pos_y++;
+<a name='L108'>                <font color='red'>}</font>
+<a name='L109'>                <b>if</b>(disp-&gt;pos_y &gt;= disp-&gt;max_y) <font color='red'>{</font>
+<a name='L110'>                        <a href='../S/18.html#L54' title='Defined at 54 in kernel/driver/chrdev/tty.c.'>tty_scroll</a>(<a href='../S/26.html#L28' title='Defined at 28 in kernel/include/device.h.'>MINOR</a>(id));
+<a name='L111'>                        disp-&gt;pos_y--;
+<a name='L112'>                <font color='red'>}</font>
+<a name='L113'>                disp-&gt;buf[disp-&gt;pos_x+disp-&gt;pos_y*disp-&gt;max_x] = 
+<a name='L114'>                        *buf|(disp-&gt;color&lt;&lt;8);
+<a name='L115'>                <a href='../S/18.html#L45' title='Defined at 45 in kernel/driver/chrdev/tty.c.'>tty_setcursor</a>(<a href='../S/26.html#L28' title='Defined at 28 in kernel/include/device.h.'>MINOR</a>(id), disp-&gt;pos_x+1, disp-&gt;pos_y);
+<a name='L116'>
+<a name='L117'>                <i><font color='green'>/* prepare for next character */</font></i>
+<a name='L118'>                disp-&gt;pos_x++;
+<a name='L119'>                buf++;
+<a name='L120'>                <b>break</b>;
+<a name='L121'>        <font color='red'>}</font>
+<a name='L122'>
+<a name='L123'>        <b>return</b> 0;
+<a name='L124'><font color='red'>}</font>
+<a name='L125'>
+<a name='L126'><b>int</b> <a href='../R/80.html' title='Multiple refered from 2 places.'>tty_ioctl</a>(<a href='../S/24.html#L16' title='Defined at 16 in kernel/include/arch-i386/types.h.'>id_t</a> id, <b>int</b> cmd, <b>int</b> arg)
+<a name='L127'><font color='red'>{</font>
+<a name='L128'>        <b>int</b> i;
+<a name='L129'>        <b>unsigned</b> <b>short</b> *p = tty_disp[<a href='../S/26.html#L28' title='Defined at 28 in kernel/include/device.h.'>MINOR</a>(id)].buf;
+<a name='L130'>        <b>switch</b>(cmd) <font color='red'>{</font>
+<a name='L131'>        <b>case</b> 1:                         <i><font color='green'>/* change current display page */</font></i>
+<a name='L132'>                <a href='../S/18.html#L36' title='Defined at 36 in kernel/driver/chrdev/tty.c.'>tty_setpage</a>(arg);
+<a name='L133'>                <b>break</b>;
+<a name='L134'>        <b>case</b> 2:
+<a name='L135'>                tty_disp[<a href='../S/26.html#L28' title='Defined at 28 in kernel/include/device.h.'>MINOR</a>(id)].color = arg;
+<a name='L136'>                <b>break</b>;
+<a name='L137'>        <b>case</b> 3:
+<a name='L138'>                <b>for</b>(i=0; 
+<a name='L139'>                    i&lt;tty_disp[<a href='../S/26.html#L28' title='Defined at 28 in kernel/include/device.h.'>MINOR</a>(id)].max_x * tty_disp[<a href='../S/26.html#L28' title='Defined at 28 in kernel/include/device.h.'>MINOR</a>(id)].max_y;
+<a name='L140'>                    i++) <font color='red'>{</font>
+<a name='L141'>                   p[i] = ' '|0x0f00;
+<a name='L142'>                <font color='red'>}</font>
+<a name='L143'>                <b>break</b>;
+<a name='L144'>        <font color='red'>}</font>
+<a name='L145'>        <b>return</b> 0;
+<a name='L146'><font color='red'>}</font>
+<a name='L147'>
+<a name='L148'><b>int</b> <a href='../S/18.html#L164' title='Refered from 164 in kernel/driver/chrdev/tty.c.'>tty_open</a>(<a href='../S/24.html#L16' title='Defined at 16 in kernel/include/arch-i386/types.h.'>id_t</a> id, <b>int</b> oflag, <a href='../S/24.html#L23' title='Defined at 23 in kernel/include/arch-i386/types.h.'>mode_t</a> mode)
+<a name='L149'><font color='red'>{</font>
+<a name='L150'>        <b>return</b> 0;
+<a name='L151'><font color='red'>}</font>
+<a name='L152'>
+<a name='L153'><b>int</b> <a href='../S/18.html#L165' title='Refered from 165 in kernel/driver/chrdev/tty.c.'>tty_close</a>(<a href='../S/24.html#L16' title='Defined at 16 in kernel/include/arch-i386/types.h.'>id_t</a> id)
+<a name='L154'><font color='red'>{</font>
+<a name='L155'>        <b>return</b> 0;
+<a name='L156'><font color='red'>}</font>
+<a name='L157'>
+<a name='L158'><b>int</b> tty_init()
+<a name='L159'><font color='red'>{</font>
+<a name='L160'>        tty_dev = <a href='../S/19.html#L14' title='Defined at 14 in kernel/driver/device.c.'>DeviceAlloc</a>(CHRDEV);
+<a name='L161'>        <b>if</b>(tty_dev == (<b>struct</b> ChrDev*)<a href='../S/27.html#L14' title='Defined at 14 in kernel/include/errno.h.'>ENODEV</a>) <font color='red'>{</font>
+<a name='L162'>                <b>return</b> -1;      <i><font color='green'>// Initialization Failure</font></i>
+<a name='L163'>        <font color='red'>}</font>
+<a name='L164'>        tty_dev-&gt;open = <a href='../S/18.html#L148' title='Defined at 148 in kernel/driver/chrdev/tty.c.'>tty_open</a>;
+<a name='L165'>        tty_dev-&gt;close= <a href='../S/18.html#L153' title='Defined at 153 in kernel/driver/chrdev/tty.c.'>tty_close</a>;
+<a name='L166'>        tty_dev-&gt;read = <a href='../S/18.html#L73' title='Defined at 73 in kernel/driver/chrdev/tty.c.'>tty_read</a>;
+<a name='L167'>        tty_dev-&gt;write= <a href='../S/18.html#L79' title='Defined at 79 in kernel/driver/chrdev/tty.c.'>tty_write</a>;
+<a name='L168'>        tty_dev-&gt;ioctl= <a href='../S/18.html#L126' title='Defined at 126 in kernel/driver/chrdev/tty.c.'>tty_ioctl</a>;
+<a name='L169'>        <b>int</b> i;
+<a name='L170'>        <b>for</b>(i=0; i&lt;8; i++)
+<a name='L171'>        <font color='red'>{</font>
+<a name='L172'>                tty_disp[i].color = 0x0F;
+<a name='L173'>                tty_disp[i].pos_x = 0;
+<a name='L174'>                tty_disp[i].pos_y = 0;
+<a name='L175'>                tty_disp[i].max_x = 80;
+<a name='L176'>                tty_disp[i].max_y = 25;
+<a name='L177'>                tty_disp[i].buf   = (<b>unsigned</b> <b>short</b>*)(0xb8000 + 
+<a name='L178'>                        tty_disp[i].max_x * tty_disp[i].max_y * 2 * i);
+<a name='L179'>        <font color='red'>}</font>
+<a name='L180'>        
+<a name='L181'>        <i><font color='green'>/* clean screen get ready for use */</font></i>
+<a name='L182'>        <a href='../S/18.html#L126' title='Defined at 126 in kernel/driver/chrdev/tty.c.'>tty_ioctl</a>(0, 3, 0);
+<a name='L183'>
+<a name='L184'>        <a href='../S/32.html#L56' title='Defined at 56 in kernel/lib/libc.c.'>kprintf</a>("TTY Driver V1.0 Initialized Successfully\n");
+<a name='L185'>        <b>return</b> 0;
+<a name='L186'><font color='red'>}</font>
+<a name='L187'>
+<a name='L188'><b>int</b> tty_exit()
+<a name='L189'><font color='red'>{</font>
+<a name='L190'>        <b>if</b>(tty_dev == (<b>struct</b> ChrDev*)<a href='../S/27.html#L14' title='Defined at 14 in kernel/include/errno.h.'>ENODEV</a>)
+<a name='L191'>                <b>return</b> -1;      <i><font color='green'>// Device not installed</font></i>
+<a name='L192'>        tty_dev-&gt;open = 0;
+<a name='L193'>        tty_dev-&gt;close= 0;
+<a name='L194'>        tty_dev-&gt;read = 0;
+<a name='L195'>        tty_dev-&gt;write= 0;
+<a name='L196'>        tty_dev-&gt;ioctl= 0;
+<a name='L197'>        <b>return</b> 0;
+<a name='L198'><font color='red'>}</font>
+<a name='L199'>
+<a name='L200'><a href='../S/30.html#L11' title='Defined at 11 in kernel/include/module.h.'>MODULE_INIT</a>(tty_init);
+<a name='L201'><a href='../S/30.html#L15' title='Defined at 15 in kernel/include/module.h.'>MODULE_EXIT</a>(tty_exit);
+<a name='L202'>
+</pre>
+<hr>
+<a name='BOTTOM'>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L36'>[^]</a><a href='#L188'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+</body>
+</html>

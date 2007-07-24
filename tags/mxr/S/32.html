@@ -1,0 +1,124 @@
+<html>
+<head>
+<title>kernel/lib/libc.c</title>
+<meta name='robots' content='noindex,nofollow'>
+<meta name='generator' content='GLOBAL-5.5'>
+</head>
+<body text='#191970' bgcolor='#f5f5dc' vlink='gray'>
+<a name='TOP'><h2><a href='../mains.html'>root</a>/<a href='../files/47.html'>kernel</a>/<a href='../files/57.html'>lib</a>/libc.c</h2>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L10'>[^]</a><a href='#L56'>[v]</a>[top]<a href='#BOTTOM'>[bottom]</a><a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+<hr>
+<h2>DEFINITIONS</h2>
+This source file includes following definitions.
+<ol>
+<li><a href='#L10' title='Defined at 10.'>itoa</a>
+<li><a href='#L40' title='Defined at 40.'>strlen</a>
+<li><a href='#L47' title='Defined at 47.'>memcpy</a>
+<li><a href='#L56' title='Defined at 56.'>kprintf</a>
+</ol>
+<hr>
+<pre>
+<a name='L1'><i><font color='green'>/*****************************************************************************</font></i>
+<a name='L2'><i><font color='green'> * Micron System Version 3 - System Core</font></i>
+<a name='L3'><i><font color='green'> * Copyright (C) 2007, Micron System Team</font></i>
+<a name='L4'><i><font color='green'> * Copyright (C) 2007, Martin Tang</font></i>
+<a name='L5'><i><font color='green'> * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT</font></i>
+<a name='L6'><i><font color='green'> *****************************************************************************/</font></i>
+<a name='L7'><font color='darkred'>#include</font> &lt;<a href='29.html'>libc.h</a>&gt;
+<a name='L8'><font color='darkred'>#include</font> &lt;<a href='26.html'>device.h</a>&gt;
+<a name='L9'>
+<a name='L10'><b>char</b> *<a href='../R/57.html' title='Multiple refered from 4 places.'>itoa</a>(<b>int</b> value, <b>char</b> *str, <b>int</b> radix)
+<a name='L11'><font color='red'>{</font>
+<a name='L12'>        <b>int</b> len=0, val = value;
+<a name='L13'>
+<a name='L14'>        <b>if</b>(value == 0) <font color='red'>{</font>
+<a name='L15'>                str[0] = '0';
+<a name='L16'>                str[1] = '\0';
+<a name='L17'>                <b>return</b> str;
+<a name='L18'>        <font color='red'>}</font>
+<a name='L19'>
+<a name='L20'>        <i><font color='green'>/* evaluate target string length */</font></i>
+<a name='L21'>        <b>while</b>(val) <font color='red'>{</font>
+<a name='L22'>                len++;
+<a name='L23'>                val = val/radix;
+<a name='L24'>        <font color='red'>}</font>
+<a name='L25'>
+<a name='L26'>        <i><font color='green'>/* cut down end of string */</font></i>
+<a name='L27'>        str[len] = '\0';
+<a name='L28'>
+<a name='L29'>        <i><font color='green'>/* do the conversion */</font></i>
+<a name='L30'>        <b>while</b>(len--) <b>if</b>((value%radix)&gt;=0 &amp;&amp; (value%radix)&lt;=9) <font color='red'>{</font>
+<a name='L31'>                str[len] = '0' + value%radix;
+<a name='L32'>                value = value/radix;
+<a name='L33'>        <font color='red'>}</font> <b>else</b> <b>if</b>((value%radix)&gt;=10) <font color='red'>{</font>
+<a name='L34'>                str[len] = 'a' + value%radix - 10;
+<a name='L35'>                value = value/radix;
+<a name='L36'>        <font color='red'>}</font>
+<a name='L37'>        <b>return</b> str;
+<a name='L38'><font color='red'>}</font>
+<a name='L39'>
+<a name='L40'><b>int</b> <a href='../R/78.html' title='Multiple refered from 11 places.'>strlen</a>(<b>char</b> *str)
+<a name='L41'><font color='red'>{</font>
+<a name='L42'>        <b>int</b> len=0;
+<a name='L43'>        <b>while</b>(*str++!='\0') len++;
+<a name='L44'>        <b>return</b> len;
+<a name='L45'><font color='red'>}</font>
+<a name='L46'>
+<a name='L47'><b>char</b> *<a href='../R/59.html' title='Multiple refered from 2 places.'>memcpy</a>(<b>char</b> *dest, <b>char</b> *src, <a href='../S/24.html#L20' title='Defined at 20 in kernel/include/arch-i386/types.h.'>size_t</a> cnt)
+<a name='L48'><font color='red'>{</font>
+<a name='L49'>        <b>while</b>(cnt--) <font color='red'>{</font>
+<a name='L50'>                *dest++ = *src++;
+<a name='L51'>        <font color='red'>}</font>
+<a name='L52'>        <b>return</b> dest;
+<a name='L53'><font color='red'>}</font>
+<a name='L54'>
+<a name='L55'><b>int</b> <b>__attribute__</b>((format(printf, 1, 2)))
+<a name='L56'><a href='../R/58.html' title='Multiple refered from 7 places.'>kprintf</a>(<b>char</b> *fmt, ...)
+<a name='L57'><font color='red'>{</font>
+<a name='L58'>        <b>unsigned</b> *args = (<b>unsigned</b>*)&amp;fmt, argi=1;
+<a name='L59'>        <b>char</b> buf[255];
+<a name='L60'>        <b>while</b>(*fmt != '\0') <b>switch</b>(*fmt) <font color='red'>{</font>
+<a name='L61'>        <b>case</b> '%':
+<a name='L62'>                fmt++;
+<a name='L63'>                <b>switch</b>(*fmt) <font color='red'>{</font>
+<a name='L64'>                <b>case</b> 'b':
+<a name='L65'>                        <a href='../S/32.html#L10' title='Defined at 10 in kernel/lib/libc.c.'>itoa</a>(args[argi++], buf, 2);
+<a name='L66'>                        <a href='../S/19.html#L90' title='Defined at 90 in kernel/driver/device.c.'>DeviceWrite</a>(CHRDEV, <a href='../S/26.html#L26' title='Defined at 26 in kernel/include/device.h.'>DEVID</a>(0, 0), buf, <a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(buf));
+<a name='L67'>                        <b>break</b>;
+<a name='L68'>                <b>case</b> 'd':
+<a name='L69'>                        <a href='../S/32.html#L10' title='Defined at 10 in kernel/lib/libc.c.'>itoa</a>(args[argi++], buf, 10);
+<a name='L70'>                        <a href='../S/19.html#L90' title='Defined at 90 in kernel/driver/device.c.'>DeviceWrite</a>(CHRDEV, <a href='../S/26.html#L26' title='Defined at 26 in kernel/include/device.h.'>DEVID</a>(0, 0), buf, <a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(buf));
+<a name='L71'>                        <b>break</b>;
+<a name='L72'>                <b>case</b> 'x':
+<a name='L73'>                        <a href='../S/32.html#L10' title='Defined at 10 in kernel/lib/libc.c.'>itoa</a>(args[argi++], buf, 16);
+<a name='L74'>                        <a href='../S/19.html#L90' title='Defined at 90 in kernel/driver/device.c.'>DeviceWrite</a>(CHRDEV, <a href='../S/26.html#L26' title='Defined at 26 in kernel/include/device.h.'>DEVID</a>(0, 0), buf, <a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>(buf));
+<a name='L75'>                        <b>break</b>;
+<a name='L76'>                <b>case</b> 's':
+<a name='L77'>                        <a href='../S/19.html#L90' title='Defined at 90 in kernel/driver/device.c.'>DeviceWrite</a>(CHRDEV, <a href='../S/26.html#L26' title='Defined at 26 in kernel/include/device.h.'>DEVID</a>(0, 0), (<b>char</b>*)args[argi],
+<a name='L78'>                                        <a href='../S/32.html#L40' title='Defined at 40 in kernel/lib/libc.c.'>strlen</a>((<b>char</b>*)args[argi]));
+<a name='L79'>                        argi++;
+<a name='L80'>                        <b>break</b>;
+<a name='L81'>                <b>case</b> 'c':
+<a name='L82'>                        <a href='../S/19.html#L90' title='Defined at 90 in kernel/driver/device.c.'>DeviceWrite</a>(CHRDEV, <a href='../S/26.html#L26' title='Defined at 26 in kernel/include/device.h.'>DEVID</a>(0, 0),
+<a name='L83'>                                        (<b>char</b>*)&amp;args[argi++], 1);
+<a name='L84'>                        <b>break</b>;
+<a name='L85'>                <b>case</b> 'C':
+<a name='L86'>                        <a href='../S/19.html#L110' title='Defined at 110 in kernel/driver/device.c.'>DeviceIoctl</a>(CHRDEV, <a href='../S/26.html#L26' title='Defined at 26 in kernel/include/device.h.'>DEVID</a>(0, 0), 2, (<b>char</b>)args[argi++]);
+<a name='L87'>                        <b>break</b>;
+<a name='L88'>                <font color='red'>}</font>
+<a name='L89'>                fmt++;
+<a name='L90'>                <b>break</b>;
+<a name='L91'>        <b>default</b>:
+<a name='L92'>                <a href='../S/19.html#L90' title='Defined at 90 in kernel/driver/device.c.'>DeviceWrite</a>(CHRDEV, <a href='../S/26.html#L26' title='Defined at 26 in kernel/include/device.h.'>DEVID</a>(0, 0), fmt, 1);
+<a name='L93'>                fmt++;
+<a name='L94'>                <b>break</b>;
+<a name='L95'>        <font color='red'>}</font>
+<a name='L96'>        <b>return</b> 0;
+<a name='L97'><font color='red'>}</font>
+<a name='L98'>
+</pre>
+<hr>
+<a name='BOTTOM'>
+<i><font color='green'>/* [&lt;][&gt;]<a href='#L10'>[^]</a><a href='#L56'>[v]</a><a href='#TOP'>[top]</a>[bottom]<a href='../mains.html'>[index]</a><a href='../help.html'>[help]</a> */</font></i>
+</body>
+</html>
