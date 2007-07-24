@@ -12,20 +12,17 @@
  *   1. Null entry
  *   2. Kernel code segment
  *   3. Kernel data segment
- *   4. Kernel stack segment
  *   4. V8086 code segment
  *   5. V8086 data segment
- *   6. V8086 stack segment
- *   7. Application code segment
- *   8. Application data segment
- *   9. Application stack segment
- *  10. Task switch selector(TSS) segment
+ *   6. Application code segment
+ *   7. Application data segment
+ *   8. Task switch selector(TSS) segment
  *
  * Developer Reference:
  *   1. IA-32 Intel Architecture Software Developer's Manual, Volume 3
  *****************************************************************************/
 
-#define GDT_ENTRIES 10
+#define GDT_ENTRIES 8
 
 struct i386_gdt
 {
@@ -41,7 +38,7 @@ struct i386_gdt
 	unsigned db:1;		/* default operation syze */
 	unsigned g:1;		/* granularity */
 	unsigned badd_h:8;	/* base address 31..24 */
-}__attribute__((packed)) i386_gdt[10];
+}__attribute__((packed)) i386_gdt[GDT_ENTRIES];
 
 struct i386_gdtr
 {
@@ -135,9 +132,8 @@ void i386_gdt_load()
 	i386_gdtr.base = (unsigned)&i386_gdt;
 	i386_gdtr.limit= sizeof(i386_gdt) - 1;
 	asm("lgdt i386_gdtr");
-	asm("movw $0x18, %ax");
-	asm("movw %ax,   %ss");
 	asm("movw $0x10, %ax");
+	asm("movw %ax,   %ss");
 	asm("movw %ax,   %ds");
 	asm("movw %ax,   %es");
 	asm("movw %ax,   %fs");
@@ -155,17 +151,14 @@ void i386_gdt_init()
 	/* Kernel segments */
 	i386_gdt_edit(1,0,0xFFFFF,1,0,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
 	i386_gdt_edit(2,0,0xFFFFF,1,0,BITS32,DATA_READ_WRITE,UNIT_4K);
-	i386_gdt_edit(3,0,0xFFFFF,1,0,BITS32,DATA_READ_WRITE,UNIT_4K);
 
 	/* V8086 segments */
-	i386_gdt_edit(4,0,0xFFFFF,1,0,BITS16,CODE_READ_EXEC_CONFORM,UNIT_1B);
-	i386_gdt_edit(5,0,0xFFFFF,1,0,BITS16,DATA_READ_WRITE,UNIT_1B);
-	i386_gdt_edit(6,0,0xFFFFF,1,0,BITS16,DATA_READ_WRITE,UNIT_1B);
+	i386_gdt_edit(3,0,0xFFFFF,1,0,BITS16,CODE_READ_EXEC_CONFORM,UNIT_1B);
+	i386_gdt_edit(4,0,0xFFFFF,1,0,BITS16,DATA_READ_WRITE,UNIT_1B);
 
 	/* Application segments */
-	i386_gdt_edit(7,0,0xFFFFF,1,3,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
-	i386_gdt_edit(8,0,0xFFFFF,1,3,BITS32,DATA_READ_WRITE,UNIT_4K);
-	i386_gdt_edit(9,0,0xFFFFF,1,3,BITS32,DATA_READ_WRITE,UNIT_4K);
+	i386_gdt_edit(5,0,0xFFFFF,1,3,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
+	i386_gdt_edit(6,0,0xFFFFF,1,3,BITS32,DATA_READ_WRITE,UNIT_4K);
 
 	/* Load new GDT */
 	i386_gdt_load();
@@ -174,6 +167,6 @@ void i386_gdt_init()
 /* Install a TSS to segment */
 void i386_gdt_tss(unsigned tadd, unsigned size)
 {
-	i386_gdt_edit(10,tadd,size,1,0,BITS32,SYST_BITS32_TSS_AVAL,UNIT_1B);
+	i386_gdt_edit(7,tadd,size,1,0,BITS32,SYST_BITS32_TSS_AVAL,UNIT_1B);
 }
 

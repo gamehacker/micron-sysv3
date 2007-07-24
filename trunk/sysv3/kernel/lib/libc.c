@@ -82,6 +82,9 @@ kprintf(char *fmt, ...)
 			DeviceWrite(CHRDEV, DEVID(0, 0),
 					(char*)&args[argi++], 1);
 			break;
+		case 'C':
+			DeviceIoctl(CHRDEV, DEVID(0, 0), 2, (char)args[argi++]);
+			break;
 		}
 		fmt++;
 		break;

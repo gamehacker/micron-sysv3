@@ -6,10 +6,11 @@
  *****************************************************************************/
 #include <module.h>
 #include <device.h>
+#include <libc.h>
+#include <io.h>
 
 void kmain()
 {
-	modinit();
 	asm("sti");
 }
 
