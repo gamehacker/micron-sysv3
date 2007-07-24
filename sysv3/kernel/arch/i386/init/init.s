@@ -15,12 +15,12 @@
 .extern i386_rtc_init
 .extern i386_page_init
 	movl $stack, %esp	/* setup stack for kernel */
-	call modinit		/* initialize all modules */
-	call i386_gdt_init	/* install new gdt managed by kernel */
 	call i386_idt_init	/* install new gdt managed by kernel */
 	call i386_irq_init	/* initialize IRQ */
 	call i386_rtc_init	/* initialize RTC */
+	call i386_gdt_init	/* install new gdt managed by kernel */
 	call i386_page_init	/* initialize RTC */
+	call modinit		/* initialize all modules */
 	call kmain
 halt:	hlt			/* kmain function should never return */
 	jmp halt
