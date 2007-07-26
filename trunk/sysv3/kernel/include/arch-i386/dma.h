@@ -26,9 +26,9 @@
 					/*   else active low */
 
 /* Values used with i386_dma1_read_write */
-#define D1_AUTOINIT 0x01		/* Autoinitialization enable */
+#define D1_AUTOINIT 0x10		/* Autoinitialization enable */
 					/*   else disable */
-#define D1_INCR     0x02		/* Address increment select */
+#define D1_INCR     0x20		/* Address increment select */
 					/*   else decrement */
 #define D1_DEMAND   0x00		/* Demand mode */
 #define D1_SINGLE   0x40		/* Single mode */
