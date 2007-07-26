@@ -34,6 +34,23 @@ struct tty_disp
 	unsigned pos_y;		/* y position */
 }tty_disp[8];
 
+#define BUF_SIZE  4
+//special key 
+#define CAPS_KEY 58
+#define INSERT_KEY 82
+#define SCROLL_KEY 70
+#define NUM_KEY 71
+#define STAT_KEY_SIZE 4
+//save sepcail key status,
+//if current key's values is 1 ,the key is downa,0 respent up
+unsigned char tty_spec_key_stat[STAT_KEY_SIZE];
+//buf is used to save keyboard value
+struct tty_queue {
+  long head;
+  long tail;
+  char buf[BUF_SIZE];
+};
+struct tty_queue tty_kbd_buf;
 void tty_setpage(int index)
 {
 	unsigned page = index * tty_disp[index].max_x * tty_disp[index].max_y;
@@ -159,16 +176,107 @@ void timer_handler(struct isr_regs* regs)
 {
 	
 }
-void key_handler(struct isr_regs* regs)
+//set head =tail=BUF_SIZE-1 and clean kdb buff
+void tty_kbd_init()
 {
-	  DEBUG(1);
+  int i;
+  tty_kbd_buf.head=BUF_SIZE-1;
+  tty_kbd_buf.tail=tty_kbd_buf.head;
+  for(i=0;i<BUF_SIZE;i++)//clean kbd buff
+	   tty_kbd_buf.buf[i]=0; 
+  for(i=0;i<STAT_KEY_SIZE;i++)
+       tty_spec_key_stat[i]=0;
 }
+void tty_kbd_buff_push( unsigned char scan_code)
+{
+  
+  if (tty_kbd_buf.buf[tty_kbd_buf.head]==0)
+	{
+	  tty_kbd_buf.buf[tty_kbd_buf.head]=scan_code;
+      if(tty_kbd_buf.head>0)
+	      tty_kbd_buf.head--;
+	  else
+		  tty_kbd_buf.head=BUF_SIZE-1;
+	}
+ 
+	
+}
+/* purpose:
+   the function will pop one element.
+   if return value is 0,it respent that buff is empty.
+   write by liubo 
+   write date: 2007-07-25
+*/
+unsigned char tty_kbd_buff_pop()
+{
+  unsigned char kbd_res=0;
+  if (tty_kbd_buf.buf[tty_kbd_buf.tail]>0)
+	{
+      kbd_res=tty_kbd_buf.buf[tty_kbd_buf.tail];
+	  tty_kbd_buf.buf[tty_kbd_buf.tail]=0;//release one buffer
+	  if(tty_kbd_buf.tail>0)
+	      tty_kbd_buf.tail--;
+	  else//it reach buffer's head
+		  tty_kbd_buf.tail=BUF_SIZE-1;
+	}
+   return kbd_res;
+}
+void tty_kbd_key_press(void)
+{
+ while (inport(0x64) & 0x01);
+ outport(0x60, 0xed);
+ outport(0x60, 0x02); 
+ return ;
+}
+void tty_key_handler(struct isr_regs* regs)
+{
+   unsigned char code ;//used to save keyboard's scan code
+   //tty_kbd_key_press();
+   code=inport(0x60);//get keyboard's scan code
+   if(!(code&0x80))//key is down
+	{
+      if (code==28)//enter key
+      {
+         DEBUG(tty_kbd_buff_pop());//pop one element
+      }
+	  else
+		{
+		  
+		  switch(code)
+			  {
+                case CAPS_KEY:
+					tty_spec_key_stat[0]=!tty_spec_key_stat[0];
+				    break;
+                case INSERT_KEY:
+                    tty_spec_key_stat[1]=!tty_spec_key_stat[1];
+				    break;
+				case SCROLL_KEY:
+                    tty_spec_key_stat[2]=!tty_spec_key_stat[2];
+				   break;
+				case NUM_KEY://the key value is not exists in my laptop,please you define key value that base on your machine:)
+					tty_spec_key_stat[3]=!tty_spec_key_stat[3];
+				   break;
+                 default:
+				   DEBUG(code);
+                   tty_kbd_buff_push(code);//push one element
+				   break;
+		      }
+		}
+	}
+   else
+    {
+	   //key is up
+	}
+}
+
 void rlt_clk_handler(struct isr_regs* regs)
 {
 	 
 }
 int tty_init()
 {
+	
+	
 	tty_dev = &ChrDev[0];
 	if(tty_dev == (struct ChrDev*)ENODEV) {
 		return -1;	// Initialization Failure
@@ -195,8 +303,9 @@ int tty_init()
 
 	kprintf("TTY Driver V1.0 Initialized Successfully\n");
 	i386_irq_install(0,timer_handler);
-	i386_irq_install(1,key_handler);
+    i386_irq_install(1,tty_key_handler);
 	i386_irq_install(7,rlt_clk_handler);
+	tty_kbd_init();
 	return 0;
 }
 
