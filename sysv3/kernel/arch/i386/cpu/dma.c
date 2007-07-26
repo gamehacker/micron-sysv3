@@ -115,6 +115,12 @@ int i386_dma1_read (unsigned channel, unsigned mode)
 	outport(BCNT1[channel], DMA1_BSIZ &0xFF);
 	outport(BCNT1[channel], (DMA1_BSIZ>>8)&0xFF);
 
+	/* write to mode register */
+	outport(MODE1, (mode&0xF0)|channel|0x08);
+	
+	/* unmask the requested channel */
+	TMSK1 &= ~(1<<channel);
+
 	/* resume stopped transfers */
 	i386_dma1_resume();
 	return 0;
@@ -123,15 +129,51 @@ int i386_dma1_read (unsigned channel, unsigned mode)
 /* initialize DMA-1 Chip for a read transfer */
 int i386_dma1_write(unsigned channel, unsigned mode)
 {
+	if(channel > 3) {
+		return -1;	/* channel invalid or not driven */
+	}
+	if(MUTX1[channel]) {
+		return -1;	/* channel is already in use */
+	}
+
+	/* pause all transfers for setup */
 	i386_dma1_pause();
+	
+	/* mark mutex */
+	MUTX1[channel]++;
+	
+	/* clear flip flops */
+	outport(CBFF1, 0xFF);			
+
+	/* setup base address */
+	outport(BADD1[channel], (char) (unsigned)BUFF1&0xFF);
+	outport(BADD1[channel], (char)((unsigned)BUFF1>>8) &0xFF);
+	outport(BPAG1[channel], (char)((unsigned)BUFF1>>16)&0xFF);
+
+	/* setup transfer size */
+	outport(BCNT1[channel], DMA1_BSIZ &0xFF);
+	outport(BCNT1[channel], (DMA1_BSIZ>>8)&0xFF);
+
+	/* write to mode register */
+	outport(MODE1, (mode&0xF0)|channel|0x04);
+	
+	/* unmask the requested channel */
+	TMSK1 &= ~(1<<channel);
+
+	/* resume stopped transfers */
 	i386_dma1_resume();
+
 	return 0;
 }
 
+/* end a DMA transfer session */
 int i386_dma1_close(unsigned channel)
 {
+	if(channel >3) {
+		return -1;
+	}
 	i386_dma1_pause();
-	TMSK1 &= ~(channel&3);
+	TMSK1 |= 1<<channel;
 	i386_dma1_resume();
 	return 0;
 }
