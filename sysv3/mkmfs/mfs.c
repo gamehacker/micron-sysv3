@@ -142,6 +142,11 @@ int mfs_end(char *outname)
 	write(out, mfs_data.m_blocks[5], MFS_BLKSIZE*NIBLK);
 	write(out, mfs_data.m_blocks[6], MFS_BLKSIZE*NDBLK);
 
+	int i;
+	for(i=0; i<7; i++) {
+		free(mfs_data.m_blocks[i]);
+	}
+
 	// Close out put file and save
 	close(out);
 
@@ -185,7 +190,10 @@ int mfs_iget(char *path)
 	char *pathbuf, *pathent[128];	// 128 lvl of dir
 
 	// parse the path entries into item
-	pathbuf=malloc(strlen(path));
+	pathbuf=malloc(strlen(path)+1);
+	if(pathbuf == NULL) {
+		printf("ERROR: Memory Unavailable \n");
+	}
 	strcpy(pathbuf, path);
 	for(i=0; i<strlen(path); i++) {
 		if(pathbuf[i]=='/') {
@@ -212,6 +220,7 @@ int mfs_iget(char *path)
 			ibi=-1;
 		}
 	}
+	free(pathbuf);
 	return ibi;
 }
 
