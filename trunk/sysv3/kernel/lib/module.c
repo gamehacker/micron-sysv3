@@ -5,6 +5,7 @@
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
 #include <module.h>
+#include <device.h>
 
 /* init and exit symbol table location */
 extern int inittab;
@@ -22,6 +23,7 @@ int (*mod_hdl)();
 int modinit()
 {
 	int i;
+	/* Initialize each compiled modules */
 	for(i=0; (inittabp[i]!=0) && (&inittabp[i]<&inittab_end); i++) {
 		mod_hdl = (int(*)()) inittabp[i];
 		mod_hdl();

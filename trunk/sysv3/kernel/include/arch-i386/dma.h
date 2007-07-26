@@ -7,18 +7,39 @@
 #ifndef __MICRON_KERNEL_DMA_H__
 #define __MICRON_KERNEL_DMA_H__
 
-enum i386_dma_mode
-{
-	SINGLE,
-	BLOCK,
-	DEMAND,
-	CASCADE
-};
+/* Values used with i386_dma1_init */
+#define D1_M2MX_ENABLE  0x01		/* Memory to memory enable */
+					/*   else disable */
+#define D1_C0AH_ENABLE  0x02		/* Channel 0 address hold enable */
+					/*   else disable */
+#define D1_DMAC_DISABLE 0x04		/* Controller disable */
+					/*   else enable */
+#define D1_CMPT_ENABLE  0x08		/* Compressed timing enable */
+					/*   else disable */
+#define D1_PRIO_ROTATE  0x10		/* Rotating priority */
+					/*   else fixed prio */
+#define D1_EXTW_SELECT  0x20		/* Extended write selection */
+					/*   else late write selection */
+#define D1_DREQ_LOW     0x40		/* DREQ sense active low */
+					/*   else active high */
+#define D1_DACK_HIGH    0x80		/* DACK sense active high */
+					/*   else active low */
 
-extern void i386_dma_read(unsigned channel);
-extern void i386_dma_write(unsigned channel);
-extern void i386_dma_pause();
-extern void i386_dma_resume();
+/* Values used with i386_dma1_read_write */
+#define D1_AUTOINIT 0x01		/* Autoinitialization enable */
+					/*   else disable */
+#define D1_INCR     0x02		/* Address increment select */
+					/*   else decrement */
+#define D1_DEMAND   0x00		/* Demand mode */
+#define D1_SINGLE   0x40		/* Single mode */
+#define D1_BLOCK    0x80		/* Block mode */
+#define D1_CASCADE  0xC0		/* Cascade mode */
+
+extern void i386_dma1_init (unsigned mode);
+extern void i386_dma1_stat (char *stat, unsigned int *buf);
+extern int  i386_dma1_read (unsigned channel, unsigned mode);
+extern int  i386_dma1_write(unsigned channel, unsigned mode);
+extern int  i386_dma1_close(unsigned channel);
 
 #endif
 

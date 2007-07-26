@@ -5,9 +5,15 @@
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
 #include <device.h>
+#include <libc.h>
 
 /* Various device mount points */
 struct ChrDev ChrDev[NCHRDEVS];
+
+void DeviceInit()
+{
+	memset(&ChrDev, 0, sizeof(struct ChrDev)*NCHRDEVS);
+}
 
 int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 {
@@ -33,7 +39,7 @@ int DeviceClose(enum DevType type, id_t dID)
 	case CHRDEV:
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(ChrDev[MAJOR(dID)].open == 0 &&
+		if(ChrDev[MAJOR(dID)].open == 0 ||
 		   ChrDev[MAJOR(dID)].close== 0) {
 			return ENODEV;
 		} else {
@@ -53,7 +59,7 @@ int DeviceRead (enum DevType type, id_t dID, char *buf, size_t cnt)
 	case CHRDEV:
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(ChrDev[MAJOR(dID)].open == 0 &&
+		if(ChrDev[MAJOR(dID)].open == 0 ||
 		   ChrDev[MAJOR(dID)].read == 0) {
 			return ENODEV;
 		} else {
@@ -73,7 +79,7 @@ int DeviceWrite(enum DevType type, id_t dID, char *buf, size_t cnt)
 	case CHRDEV:
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(ChrDev[MAJOR(dID)].open == 0 &&
+		if(ChrDev[MAJOR(dID)].open == 0 ||
 		   ChrDev[MAJOR(dID)].write== 0) {
 			return ENODEV;
 		} else {
@@ -93,7 +99,7 @@ int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
 	case CHRDEV:
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(ChrDev[MAJOR(dID)].open == 0 &&
+		if(ChrDev[MAJOR(dID)].open == 0 ||
 		   ChrDev[MAJOR(dID)].ioctl== 0) {
 			return ENODEV;
 		} else {
