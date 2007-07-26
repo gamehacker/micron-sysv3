@@ -12,7 +12,6 @@ all:
 	@make --no-print-directory -C mkmfs
 	@mkmfs/mkmfs.exe -v -r rootfs -f mfs \
 	        -b kernel/boot -k kernel/micron -o micron.img
-	@chmod +rwx micron.img
 
 run:
 	@start bochs -q -f scripts/run.bxrc
