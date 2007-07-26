@@ -17,12 +17,16 @@ SECTIONS
 	{
 		code = . ;
 		*(.text)
+		*(.rodata.str1.1)
+		*(.rodata.str1.4)
+		*(.rodata.*)
 		. = ALIGN(page_size);
 	}
 	.data : AT(kernel_begin + (data - code))
 	{
 		data = . ;
 		*(.data)
+		*(.rodata)
 		. = ALIGN(page_size);
 	}
 	.inittab : AT(kernel_begin + (inittab - code))
@@ -56,8 +60,8 @@ SECTIONS
 	{
 		stack_end = . ;
 		stack = stack_end + stack_size;
-		. = ALIGN(page_size);
 	}
+	. = ALIGN(page_size);
 	kernel_end = . ;
 }
 

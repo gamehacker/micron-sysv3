@@ -169,7 +169,7 @@ void rlt_clk_handler(struct isr_regs* regs)
 }
 int tty_init()
 {
-	tty_dev = DeviceAlloc(CHRDEV);
+	tty_dev = &ChrDev[0];
 	if(tty_dev == (struct ChrDev*)ENODEV) {
 		return -1;	// Initialization Failure
 	}
@@ -195,7 +195,7 @@ int tty_init()
 
 	kprintf("TTY Driver V1.0 Initialized Successfully\n");
 	i386_irq_install(0,timer_handler);
-    i386_irq_install(1,key_handler);
+	i386_irq_install(1,key_handler);
 	i386_irq_install(7,rlt_clk_handler);
 	return 0;
 }

@@ -27,8 +27,10 @@ enum DevType
 #define MAJOR(dID)		(dID>>16)&0xffff
 #define MINOR(dID)		dID&0xffff
 
+/* Device descriptor holder */
+struct ChrDev ChrDev[NCHRDEVS];
+
 /* Device operation method function interface */
-extern void *DeviceAlloc(enum DevType type);
 extern int   DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode);
 extern int   DeviceClose(enum DevType type, id_t dID);
 extern int   DeviceRead (enum DevType type, id_t dID, char *buf, size_t cnt);

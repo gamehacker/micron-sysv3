@@ -6,12 +6,10 @@
 ###############################################################################
 
 # Toolchain Flags
-CCFLAGS=-g -Wall
-CXXFLAGS=-g -Wall
+CCFLAGS=-Wall -O2
 
 # Toolchain Configuration
 CC=gcc $(CCFLAGS)
-CXX=c++ $(CXXFLAGS)
 
 # Objective Destinations
 OBJECTS=main.o mfs.o
@@ -26,8 +24,5 @@ clean:
 # Standard Procedures
 .c.o:
 	@echo "[HOSTCC] $@"; $(CC) -c -o $@ $<
-
-.cc.o:
-	@echo "[HOSTCXX] $@"; $(CXX) -c -o $@ $<
 
 
