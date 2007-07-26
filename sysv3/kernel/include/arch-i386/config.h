@@ -17,6 +17,8 @@
 #define NESYMLEN	20	// Maximum export symbol name length
 
 extern unsigned arch_memsize;	/* architecture memory size */
+extern void arch_disablei();	/* disable all interrupts */
+extern void arch_enablei();	/* enable all interrupts */
 
 #endif
 

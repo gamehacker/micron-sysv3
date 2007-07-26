@@ -7,3 +7,13 @@
 
 unsigned arch_memsize;		/* architecture memory size */
 
+void arch_disablei()
+{
+	__asm__ __volatile__("cli");
+}
+
+void arch_enablei()
+{
+	__asm__ __volatile__("sti");
+}
+
