@@ -11,7 +11,8 @@
 
 extern char *itoa(int value, char *str, int radix);
 extern int strlen(char *str);
-extern char *memcpy(char *dest, char *src, size_t cnt);
+extern void *memcpy(char *dest, char *src, size_t cnt);
+extern void *memset(void *dest, int ch, size_t cnt);
 extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 
 /* debug functions */
@@ -22,7 +23,7 @@ extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 			kprintf("\n%C", 0x0F); \
 			while(1); \
 		}
-#define DEBUG(data)      kprintf("%CDEBUG:%s= %d\n%C",0x0C,#data,data,0x0F);
+#define DEBUG(data)      kprintf("%CDEBUG:%s= %d\n%C",0x0A,#data,data,0x0F);
 
 #endif
 

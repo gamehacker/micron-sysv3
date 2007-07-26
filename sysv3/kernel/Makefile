@@ -11,7 +11,7 @@ CROSS=i686-elf-
 
 # Compile Flags
 ASFLAGS=-g
-CCFLAGS=-Wall -g -Iinclude
+CCFLAGS=-Wall -g -Iinclude -nostdlib -nostdinc -fno-builtin
 CXXFLAGS=$(CCFLAGS)
 
 # Toolchain Configuration
