@@ -63,7 +63,7 @@ struct mfs_superblk {
 // MFS Inode structure
 struct mfs_inode {
 	// Identifiers
-	mfs_u8  i_name[MFS_NAMELEN];	// File name
+	mfs_s8  i_name[MFS_NAMELEN];	// File name
 	mfs_u16 i_mode;			// Inode mode
 	mfs_u16 i_nlinks;		// Number of linked files
 	mfs_u32 i_sn;			// Inode serial number

@@ -20,7 +20,8 @@
 #include <device.h>
 #include <io.h>
 #include <libc.h>
-
+#include <irq.h>
+#include<libc.h>
 struct ChrDev *tty_dev;
 
 struct tty_disp
@@ -154,7 +155,18 @@ int tty_close(id_t id)
 {
 	return 0;
 }
-
+void timer_handler(struct isr_regs* regs)
+{
+	
+}
+void key_handler(struct isr_regs* regs)
+{
+	  DEBUG(1);
+}
+void rlt_clk_handler(struct isr_regs* regs)
+{
+	 
+}
 int tty_init()
 {
 	tty_dev = DeviceAlloc(CHRDEV);
@@ -182,6 +194,9 @@ int tty_init()
 	tty_ioctl(0, 3, 0);
 
 	kprintf("TTY Driver V1.0 Initialized Successfully\n");
+	i386_irq_install(0,timer_handler);
+    i386_irq_install(1,key_handler);
+	i386_irq_install(7,rlt_clk_handler);
 	return 0;
 }
 

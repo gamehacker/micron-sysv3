@@ -28,6 +28,7 @@ OBJECTS+=arch/i386/init/init.o \
 	 arch/i386/cpu/clock.o \
 	 arch/i386/cpu/gdt.o \
 	 arch/i386/cpu/mmu.o \
+	 arch/i386/cpu/dma.o \
 	 arch/i386/cpu/tss.o \
 	 arch/i386/cpu/io.o \
 	 driver/chrdev/tty.o		# Add PC tty driver

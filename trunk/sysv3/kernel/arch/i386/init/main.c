@@ -9,7 +9,7 @@
 
 void kmain()
 {
-	kprintf("System Memory: %d\n", arch_memsize);
+	kprintf("System Memory: %d KB\n", arch_memsize/1024);
 	asm("sti");
 }
 

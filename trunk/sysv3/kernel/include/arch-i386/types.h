@@ -12,15 +12,23 @@
  * be different from architecture to architecture, and can be modified by porter
  */
 
+/* portable basic data types */
+typedef unsigned int   u32_t;
+typedef unsigned short u16_t;
+typedef unsigned char  u8_t;
+typedef int            s32_t;
+typedef short          s16_t;
+typedef char           s8_t;
+
 /* IDs */
-typedef unsigned int	id_t;		// General identifier 
-typedef unsigned short	dev_t;		// Used for device IDs
+typedef unsigned int   id_t;		// General identifier 
+typedef unsigned short dev_t;		// Used for device IDs
 
 /* Sizes */
-typedef unsigned int	size_t;		// Counter for sizes
+typedef unsigned int   size_t;		// Counter for sizes
 
 /* File attribute */
-typedef unsigned short	mode_t;		// File attributes
+typedef unsigned short mode_t;		// File attributes
 
 #endif
 
