@@ -12,7 +12,7 @@ CROSS=i686-elf-
 # Compile Flags
 ASFLAGS=-g
 CCFLAGS=-Wall -g -Iinclude
-CXXFLAGS=-Wall -g -Iinclude
+CXXFLAGS=$(CCFLAGS)
 
 # Toolchain Configuration
 AS=$(CROSS)as  $(ASFLAGS)

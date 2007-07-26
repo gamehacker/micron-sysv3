@@ -18,15 +18,18 @@ void i386_mem_size()
 		tp  = (unsigned*)memsize;
 		tmp = *tp;
 		*tp = 0x55AA55AA;
+		asm("":::"memory");
 		if(*tp != 0x55AA55AA) {
 			break;
 		} else {
 			*tp = 0xAA55AA55;
+			asm("":::"memory");
 			if(*tp != 0xAA55AA55) {
 				break;
 			}
 		}
 		*tp = tmp;
+		asm("":::"memory");
 		memsize+= 0x1000;
 	} while(memsize < 0xFFFFFFFF);
 

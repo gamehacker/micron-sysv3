@@ -4,30 +4,10 @@
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
-#include <types.h>
 #include <device.h>
-#include <errno.h>
 
 /* Various device mount points */
 struct ChrDev ChrDev[NCHRDEVS];
-
-void *DeviceAlloc(enum DevType type)
-{
-	int i;
-	for(i=0; i<NCHRDEVS; i++) { switch(type) {
-	case CHRDEV:
-		// Still, we take open method as the sign of being used
-		if(!ChrDev[i].open) {
-			ChrDev[i].major = i;
-			return &ChrDev[i];
-		}
-		break;
-	default:
-		return (void*)ENODEV;
-		break;
-	}}
-	return (void*)ENODEV;	/* Actually it's out of devices */
-}
 
 int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 {

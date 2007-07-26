@@ -21,10 +21,10 @@ struct i386_page
 	unsigned addr:20;
 }__attribute__((packed));
 
-struct i386_page i386_page[1024] __attribute__((aligned (0x1000)));
+//struct i386_page i386_page[1024] __attribute__((aligned (0x1000)));
 
 void i386_page_init()
 {
-	PANIC((unsigned)i386_page%0x1000, "I386:cpu/mmu.c");
+//	PANIC((unsigned)i386_page%0x1000, "I386:cpu/mmu.c");
 }
 
