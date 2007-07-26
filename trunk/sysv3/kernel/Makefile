@@ -11,15 +11,15 @@ CROSS=i686-elf-
 
 # Compile Flags
 ASFLAGS=-g
-CCFLAGS=-Wall -g -Iinclude -nostdlib -nostdinc -fno-builtin
+CCFLAGS=-g -Wall -fno-strict-aliasing -Iinclude -fno-builtin
 CXXFLAGS=$(CCFLAGS)
 
 # Toolchain Configuration
-AS=$(CROSS)as  $(ASFLAGS)
-CC=$(CROSS)gcc $(CCFLAGS)
+AS= $(CROSS)as  $(ASFLAGS)
+CC= $(CROSS)gcc $(CCFLAGS)
 CXX=$(CROSS)c++ $(CXXFLAGS)
-LD=$(CROSS)ld  $(LDFLAGS)
-OC=$(CROSS)objcopy
+LD= $(CROSS)ld  $(LDFLAGS)
+OC= $(CROSS)objcopy
 
 # Include Target Platform Makefile
 include arch/$(ARCH)/Makefile

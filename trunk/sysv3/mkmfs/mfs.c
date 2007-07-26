@@ -130,7 +130,7 @@ int mfs_end(char *outname)
 
 	// Create the output file
 	printf("Creating image file: %s\n", outname);
-	out = open(outname, O_TRUNC|O_BINARY|O_RDWR|O_CREAT, S_IRWXU);
+	out = open(outname, O_TRUNC|O_BINARY|O_WRONLY|O_CREAT, 0777);
 	
 	// Write the blocks
 	lseek(out, 0, SEEK_SET);
