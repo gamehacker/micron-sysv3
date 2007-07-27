@@ -25,13 +25,13 @@
 #define		S_IROTH	0x0100	// Read permission, others
 #define		S_IWOTH	0x0200	// Write permission, others
 #define		S_IXOTH	0x0400	// Execute/search permission, others
-#define	S_IFMT		0xF000	//Type of file. 
-#define		S_IFBLK	0x1000	//Block special. 
-#define		S_IFCHR	0x2000	//Character special. 
-#define		S_IFIFO	0x3000	//FIFO special. 
-#define		S_IFREG	0x4000	//Regular. 
-#define		S_IFDIR	0x5000	//Directory. 
-#define		S_IFLNK	0x6000	//Symbolic link. 
+#define	S_IFMT		0xF000	// Type of file. 
+#define		S_IFIFO	0x1000	// FIFO special. 
+#define		S_IFCHR	0x2000	// Character special. 
+#define		S_IFBLK	0x3000	// Block special. 
+#define		S_IFDIR	0x4000	// Directory. 
+#define		S_IFLNK	0x6000	// Symbolic link. 
+#define		S_IFREG	0x8000	// Regular. 
 #endif
 
 // MFS Data Type Definitions (currently i386)

@@ -88,13 +88,13 @@ void tty_scroll(int id)
 }
 
 // Keyboard input
-int tty_read(id_t id, char *buf, size_t cnt)
+int tty_read(id_t id, char *buf, off_t cnt)
 {
 	return 0;
 }
 
 // Screen output
-int tty_write(id_t id, char *buf, size_t cnt)
+int tty_write(id_t id, char *buf, off_t cnt)
 {
 	/* get target display struct */
 	struct tty_disp *disp = &tty_disp[MINOR(id)];
@@ -172,6 +172,7 @@ int tty_close(id_t id)
 {
 	return 0;
 }
+
 void timer_handler(struct isr_regs* regs)
 {
 	

@@ -11,7 +11,7 @@
 
 extern char *itoa(int value, char *str, int radix);
 extern int strlen(char *str);
-extern void *memcpy(char *dest, char *src, size_t cnt);
+extern void *memcpy(void *dest, void *src, size_t cnt);
 extern void *memset(void *dest, int ch, size_t cnt);
 extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 

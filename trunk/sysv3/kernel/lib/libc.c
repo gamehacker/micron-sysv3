@@ -44,10 +44,11 @@ int strlen(char *str)
 	return len;
 }
 
-void *memcpy(char *dest, char *src, size_t cnt)
+void *memcpy(void *dest, void *src, size_t cnt)
 {
+	char *bufd=dest, *bufs=src;
 	while(cnt--) {
-		*dest++ = *src++;
+		*bufd++ = *bufs++;
 	}
 	return dest;
 }

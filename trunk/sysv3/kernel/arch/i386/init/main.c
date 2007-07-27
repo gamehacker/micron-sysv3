@@ -10,6 +10,7 @@
 void kmain()
 {
 	kprintf("System Memory: %d KB\n", arch_memsize/1024);
+	kprintf("Micron System Version 3 Initialized Successfully\n");
 	asm("sti");
 }
 

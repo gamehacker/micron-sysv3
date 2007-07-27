@@ -16,8 +16,8 @@ struct ChrDev
 	dev_t major;
 	int (*open )(id_t id, int oflag, mode_t mode);
 	int (*close)(id_t id);
-	int (*read )(id_t id, char *buf, size_t cnt);
-	int (*write)(id_t id, char *buf, size_t cnt);
+	int (*read )(id_t id, char *buf, off_t cnt);
+	int (*write)(id_t id, char *buf, off_t cnt);
 	int (*ioctl)(id_t id, int cmd, int arg);
 };
 

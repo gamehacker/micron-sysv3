@@ -12,8 +12,8 @@
  * architecture to architecture, and should be changed here.
  */
 
-#define NCHRDEVS	256	// Maximum number of char devices
-#define NBLKDEVS	256	// Maximum number of block devices
+#define NCHRDEVS	16	// Maximum number of char devices
+#define NBLKDEVS	16	// Maximum number of block devices
 #define NESYMLEN	20	// Maximum export symbol name length
 
 extern unsigned arch_memsize;	/* architecture memory size */
