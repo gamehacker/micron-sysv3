@@ -21,11 +21,14 @@ typedef short          s16_t;
 typedef char           s8_t;
 
 /* IDs */
-typedef unsigned int   id_t;		// General identifier 
-typedef unsigned short dev_t;		// Used for device IDs
+typedef int            id_t;		// General identifier 
+typedef short          dev_t;		// Used for device IDs
 
 /* Sizes */
 typedef unsigned int   size_t;		// Counter for sizes
+typedef int            blkcnt_t;	// Block counter
+typedef int            blksize_t;	// Block size descriptor
+typedef int            off_t;		// file sizes
 
 /* File attribute */
 typedef unsigned short mode_t;		// File attributes

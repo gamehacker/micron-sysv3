@@ -9,10 +9,12 @@
 
 /* Various device mount points */
 struct ChrDev ChrDev[NCHRDEVS];
+struct BlkDev BlkDev[NBLKDEVS];
 
 void DeviceInit()
 {
 	memset(&ChrDev, 0, sizeof(struct ChrDev)*NCHRDEVS);
+	memset(&BlkDev, 0, sizeof(struct BlkDev)*NBLKDEVS);
 }
 
 int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
@@ -26,11 +28,16 @@ int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 			return ChrDev[MAJOR(dID)].open(dID, oflag, mode);
 		}
 		break;
-	default:
-		return ENODEV;
+	case BLKDEV:
+		// Check if device exists
+		if(BlkDev[MAJOR(dID)].open == 0) {
+			return ENODEV;
+		} else {
+			return BlkDev[MAJOR(dID)].open(dID, oflag, mode);
+		}
 		break;
 	}
-	return ENODEV;	/* We will never come here */
+	return ENODEV;
 }
 
 int DeviceClose(enum DevType type, id_t dID)
@@ -46,14 +53,21 @@ int DeviceClose(enum DevType type, id_t dID)
 			return ChrDev[MAJOR(dID)].close(dID);
 		}
 		break;
-	default:
-		return ENODEV;
+	case BLKDEV:
+		// Check if device exists, open operation is always checked
+		// as the existence of device entry
+		if(BlkDev[MAJOR(dID)].open == 0 ||
+		   BlkDev[MAJOR(dID)].close== 0) {
+			return ENODEV;
+		} else {
+			return BlkDev[MAJOR(dID)].close(dID);
+		}
 		break;
 	}
-	return ENODEV;	/* We will never come here */
+	return ENODEV;
 }
 
-int DeviceRead (enum DevType type, id_t dID, char *buf, size_t cnt)
+int DeviceRead (enum DevType type, id_t dID, char *buf, off_t cnt)
 {
 	switch(type) {
 	case CHRDEV:
@@ -66,14 +80,13 @@ int DeviceRead (enum DevType type, id_t dID, char *buf, size_t cnt)
 			return ChrDev[MAJOR(dID)].read(dID, buf, cnt);
 		}
 		break;
-	default:
-		return ENODEV;
+	case BLKDEV:
 		break;
 	}
-	return ENODEV;	/* We will never come here */
+	return ENODEV;
 }
 
-int DeviceWrite(enum DevType type, id_t dID, char *buf, size_t cnt)
+int DeviceWrite(enum DevType type, id_t dID, char *buf, off_t cnt)
 {
 	switch(type) {
 	case CHRDEV:
@@ -86,11 +99,30 @@ int DeviceWrite(enum DevType type, id_t dID, char *buf, size_t cnt)
 			return ChrDev[MAJOR(dID)].write(dID, buf, cnt);
 		}
 		break;
-	default:
-		return ENODEV;
+	case BLKDEV:
 		break;
 	}
-	return ENODEV;	/* We will never come here */
+	return ENODEV;
+}
+
+int DeviceRdwr (enum DevType type, id_t dID, mode_t mode, char *buf, 
+		blkcnt_t sectors)
+{
+	switch(type) {
+	case CHRDEV:
+		break;
+	case BLKDEV:
+		// Check if device exists, open operation is always checked
+		// as the existence of device entry
+		if(BlkDev[MAJOR(dID)].open == 0 ||
+		   BlkDev[MAJOR(dID)].rdwr == 0) {
+			return ENODEV;
+		} else {
+			return BlkDev[MAJOR(dID)].rdwr(dID, mode, buf, sectors);
+		}
+		break;
+	}
+	return ENODEV;
 }
 
 int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
@@ -106,10 +138,17 @@ int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
 			return ChrDev[MAJOR(dID)].ioctl(dID, cmd, arg);
 		}
 		break;
-	default:
-		return ENODEV;
+	case BLKDEV:
+		// Check if device exists, open operation is always checked
+		// as the existence of device entry
+		if(BlkDev[MAJOR(dID)].open == 0 ||
+		   BlkDev[MAJOR(dID)].ioctl== 0) {
+			return ENODEV;
+		} else {
+			return BlkDev[MAJOR(dID)].ioctl(dID, cmd, arg);
+		}
 		break;
 	}
-	return ENODEV;	/* We will never come here */
+	return ENODEV;
 }
 
