@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Micron System V3 - I386 Driver - Console
+ * Micron System V3 - Device Driver - I386 - TTY
  * Copyright (C) 2007, Micron System Team
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
@@ -278,7 +278,7 @@ int tty_init()
 {
 	
 	
-	tty_dev = &ChrDev[0];
+	tty_dev = &ChrDev[CHR_TTY];
 	if(tty_dev == (struct ChrDev*)ENODEV) {
 		return -1;	// Initialization Failure
 	}
@@ -304,7 +304,7 @@ int tty_init()
 
 	kprintf("TTY Driver V1.0 Initialized Successfully\n");
 	i386_irq_install(0,timer_handler);
-    i386_irq_install(1,tty_key_handler);
+	i386_irq_install(1,tty_key_handler);
 	i386_irq_install(7,rlt_clk_handler);
 	tty_kbd_init();
 	return 0;
@@ -312,7 +312,7 @@ int tty_init()
 
 int tty_exit()
 {
-	if(tty_dev == (struct ChrDev*)ENODEV)
+	if(tty_dev == 0)
 		return -1;	// Device not installed
 	tty_dev->open = 0;
 	tty_dev->close= 0;
