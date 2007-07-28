@@ -5,6 +5,11 @@
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT
  *****************************************************************************/
 #include <io.h>
+#include <irq.h>
+
+void i386_rtc_intr(struct isr_regs *regs)
+{
+}
 
 void i386_rtc_freq(unsigned freq)
 {
@@ -17,5 +22,8 @@ void i386_rtc_freq(unsigned freq)
 void i386_rtc_init()
 {
 	i386_rtc_freq(1000);
+	i386_irq_install(0, i386_rtc_intr);
+	// TODO: REMOVE THIS !!!
+	i386_irq_install(7, i386_rtc_intr);
 }
 

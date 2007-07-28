@@ -29,19 +29,12 @@ SECTIONS
 		*(.rodata)
 		. = ALIGN(page_size);
 	}
-	.inittab : AT(kernel_begin + (inittab - code))
+	.modtab : AT(kernel_begin + (modtab - code))
 	{
-		inittab = . ;
-		*(.inittab)
+		modtab = . ;
+		*(.modtab)
 		. = ALIGN(page_size);
-		inittab_end = . ;
-	}
-	.exittab : AT(kernel_begin + (exittab - code))
-	{
-		exittab = . ;
-		*(.exittab)
-		. = ALIGN(page_size);
-		exittab_end = . ;
+		modtab_end = . ;
 	}
 	.exporttab : AT(kernel_begin + (exporttab - code))
 	{

@@ -25,6 +25,8 @@ extern void arch_enablei();	/* enable all interrupts */
 #define NCHRDEVS	16	// Maximum number of char devices
 #define NBLKDEVS	16	// Maximum number of block devices
 #define NESYMLEN	20	// Maximum export symbol name length
+#define NMIDSLEN	8	// Maximum module ID string length
+#define NMDESLEN	20	// Maximum module description string length
 
 /*
  * Various device major device IDs

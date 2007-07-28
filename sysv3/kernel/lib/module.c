@@ -6,38 +6,52 @@
  *****************************************************************************/
 #include <module.h>
 #include <device.h>
+#include <libc.h>
 
 /* init and exit symbol table location */
-extern int inittab;
-extern int inittab_end;
-extern int exittab;
-extern int exittab_end;
+extern struct modtab modtab;
+extern struct modtab modtab_end;
 
 /* init and exit symbol table */
-int *inittabp = &inittab;
-int *exittabp = &exittab;
+struct modtab *modtabp = &modtab;
 
 /* The function pointer for invokations */
-int (*mod_hdl)();
+int (*modhdl)();
 
 int modinit()
 {
-	int i;
+	int i=0;
+
 	/* Initialize each compiled modules */
-	for(i=0; (inittabp[i]!=0) && (&inittabp[i]<&inittab_end); i++) {
-		mod_hdl = (int(*)()) inittabp[i];
-		mod_hdl();
+	while((modtabp[i].init!=0) && (&modtabp[i]<&modtab_end)) {
+		modhdl = modtabp[i].init;
+		kprintf("%C[MODULE]%C:", 0x0B, 0x0F);
+		kprintf("%s Initializing...%X", modtabp[i].desc, 68);
+		if(modhdl() == 0) {
+			kprintf("%C[SUCCESS]%C\n", 0x0A, 0x0F);
+		} else {
+			kprintf("%C[FAILURE]%C\n", 0x0C, 0x0F);
+			modhdl = modtabp[i].exit;
+			kprintf("%C[MODULE]%C:", 0x0B, 0x0F);
+			kprintf("%s Unitialized...%X", modtabp[i].desc, 68);
+			if(modhdl() == 0) {
+				kprintf("%C[SUCCESS]%C\n", 0x0A, 0x0F);
+			} else {
+				kprintf("%C[FAILURE]%C\n", 0x0C, 0x0F);
+			}
+		}
+		i++;
 	}
 	return 0;
 }
 
-int modexit()
+int modstart()
 {
-	int i;
-	for(i=0; (exittabp[i]!=0) && (&exittabp[i]<&exittab_end); i++) {
-		mod_hdl = (int(*)()) exittabp[i];
-		mod_hdl();
-	}
+	return 0;
+}
+
+int modkill()
+{
 	return 0;
 }
 
