@@ -3,9 +3,19 @@
  * Copyright (C) 2007, Micron System Team
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
+ *****************************************************************************
+ * Note to architecture porters:
+ *   This file contains the critical section of code which describes a new
+ * micron architecture.
  *****************************************************************************/
 #ifndef __MICRON_KERNEL_CONFIG_H__
 #define __MICRON_KERNEL_CONFIG_H__
+
+/* All architecture should implement the following function */
+
+extern unsigned arch_memsize;	/* architecture memory size */
+extern void arch_disablei();	/* disable all interrupts */
+extern void arch_enablei();	/* enable all interrupts */
 
 /*
  * This file contains the limits of micron kernel, may be different from
@@ -26,9 +36,9 @@
 /* Block devices */
 #define BLK_HDD		0
 
-extern unsigned arch_memsize;	/* architecture memory size */
-extern void arch_disablei();	/* disable all interrupts */
-extern void arch_enablei();	/* enable all interrupts */
+/*
+ * Device driver I/O base definitions
+ */
 
 #endif
 
