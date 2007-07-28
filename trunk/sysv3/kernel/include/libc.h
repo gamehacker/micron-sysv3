@@ -18,7 +18,7 @@ extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 /* debug functions */
 #define PANIC(cond, str...) \
 		if(cond) {\
-			kprintf("%CPANIC: %s: ", 0x0C, #cond); \
+			kprintf("%CPANIC: %s:%d: ", 0x0C, __FILE__, __LINE__); \
 			kprintf(str); \
 			kprintf("\n%C", 0x0F); \
 			while(1); \
