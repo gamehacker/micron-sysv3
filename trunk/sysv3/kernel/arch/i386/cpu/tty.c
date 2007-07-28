@@ -13,15 +13,18 @@
  *   1		page index	display page n
  *   2		color		set display color
  *   3		any		clear screen
+ *   4		X value		set X
+ *   5		Y value		set Y
  *****************************************************************************/
 #include <device.h>
 #include <io.h>
 #include <libc.h>
 #include <irq.h>
-#include<libc.h>
 
 /* Device descriptor */
-struct ChrDev *tty_dev;
+struct ChrDev *tty_dev = &ChrDev[CHR_TTY];
+
+/************************** TTY Driver Begin *********************************/
 
 struct tty_disp
 {
@@ -33,23 +36,6 @@ struct tty_disp
 	unsigned pos_y;		/* y position */
 }tty_disp[8];
 
-#define BUF_SIZE  4
-//special key 
-#define CAPS_KEY 58
-#define INSERT_KEY 82
-#define SCROLL_KEY 70
-#define NUM_KEY 71
-#define STAT_KEY_SIZE 4
-//save sepcail key status,
-//if current key's values is 1 ,the key is downa,0 respent up
-unsigned char tty_spec_key_stat[STAT_KEY_SIZE];
-//buf is used to save keyboard value
-struct tty_queue {
-  long head;
-  long tail;
-  char buf[BUF_SIZE];
-};
-struct tty_queue tty_kbd_buf;
 void tty_setpage(int index)
 {
 	unsigned page = index * tty_disp[index].max_x * tty_disp[index].max_y;
@@ -86,15 +72,10 @@ void tty_scroll(int id)
 	}
 }
 
-// Keyboard input
-int tty_read(id_t id, char *buf, off_t cnt)
-{
-	return 0;
-}
-
 // Screen output
 int tty_write(id_t id, char *buf, off_t cnt)
 {
+	unsigned temp;
 	/* get target display struct */
 	struct tty_disp *disp = &tty_disp[MINOR(id)];
 	
@@ -115,7 +96,8 @@ int tty_write(id_t id, char *buf, off_t cnt)
 		buf++;
 		break;
 	case '\t':
-		disp->pos_x = ((disp->pos_x/8) + (disp->pos_x%8)?1:0)*8;
+		temp = disp->pos_x;
+		disp->pos_x = (temp/8 + 1)*8;
 		buf++;
 		break;
 	default:
@@ -140,23 +122,88 @@ int tty_write(id_t id, char *buf, off_t cnt)
 	return 0;
 }
 
+/*************************** BEGIN OF KEYBOARD DEV ***************************/
+
+#define BUF_SIZE 16
+
+struct tty_queue {
+	long head;
+	long tail;
+	char buf[BUF_SIZE];
+	char map[BUF_SIZE];
+}tty_kbd_buf = {0, 0};
+
+void tty_kbd_buf_push(unsigned char scan_code)
+{
+	MSG(tty_kbd_buf.map[tty_kbd_buf.head]==0x55, "kbd buffer overflow\n");
+	if(tty_kbd_buf.map[tty_kbd_buf.head]==0) {
+		tty_kbd_buf.buf[tty_kbd_buf.head] = scan_code;
+		tty_kbd_buf.map[tty_kbd_buf.head] = 0x55;
+		if(tty_kbd_buf.head > 0) {
+			tty_kbd_buf.head--;
+		} else {
+			tty_kbd_buf.head = BUF_SIZE -1;
+		}	
+	}
+}
+
+unsigned char tty_kbd_buf_pop()
+{
+	unsigned char kbd_res;
+	MSG(tty_kbd_buf.map[tty_kbd_buf.tail] == 0, "reading empty buffer\n");
+	if(tty_kbd_buf.map[tty_kbd_buf.tail] == 0x55) {
+		tty_kbd_buf.map[tty_kbd_buf.tail] = 0;
+		kbd_res = tty_kbd_buf.buf[tty_kbd_buf.tail];
+		if(tty_kbd_buf.tail > 0) {
+			tty_kbd_buf.tail --;
+		} else {
+			tty_kbd_buf.tail = BUF_SIZE - 1;
+		}
+		return kbd_res;
+	}
+	return 0;
+}
+
+void tty_intr(struct isr_regs *regs)
+{
+	MSG((inport(0x64) & 0x01) != 0x01, "Buffer not full\n");
+	tty_kbd_buf_push(inport(0x60));
+	kprintf("<%x>\n", tty_kbd_buf_pop());
+	MSG((inport(0x64) & 0x01) != 0x00, "Buffer not empty after read\n");
+}
+
+// Keyboard input
+int tty_read(id_t id, char *buf, off_t cnt)
+{
+	buf[0] = tty_kbd_buf_pop();
+	return 0;
+}
+
+/*************************** Begin of Common Interface ***********************/
+
 int tty_ioctl(id_t id, int cmd, int arg)
 {
 	int i;
-	unsigned short *p = tty_disp[MINOR(id)].buf;
+	struct tty_disp *tty = &tty_disp[MINOR(id)];
 	switch(cmd) {
 	case 1:				/* change current display page */
 		tty_setpage(arg);
 		break;
 	case 2:
-		tty_disp[MINOR(id)].color = arg;
+		tty->color = arg;
 		break;
 	case 3:
 		for(i=0; 
-		    i<tty_disp[MINOR(id)].max_x * tty_disp[MINOR(id)].max_y;
+		    i<tty->max_x * tty->max_y;
 		    i++) {
-		   p[i] = ' '|0x0f00;
+		   tty->buf[i] = ' '|0x0f00;
 		}
+		break;
+	case 4:
+		tty->pos_x = arg;
+		break;
+	case 5:
+		tty->pos_y = arg;
 		break;
 	}
 	return 0;
@@ -172,120 +219,16 @@ int tty_close(id_t id)
 	return 0;
 }
 
-void timer_handler(struct isr_regs* regs)
+int i386_tty_init()
 {
-	
-}
-//set head =tail=BUF_SIZE-1 and clean kdb buff
-void tty_kbd_init()
-{
-  int i;
-  tty_kbd_buf.head=BUF_SIZE-1;
-  tty_kbd_buf.tail=tty_kbd_buf.head;
-  for(i=0;i<BUF_SIZE;i++)//clean kbd buff
-	   tty_kbd_buf.buf[i]=0; 
-  for(i=0;i<STAT_KEY_SIZE;i++)
-       tty_spec_key_stat[i]=0;
-}
-void tty_kbd_buff_push( unsigned char scan_code)
-{
-  
-  if (tty_kbd_buf.buf[tty_kbd_buf.head]==0)
-	{
-	  tty_kbd_buf.buf[tty_kbd_buf.head]=scan_code;
-      if(tty_kbd_buf.head>0)
-	      tty_kbd_buf.head--;
-	  else
-		  tty_kbd_buf.head=BUF_SIZE-1;
-	}
- 
-	
-}
-/* purpose:
-   the function will pop one element.
-   if return value is 0,it respent that buff is empty.
-   write by liubo 
-   write date: 2007-07-25
-*/
-unsigned char tty_kbd_buff_pop()
-{
-  unsigned char kbd_res=0;
-  if (tty_kbd_buf.buf[tty_kbd_buf.tail]>0)
-	{
-      kbd_res=tty_kbd_buf.buf[tty_kbd_buf.tail];
-	  tty_kbd_buf.buf[tty_kbd_buf.tail]=0;//release one buffer
-	  if(tty_kbd_buf.tail>0)
-	      tty_kbd_buf.tail--;
-	  else//it reach buffer's head
-		  tty_kbd_buf.tail=BUF_SIZE-1;
-	}
-   return kbd_res;
-}
-void tty_kbd_key_press(void)
-{
- while (inport(0x64) & 0x01);
- outport(0x60, 0xed);
- outport(0x60, 0x02); 
- return ;
-}
-void tty_key_handler(struct isr_regs* regs)
-{
-   unsigned char code ;//used to save keyboard's scan code
-   //tty_kbd_key_press();
-   code=inport(0x60);//get keyboard's scan code
-   if(!(code&0x80))//key is down
-	{
-      if (code==28)//enter key
-      {
-         DEBUG(tty_kbd_buff_pop());//pop one element
-      }
-	  else
-		{
-		  
-		  switch(code)
-			  {
-                case CAPS_KEY:
-					tty_spec_key_stat[0]=!tty_spec_key_stat[0];
-				    break;
-                case INSERT_KEY:
-                    tty_spec_key_stat[1]=!tty_spec_key_stat[1];
-				    break;
-				case SCROLL_KEY:
-                    tty_spec_key_stat[2]=!tty_spec_key_stat[2];
-				   break;
-				case NUM_KEY://the key value is not exists in my laptop,please you define key value that base on your machine:)
-					tty_spec_key_stat[3]=!tty_spec_key_stat[3];
-				   break;
-                 default:
-				   DEBUG(code);
-                   tty_kbd_buff_push(code);//push one element
-				   break;
-		      }
-		}
-	}
-   else
-    {
-	   //key is up
-	}
-}
-
-void rlt_clk_handler(struct isr_regs* regs)
-{
-	 
-}
-int tty_init()
-{
-	
-	
-	tty_dev = &ChrDev[CHR_TTY];
-	if(tty_dev == (struct ChrDev*)ENODEV) {
-		return -1;	// Initialization Failure
-	}
+	/* Device handler initialization */
 	tty_dev->open = tty_open;
 	tty_dev->close= tty_close;
 	tty_dev->read = tty_read;
 	tty_dev->write= tty_write;
 	tty_dev->ioctl= tty_ioctl;
+
+	/* private initialization */
 	int i;
 	for(i=0; i<8; i++)
 	{
@@ -301,26 +244,11 @@ int tty_init()
 	/* clean screen get ready for use */
 	tty_ioctl(0, 3, 0);
 
-	kprintf("TTY Driver V1.0 Initialized Successfully\n");
-	i386_irq_install(0,timer_handler);
-	i386_irq_install(1,tty_key_handler);
-	i386_irq_install(7,rlt_clk_handler);
-	tty_kbd_init();
+	/* print test string */
+	tty_write(0, "TTY Display ready\n\n", 19);
+
+	/* install interrupt handler for keyboard */
+	i386_irq_install(1, tty_intr);
 	return 0;
 }
-
-int tty_exit()
-{
-	if(tty_dev == 0)
-		return -1;	// Device not installed
-	tty_dev->open = 0;
-	tty_dev->close= 0;
-	tty_dev->read = 0;
-	tty_dev->write= 0;
-	tty_dev->ioctl= 0;
-	return 0;
-}
-
-MODULE_INIT(tty_init);
-MODULE_EXIT(tty_exit);
 

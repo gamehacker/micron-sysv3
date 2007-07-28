@@ -11,19 +11,34 @@
 
 extern char *itoa(int value, char *str, int radix);
 extern int strlen(char *str);
+extern int strcmp(char *str1, char *str2);
 extern void *memcpy(void *dest, void *src, size_t cnt);
 extern void *memset(void *dest, int ch, size_t cnt);
 extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 
 /* debug functions */
 #define PANIC(cond, str...) \
-		if(cond) {\
-			kprintf("%CPANIC: %s:%d: ", 0x0C, __FILE__, __LINE__); \
-			kprintf(str); \
-			kprintf("\n%C", 0x0F); \
-			while(1); \
-		}
-#define DEBUG(data)      kprintf("%CDEBUG:%s= %d\n%C",0x0A,#data,data,0x0F);
+	if(cond) {\
+		kprintf("%CPANIC: %s:%d: ", 0x0C, __FILE__, __LINE__); \
+		kprintf(str); \
+		kprintf("\n%C", 0x0F); \
+		while(1); \
+	}
+
+#define MSG(cond, str...) \
+	if(cond) { \
+		kprintf("%CMESSAGE: %s:%d: ", 0x0A, __FILE__, __LINE__); \
+		kprintf(str); \
+		kprintf("\n%C", 0x0F); \
+	}
+
+#define DEBUG(data) \
+	kprintf("%CDEBUG:%s= %d\n%C",0x0A,#data,data,0x0F);
+
+#define SYSTEM(fmt, arg...) \
+	kprintf("%C[SYSTEM]%C:", 0x0A, 0x0F); \
+	kprintf(fmt, ##arg);
+
 
 #endif
 

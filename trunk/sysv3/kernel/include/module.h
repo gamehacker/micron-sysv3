@@ -7,14 +7,27 @@
 #ifndef __MICRON_KERNEL_MODULE_H__
 #define __MICRON_KERNEL_MODULE_H__
 
-/* Here are the module automatic init and exit macros */
-#define MODULE_INIT(sym) \
-	const int inittabc_##sym __attribute__((section(".inittab"))) \
-	= (int) sym;
+#include <config.h>
 
-#define MODULE_EXIT(sym) \
-	const int exittabc_##sym __attribute__((section(".exittab"))) \
-	= (int) sym;
+/* Here are the module automatic init and exit macros */
+#define REGISTER_MODULE(id, desc, init, exit) \
+	char mod_id_##id[NMIDSLEN] __attribute__((section(".modtab"))) \
+	= #id; \
+	char mod_desc_##id[NMDESLEN] __attribute__((section(".modtab"))) \
+	= desc; \
+	int mod_init_##id __attribute__((section(".modtab"))) \
+	= (int) init; \
+	int mod_exit_##id __attribute__((section(".modtab"))) \
+	= (int) exit;
+
+/* Accessing datatype */
+struct modtab
+{
+	char id[NMIDSLEN];
+	char desc[NMDESLEN];
+	int (*init)();
+	int (*exit)();
+};
 
 /* Module init and exit invokers */
 extern int modinit();

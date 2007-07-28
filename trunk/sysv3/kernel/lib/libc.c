@@ -45,6 +45,21 @@ int strlen(char *str)
 	return len;
 }
 
+int strcmp(char *str1, char *str2)
+{
+	int len1, len2;
+	len1 = strlen(str1);
+	len2 = strlen(str2);
+	if(len1 != len2) {
+		return -1;
+	} else {
+		while(len1--) if(*str1++ != *str2++) {
+				return -1;
+		}
+	}
+	return 0;
+}
+
 void *memcpy(void *dest, void *src, size_t cnt)
 {
 	char *bufd=dest, *bufs=src;
@@ -98,6 +113,14 @@ kprintf(char *fmt, ...)
 			break;
 		case 'C':
 			DeviceIoctl(CHRDEV, DEVID(CHR_TTY, 0), 2, 
+					(char)args[argi++]);
+			break;
+		case 'X':
+			DeviceIoctl(CHRDEV, DEVID(CHR_TTY, 0), 4, 
+					(char)args[argi++]);
+			break;
+		case 'Y':
+			DeviceIoctl(CHRDEV, DEVID(CHR_TTY, 0), 5, 
 					(char)args[argi++]);
 			break;
 		}
