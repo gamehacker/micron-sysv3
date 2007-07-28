@@ -1,16 +1,13 @@
 /*****************************************************************************
- * Micron System V3 - Device Driver - I386 - TTY
+ * Micron System V3 - I386 Specific - TTY
  * Copyright (C) 2007, Micron System Team
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************
  * Design Notes
- *     The tty device on PC architecture should hold 8 consoles, which can be
- *   switched to each other by the use of ioctl command. The driver should be
- *   capable of handling escapes including but not limited to:
+ *   To include this driver, the following macros in config.h must be defined:
+ *   CHR_TTY	-	TTY character device major ID
  *
- *     '\n', '\t', '\b', '\r'
- *     
  * Operation ioctl command list:
  *   cmd	arg		function
  *   1		page index	display page n
@@ -22,6 +19,8 @@
 #include <libc.h>
 #include <irq.h>
 #include<libc.h>
+
+/* Device descriptor */
 struct ChrDev *tty_dev;
 
 struct tty_disp
