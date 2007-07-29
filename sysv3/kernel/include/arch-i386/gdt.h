@@ -7,7 +7,7 @@
 #ifndef __MICRON_KERNEL_GDT_H__
 #define __MICRON_KERNEL_GDT_H__
 
-extern void i386_gdt_tss(unsigned tadd, unsigned size);
+extern void gdt_tss(unsigned tadd, unsigned size);
 
 #endif
 

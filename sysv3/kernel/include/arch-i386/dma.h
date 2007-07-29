@@ -7,7 +7,7 @@
 #ifndef __MICRON_KERNEL_DMA_H__
 #define __MICRON_KERNEL_DMA_H__
 
-/* Values used with i386_dma1_init */
+/* Values used with dma1_init */
 #define D1_M2MX_ENABLE  0x01		/* Memory to memory enable */
 					/*   else disable */
 #define D1_C0AH_ENABLE  0x02		/* Channel 0 address hold enable */
@@ -25,7 +25,7 @@
 #define D1_DACK_HIGH    0x80		/* DACK sense active high */
 					/*   else active low */
 
-/* Values used with i386_dma1_read_write */
+/* Values used with dma1_read_write */
 #define D1_AUTOINIT 0x10		/* Autoinitialization enable */
 					/*   else disable */
 #define D1_INCR     0x20		/* Address increment select */
@@ -35,11 +35,11 @@
 #define D1_BLOCK    0x80		/* Block mode */
 #define D1_CASCADE  0xC0		/* Cascade mode */
 
-extern void i386_dma1_init (unsigned mode);
-extern void i386_dma1_stat (char *stat, unsigned int *buf);
-extern int  i386_dma1_read (unsigned channel, unsigned mode);
-extern int  i386_dma1_write(unsigned channel, unsigned mode);
-extern int  i386_dma1_close(unsigned channel);
+extern void dma1_init (unsigned mode);
+extern void dma1_stat (char *stat, unsigned int *buf);
+extern int  dma1_read (unsigned channel, unsigned mode);
+extern int  dma1_write(unsigned channel, unsigned mode);
+extern int  dma1_close(unsigned channel);
 
 #endif
 

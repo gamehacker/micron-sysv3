@@ -24,7 +24,7 @@
 
 #define GDT_ENTRIES 8
 
-struct i386_gdt
+struct gdt
 {
 	unsigned slim_l:16;	/* segment limit 15..0 */
 	unsigned badd_l:16;	/* base address 15..0 */
@@ -38,33 +38,33 @@ struct i386_gdt
 	unsigned db:1;		/* default operation syze */
 	unsigned g:1;		/* granularity */
 	unsigned badd_h:8;	/* base address 31..24 */
-}__attribute__((packed)) i386_gdt[GDT_ENTRIES];
+}__attribute__((packed)) gdt[GDT_ENTRIES];
 
-struct i386_gdtr
+struct gdtr
 {
 	unsigned limit:16;
 	unsigned base:32;
-}__attribute__((packed)) i386_gdtr;
+}__attribute__((packed)) gdtr;
 
-enum i386_gdt_s
+enum gdt_s
 {
 	SYSTEM,			/* system segment */
 	CODE_DATA		/* code or data */
 };
 
-enum i386_gdt_db
+enum gdt_db
 {
 	BITS16,			/* 16 bit segment */
 	BITS32			/* 32 bit segment */
 };
 
-enum i386_gdt_gran
+enum gdt_gran
 {
 	UNIT_1B,		/* segment limit in 1byte unit */
 	UNIT_4K			/* segment limit in 4KB unit */
 };
 
-enum i386_gdt_type
+enum gdt_type
 {
 	SYST_RES0,
 	SYST_BITS16_TSS_AVAL,
@@ -101,37 +101,37 @@ enum i386_gdt_type
 };
 
 /* GDT entry modifier */
-int i386_gdt_edit(unsigned index,		/* GDT Index */
+int gdt_edit(unsigned index,		/* GDT Index */
 		  unsigned address,		/* segment address */
 		  unsigned limit,		/* segment limit */
 		  unsigned present,		/* segment present */
 		  unsigned dpl,			/* descriptor privilege */
-		  enum i386_gdt_db   db,	/* default data length */
-		  enum i386_gdt_type type, 	/* descriptor type */
-		  enum i386_gdt_gran gran)	/* data granularity */
+		  enum gdt_db   db,	/* default data length */
+		  enum gdt_type type, 	/* descriptor type */
+		  enum gdt_gran gran)	/* data granularity */
 {
 	if(index > GDT_ENTRIES)
 		return -1;			/* no such GDT entry */
-	i386_gdt[index].slim_l = limit & 0xFFFF;
-	i386_gdt[index].slim_h = (limit>>16) & 0xF;
-	i386_gdt[index].badd_l = address & 0xFFFF;
-	i386_gdt[index].badd_m = (address>>16) & 0xFF;
-	i386_gdt[index].badd_h = (address>>24) & 0xFF;
-	i386_gdt[index].p      = present;
-	i386_gdt[index].dpl    = dpl;
-	i386_gdt[index].db     = db;
-	i386_gdt[index].type   = type;
-	i386_gdt[index].g      = gran;
-	i386_gdt[index].l      = 0;
-	i386_gdt[index].avl    = 0;
+	gdt[index].slim_l = limit & 0xFFFF;
+	gdt[index].slim_h = (limit>>16) & 0xF;
+	gdt[index].badd_l = address & 0xFFFF;
+	gdt[index].badd_m = (address>>16) & 0xFF;
+	gdt[index].badd_h = (address>>24) & 0xFF;
+	gdt[index].p      = present;
+	gdt[index].dpl    = dpl;
+	gdt[index].db     = db;
+	gdt[index].type   = type;
+	gdt[index].g      = gran;
+	gdt[index].l      = 0;
+	gdt[index].avl    = 0;
 	return 0;
 }
 
-void i386_gdt_load()
+void gdt_load()
 {
-	i386_gdtr.base = (unsigned)&i386_gdt;
-	i386_gdtr.limit= sizeof(i386_gdt) - 1;
-	asm("lgdt i386_gdtr");
+	gdtr.base = (unsigned)&gdt;
+	gdtr.limit= sizeof(gdt) - 1;
+	asm("lgdt gdtr");
 	asm("movw $0x10, %ax");
 	asm("movw %ax,   %ss");
 	asm("movw %ax,   %ds");
@@ -143,30 +143,30 @@ void i386_gdt_load()
 }
 
 /* GDT manager initialization */
-void i386_gdt_init()
+void gdt_init()
 {
 	/* Null GDT entry */
-	i386_gdt_edit(0,0,0,0,0,0,0,0);
+	gdt_edit(0,0,0,0,0,0,0,0);
 
 	/* Kernel segments */
-	i386_gdt_edit(1,0,0xFFFFF,1,0,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
-	i386_gdt_edit(2,0,0xFFFFF,1,0,BITS32,DATA_READ_WRITE,UNIT_4K);
+	gdt_edit(1,0,0xFFFFF,1,0,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
+	gdt_edit(2,0,0xFFFFF,1,0,BITS32,DATA_READ_WRITE,UNIT_4K);
 
 	/* V8086 segments */
-	i386_gdt_edit(3,0,0xFFFFF,1,0,BITS16,CODE_READ_EXEC_CONFORM,UNIT_1B);
-	i386_gdt_edit(4,0,0xFFFFF,1,0,BITS16,DATA_READ_WRITE,UNIT_1B);
+	gdt_edit(3,0,0xFFFFF,1,0,BITS16,CODE_READ_EXEC_CONFORM,UNIT_1B);
+	gdt_edit(4,0,0xFFFFF,1,0,BITS16,DATA_READ_WRITE,UNIT_1B);
 
 	/* Application segments */
-	i386_gdt_edit(5,0,0xFFFFF,1,3,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
-	i386_gdt_edit(6,0,0xFFFFF,1,3,BITS32,DATA_READ_WRITE,UNIT_4K);
+	gdt_edit(5,0,0xFFFFF,1,3,BITS32,CODE_READ_EXEC_CONFORM,UNIT_4K);
+	gdt_edit(6,0,0xFFFFF,1,3,BITS32,DATA_READ_WRITE,UNIT_4K);
 
 	/* Load new GDT */
-	i386_gdt_load();
+	gdt_load();
 }
 
 /* Install a TSS to segment */
-void i386_gdt_tss(unsigned tadd, unsigned size)
+void gdt_tss(unsigned tadd, unsigned size)
 {
-	i386_gdt_edit(7,tadd,size,1,0,BITS32,SYST_BITS32_TSS_AVAL,UNIT_1B);
+	gdt_edit(7,tadd,size,1,0,BITS32,SYST_BITS32_TSS_AVAL,UNIT_1B);
 }
 

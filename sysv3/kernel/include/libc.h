@@ -19,7 +19,7 @@ extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 /* debug functions */
 #define PANIC(cond, str...) \
 	if(cond) {\
-		kprintf("%CPANIC: %s:%d: ", 0x0C, __FILE__, __LINE__); \
+		kprintf("%C[PANIC]: %s:%d: ", 0x0C, __FILE__, __LINE__); \
 		kprintf(str); \
 		kprintf("\n%C", 0x0F); \
 		while(1); \
@@ -27,16 +27,16 @@ extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 
 #define MSG(cond, str...) \
 	if(cond) { \
-		kprintf("%CMESSAGE: %s:%d: ", 0x0A, __FILE__, __LINE__); \
+		kprintf("%C[MESSAGE]: %s:%d: ", 0x0E, __FILE__, __LINE__); \
 		kprintf(str); \
 		kprintf("\n%C", 0x0F); \
 	}
 
 #define DEBUG(data) \
-	kprintf("%CDEBUG:%s= %d\n%C",0x0A,#data,data,0x0F);
+	kprintf("%CDEBUG:%s= 0x%x\n%C",0x0E,#data,data,0x0F);
 
 #define SYSTEM(fmt, arg...) \
-	kprintf("%C[SYSTEM]%C:", 0x0A, 0x0F); \
+	kprintf("%C[SYSTEM]%C:", 0x0E, 0x0F); \
 	kprintf(fmt, ##arg);
 
 

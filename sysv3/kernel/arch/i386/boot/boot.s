@@ -101,6 +101,7 @@ stat_dev:
 	andw $0xC0,  %cx	/* get high 2 bits of max cyl number */
 	shlw $0x02,  %cx	/* align it to position */
 	addw %cx,    b_devc	/* add up to the cyl number data */
+	andb $0x0F,  %dh	/* only lower 4 bits are used */
 	movb %dh,    b_devh	/* max head number */
 	movb %dl,    b_devn	/* number of drives */
 	movw b_devs, %ax	/* calculate bytes per head */

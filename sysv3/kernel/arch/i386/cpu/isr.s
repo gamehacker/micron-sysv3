@@ -65,7 +65,7 @@
  *   Ralf Brown's Interrupt List
  *****************************************************************************/
 
-.extern i386_isr_entry
+.extern isr_entry
 isr_handler:
 	pusha
 	pushl %ss
@@ -82,7 +82,7 @@ isr_handler:
 
 	movl  %esp, %eax
 	pushl %eax
-	movl  $i386_isr_entry, %eax
+	movl  $isr_entry, %eax
 	call *%eax
 	popl  %eax
 

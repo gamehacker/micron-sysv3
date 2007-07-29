@@ -41,6 +41,7 @@ extern void arch_enablei();	/* enable all interrupts */
 /*
  * Device driver I/O base definitions
  */
+#define BLK_HDD_IOBASE	0x01F0
 
 #endif
 

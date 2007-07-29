@@ -8,7 +8,7 @@
 
 extern unsigned kernel_end;
 
-void i386_mem_size()
+void mem_size()
 {
 	unsigned *tp, tmp, memsize;
 

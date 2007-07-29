@@ -7,23 +7,23 @@
 #include <io.h>
 #include <irq.h>
 
-void i386_rtc_intr(struct isr_regs *regs)
+void rtc_intr(struct Register *regs)
 {
 }
 
-void i386_rtc_freq(unsigned freq)
+void rtc_freq(unsigned freq)
 {
 	unsigned div = 1193180/freq;
-	outport(0x43, 0x36);
-	outport(0x40, div & 0xFF);
-	outport(0x40, div>>8);
+	outportb(0x43, 0x36);
+	outportb(0x40, div & 0xFF);
+	outportb(0x40, div>>8);
 }
 
-void i386_rtc_init()
+void rtc_init()
 {
-	i386_rtc_freq(1000);
-	i386_irq_install(0, i386_rtc_intr);
+	rtc_freq(1000);
+	irq_install(0, rtc_intr);
 	// TODO: REMOVE THIS !!!
-	i386_irq_install(7, i386_rtc_intr);
+	irq_install(7, rtc_intr);
 }
 

@@ -13,81 +13,80 @@
 #include <libc.h>
 #include <irq.h>
 
-void i386_pic_eoi()
+void irq_eoi()
 {
-	outport(0x20, 0x20);
-	outport(0xA0, 0x20);
+	outportb(0x20, 0x20);
+	outportb(0xA0, 0x20);
 }
 
-void (*i386_isr_handler[32])(struct isr_regs*);
+void (*isr_handler[32])(struct Register*);
 
-void (*i386_irq_handler[16])(struct isr_regs*);
+void (*irq_handler[16])(struct Register*);
 
-void (*i386_isr_syscall)(struct isr_regs*);
+void (*syscall)(struct Register*);
 
-void i386_isr_install(int index, void (*handler)(struct isr_regs*))
+void isr_install(int index, void (*handler)(struct Register*))
 {
-	i386_isr_handler[index] = handler;
+	isr_handler[index] = handler;
 }
 
-void i386_irq_install(int index, void (*handler)(struct isr_regs*))
+void irq_install(int index, void (*handler)(struct Register*))
 {
-	i386_irq_handler[index] = handler;
+	irq_handler[index] = handler;
 }
 
-void i386_isr_install_syscall(void (*handler)(struct isr_regs*))
+void isr_install_syscall(void (*handler)(struct Register*))
 {
-	i386_isr_syscall = handler;
+	syscall = handler;
 }
 
-void i386_isr_entry(struct isr_regs *regs)
+void isr_entry(struct Register *regs)
 {
 	if((regs->intn >= 0) && (regs->intn <= 31)) {
-		PANIC(i386_irq_handler[regs->intn] == 0, "ISR=%d", regs->intn);
-		i386_isr_handler[regs->intn](regs);
+		PANIC(irq_handler[regs->intn] == 0, "ISR=%d", regs->intn);
+		isr_handler[regs->intn](regs);
 	} else if((regs->intn >= 32) && (regs->intn <= 47)) {
-		PANIC(i386_irq_handler[regs->intn-32] == 0, "IRQ=%d", 
-								regs->intn-32);
-		i386_irq_handler[regs->intn-32](regs);
-		i386_pic_eoi();
+		MSG(irq_handler[regs->intn-32] == 0, "IRQ=%d", regs->intn-32);
+		irq_handler[regs->intn-32](regs);
+		irq_eoi();
 	}else if(regs->intn == 0x80) {
-		i386_isr_handler[regs->intn](regs);
+		isr_handler[regs->intn](regs);
 	}
 }
 
-void i386_pic_init()
+void pic_init()
 {
 	/* Master Initialization */
-	outport(0x20, 0x11);	/* ICW1 */
-	outport(0x21, 0x20);	/* ICW2 */
-	outport(0x21, 0x04);	/* ICW3 */
-	outport(0x21, 0x01);	/* ICW4 */
+	outportb(0x20, 0x11);	/* ICW1 */
+	outportb(0x21, 0x20);	/* ICW2 */
+	outportb(0x21, 0x04);	/* ICW3 */
+	outportb(0x21, 0x01);	/* ICW4 */
 
 	/* Slave Initialization */
-	outport(0xA0, 0x11);	/* ICW1 */
-	outport(0xA1, 0x28);	/* ICW2 */
-	outport(0xA1, 0x02);	/* ICW3 */
-	outport(0xA1, 0x01);	/* ICW4 */
+	outportb(0xA0, 0x11);	/* ICW1 */
+	outportb(0xA1, 0x28);	/* ICW2 */
+	outportb(0xA1, 0x02);	/* ICW3 */
+	outportb(0xA1, 0x01);	/* ICW4 */
 
 	/* Enable PIC */
-	outport(0x20, 0x00);
-	outport(0xA0, 0x00);
+	outportb(0x20, 0x00);
+	outportb(0xA0, 0x00);
 }
 
-void i386_pic_enable()
+void pic_enable()
 {
-	outport(0x21, 0x00);
-	outport(0xA1, 0x00);
+	outportb(0x21, 0x00);
+	outportb(0xA1, 0x00);
 }
 
-void i386_pic_disable()
+void pic_disable()
 {
-	outport(0x21, 0xFF);
-	outport(0xA1, 0xFF);
+	outportb(0x21, 0xFF);
+	outportb(0xA1, 0xFF);
 }
 
-void i386_irq_init()
+void irq_init()
 {
-	i386_pic_init();
+	pic_init();
 }
 
