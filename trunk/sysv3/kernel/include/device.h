@@ -13,7 +13,7 @@
 #include <export.h>
 #include <errno.h>
 #include <chrdev.h>
-#include <blkdrv.h>
+#include <blkdev.h>
 /* DEVICE TODO: Add other device type headers here */
 
 /* Device type enumeration */

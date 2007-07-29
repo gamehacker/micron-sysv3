@@ -39,19 +39,19 @@ struct tty_disp
 void tty_setpage(int index)
 {
 	unsigned page = index * tty_disp[index].max_x * tty_disp[index].max_y;
-	outport(0x3D4, 0x0C);
-	outport(0x3D5, (page>>8) & 0xFF);
-	outport(0x3D4, 0x0D);
-	outport(0x3D5, page & 0xFF);
+	outportb(0x3D4, 0x0C);
+	outportb(0x3D5, (page>>8) & 0xFF);
+	outportb(0x3D4, 0x0D);
+	outportb(0x3D5, page & 0xFF);
 }
 
 void tty_setcursor(int page, int pos_x, int pos_y)
 {
 	unsigned location = pos_x + pos_y * tty_disp[page].max_x;
-	outport(0x3D4, 0x0E);
-	outport(0x3D5, (location>>8) & 0xFF);
-	outport(0x3D4, 0x0F);
-	outport(0x3D5, location & 0xFF);
+	outportb(0x3D4, 0x0E);
+	outportb(0x3D5, (location>>8) & 0xFF);
+	outportb(0x3D4, 0x0F);
+	outportb(0x3D5, location & 0xFF);
 }
 
 void tty_scroll(int id)
@@ -164,12 +164,12 @@ unsigned char tty_kbd_buf_pop()
 	return 0;
 }
 
-void tty_intr(struct isr_regs *regs)
+void tty_intr(struct Register *regs)
 {
-	MSG((inport(0x64) & 0x01) != 0x01, "Buffer not full\n");
-	tty_kbd_buf_push(inport(0x60));
+	MSG((inportb(0x64) & 0x01) != 0x01, "Buffer not full\n");
+	tty_kbd_buf_push(inportb(0x60));
 	kprintf("<%x>\n", tty_kbd_buf_pop());
-	MSG((inport(0x64) & 0x01) != 0x00, "Buffer not empty after read\n");
+	MSG((inportb(0x64) & 0x01) != 0x00, "Buffer not empty after read\n");
 }
 
 // Keyboard input
@@ -219,7 +219,7 @@ int tty_close(id_t id)
 	return 0;
 }
 
-int i386_tty_init()
+int tty_init()
 {
 	/* Device handler initialization */
 	tty_dev->open = tty_open;
@@ -248,7 +248,7 @@ int i386_tty_init()
 	tty_write(0, "TTY Display ready\n\n", 19);
 
 	/* install interrupt handler for keyboard */
-	i386_irq_install(1, tty_intr);
+	irq_install(1, tty_intr);
 	return 0;
 }
 

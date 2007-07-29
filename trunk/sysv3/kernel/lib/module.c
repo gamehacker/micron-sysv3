@@ -25,14 +25,14 @@ int modinit()
 	/* Initialize each compiled modules */
 	while((modtabp[i].init!=0) && (&modtabp[i]<&modtab_end)) {
 		modhdl = modtabp[i].init;
-		kprintf("%C[MODULE]%C:", 0x0B, 0x0F);
+		kprintf("%C[MODULE]%C:", 0x0E, 0x0F);
 		kprintf("%s Initializing...%X", modtabp[i].desc, 68);
 		if(modhdl() == 0) {
 			kprintf("%C[SUCCESS]%C\n", 0x0A, 0x0F);
 		} else {
 			kprintf("%C[FAILURE]%C\n", 0x0C, 0x0F);
 			modhdl = modtabp[i].exit;
-			kprintf("%C[MODULE]%C:", 0x0B, 0x0F);
+			kprintf("%C[MODULE]%C:", 0x0E, 0x0F);
 			kprintf("%s Unitialized...%X", modtabp[i].desc, 68);
 			if(modhdl() == 0) {
 				kprintf("%C[SUCCESS]%C\n", 0x0A, 0x0F);
