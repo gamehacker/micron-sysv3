@@ -1,3 +1,4 @@
+#summary Micron WIKI 主页
 #labels Featured
 
 == Micron System Version 3 简介 ==
@@ -47,5 +48,4 @@
 
   * [PsnMartin Martin]
   * [Psnflyinsky88 flyinsky88]
-
 
