@@ -25,7 +25,7 @@
   * [Porting 向新处理器的移植]
   * [Dev Micron设备驱动文档 ]
     * [DevChr 字符设备驱动]
-      * [DevChrTty
+      * [DevChrTty TTY显示驱动]
     * [DevBlk 块设备驱动]
       * [DevBlkHdd ATA硬盘驱动]
     * [DevNet 网络设备驱动]
