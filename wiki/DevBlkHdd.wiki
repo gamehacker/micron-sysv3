@@ -6,4 +6,4 @@
 
 = References =
 
-  _[www.t13.org T13 Organization]_
+  * [www.t13.org T13 Organization]
