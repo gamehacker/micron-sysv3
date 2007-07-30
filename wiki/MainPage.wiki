@@ -1,3 +1,1 @@
-#labels Featured
-
 = WIKI 主页 =
