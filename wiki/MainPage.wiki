@@ -1,4 +1,6 @@
 #labels Featured
+#项目WIKI主页
+
 == Micron System Version 3 简介 ==
 
   Micron System是一个嵌入式系统开发项目，同时是对嵌入式系统开发的研究项目。本项目由[MartinTang Martin Tang]所领导，并将持续的开发下去，直到各个目标的达成。由于开发人员较少、工作量较大、个人等原因，预计距离项目开始，推出第一个Release的时间为2年。
