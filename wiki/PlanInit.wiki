@@ -14,7 +14,9 @@
 
   During 3 week's hard development, the static part of I386 processor driver has almost finished, in order to provide a dynamic part development and debug environment, we are going to implement part of the kernel and most importantly the hard disk driver and VFS layer. After we can load our first file, the MMU driver will be on its way.
 
-  Because the ATA/IDE hard disk uses DMA from the PCI bus's UltraDMA, we had to implement the hard disk in the PIO way, and after we have finished the PCI driver, the DMA mode will be put back to it.
+  PROBLEMS:
+
+  Because the ATA/IDE hard disk uses DMA from the PCI bus's UltraDMA, we had to implement the hard disk in the PIO way, and after we have finished the PCI driver, the DMA mode will be added to it.
 
 = Future =
 
