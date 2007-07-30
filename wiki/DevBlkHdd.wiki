@@ -19,15 +19,16 @@
   Each controller contains 2 channels so there are 4 channels in total.
 
   REGISTERS:
-    * 0 (r-)-> DATA Register
-    * 1 (r-)-> ERROR Register
-    * 2 (-w)-> FEATURE Register
-    * 3 (rw)-> SECTOR Count Register
-    * 4 (rw)-> SECTOR Register
-    * 5 (rw)-> CYLINDER Low Register
-    * 6 (rw)-> CYLINDER High Register
-    * 7 (r-)-> STATUS Register
-    * 7 (-w)-> COMMAND Register
+    * 0 (r-)-> Data Register
+    * 1 (r-)-> Error Register
+    * 1 (-w)-> Feature Register
+    * 2 (rw)-> Sector Count Register
+    * 3 (rw)-> Sector Register
+    * 4 (rw)-> Cylinder Low Register
+    * 5 (rw)-> Cylinder High Register
+    * 6 (rw)-> Device Register
+    * 7 (r-)-> Status Register
+    * 7 (-w)-> Command Register
 
 = IRQ Resource =
 
@@ -40,9 +41,26 @@
   Please Refer To T13 Publication: 
  _Information Technology - AT Attachment with Packet Interface - 5 (ATA/ATAPI-5)_
 
+= Sample Access Sessions =
+
+  COMMAND_READ:
+  {{{
+  // CHS mode access
+  unsigned short *buf = buffer;
+  outportb(Reg_Sector_Count, Sector_Count);
+  outportb(Reg_Sector, Sector);
+  outportb(Reg_Cylinder_High, Cylinder&0xFF);
+  outportb(Reg_Cylinder_Low, (Cylinder>>8)&0xFF);
+  outportb(Reg_Device, Head&0xF);
+  wait_for_interrupt();
+  while(inportb(Reg_Status) & 0x08)    // Poll until DRQ = 0
+      *buf++ = inportw(Reg_Data);
+  }}}
+
 = References =
 
   * [http://www.t13.org T13 Organization Publications]
+
 
 
 
