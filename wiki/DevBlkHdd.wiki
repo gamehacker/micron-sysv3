@@ -2,11 +2,8 @@
 
 = Introduction =
 
-  NOTICE: This documentation does NOT fully describe the ATA/IDE hard disk device fully, but a description of essential part of its functionality.
+  NOTICE: This documentation does NOT fully describe the ATA/IDE hard disk device, for professional knowledge, please refer to the references listed below.
 
-= Details =
+= References =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+  _[www.t13.org T13 Organization]_
