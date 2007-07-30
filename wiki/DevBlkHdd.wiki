@@ -4,6 +4,54 @@
 
   NOTICE: This documentation does NOT fully describe the ATA/IDE hard disk device, for professional knowledge, please refer to the references listed below.
 
+  ATA/IDE Interface is used in PC architectures providing controlling to hard disk and CD-ROM, DVD-ROM access. It is a industrial standard mainly maintained by T13 organization and ANSI.
+
+  This documentation provides the essential information on ATA/IDE hard disk controlling.
+
+= I/O Interface =
+
+  PC architecture commonly implements 4 channels of ATA/IDE bus, providing access to floppy disk, hard disk, CD/DVD-ROMs.
+
+  Two ATA/IDE controller are attached to ports:
+    * 0x1f0 -> I/O base of first controller
+    * 0x3f0 -> I/O base of second controller
+
+  Each controller contains 2 channels so there are 4 channels in total.
+
+  REGISTERS:
+    * 0 (r-)-> DATA Register
+    * 1 (r-)-> ERROR Register
+    * 2 (-w)-> FEATURE Register
+    * 3 (rw)-> SECTOR Count Register
+    * 4 (rw)-> SECTOR Register
+    * 5 (rw)-> CYLINDER Low Register
+    * 6 (rw)-> CYLINDER High Register
+    * 7 (r-)-> STATUS Register
+    * 7 (-w)-> COMMAND Register
+
+= IRQ Resource =
+
+  Commonly the ATA/IDE controller is linked to IRQs:
+    * 14 -> IRQ of first controller
+    * 15 -> IRQ of second controller
+
+= Command Sets =
+
+  Please Refer To T13 Publication: 
+ _Information Technology - AT Attachment with Packet Interface - 5 (ATA/ATAPI-5)_
+
 = References =
 
-  * [www.t13.org T13 Organization]
+  * [http://www.t13.org T13 Organization Publications]
+
+
+
+
+
+
+
+
+
+
+
+
