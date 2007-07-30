@@ -45,7 +45,7 @@
 
   COMMAND_READ:
   {{{
-  // CHS mode access
+  // CHS, PIO mode access
   unsigned short *buf = buffer;
   outportb(Reg_Sector_Count, Sector_Count);
   outportb(Reg_Sector, Sector);
@@ -61,6 +61,7 @@
 = References =
 
   * [http://www.t13.org T13 Organization Publications]
+
 
 
 
