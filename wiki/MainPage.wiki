@@ -1,18 +1,51 @@
 #labels Featured
-== WIKI 项目简介 ==
+== Micron System Version 3 简介 ==
 
   Micron System是一个嵌入式系统开发项目，同时是对嵌入式系统开发的研究项目。本项目由[MartinTang Martin Tang]所领导，并将持续的开发下去，直到各个目标的达成。由于开发人员较少、工作量较大、个人等原因，预计距离项目开始，推出第一个Release的时间为2年。
 
   2年的开发时间并不意味着2年之内我们不会向外提供任何有价值的东西，相反，我们将把开发过程中的所有技术细节以文档的方式放在本项目WIKI之中，供后来的开发者、其他OS开发者交流参考用。
 
-== 项目新闻 ==
+== 开发新闻 ==
 
   * [News2007073001 2007年07月30日 本Wiki创建]
 
-== 嵌入式操作系统开发研究 ==
+== Micron 开发手册 ==
 
-  * [ProcessorCtrl 处理器控制]
-  * [DeviceDriver 设备驱动]
+  * [Plan 本项目开发计划]
+    * [PlanInit 初期开发计划]
+  * [Arch 计算机标准体系]
+    * [ArchIBMPC IBM/PC标准]
+  * [Proc 处理器控制]
+    * [ProcI386 IA-32 处理器架构]
+      * [ProcI386Protect 保护模式简介]
+      * [ProcI386GDT GDT描述符]
+      * [ProcI386GDT LDT描述符]
+      * [ProcI386GDT IDT描述符]
+      * [ProcI386GDT TSS描述符]
+  * [Porting 向新处理器的移植]
+  * [Dev Micron设备驱动文档 ]
+    * [DevATAHDD ATA硬盘驱动]
+    * [DevNe2k NE2000标准网卡]
+  * [Devdev 编写Micron驱动]
+    * [DevdevHowto Micron 驱动Howto]
+    * [DevdevDev 设备驱动开发]
+    * [DevdevMod 内核模块开发]
+    * [DevdevSrv 系统服务开发]
+    * [DevdevKrn 内核扩展模式]
+  * [Bus 总线标准与控制]
+    * [BusPCI PCI总线]
+    * [BusISA ISA总线
+
+
+
+
+
+
+
+
+
+
+
 
 
 
