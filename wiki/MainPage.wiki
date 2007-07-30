@@ -1,51 +1,55 @@
-#summary Micron WIKI 主页
+#summary Micron System WIKI Main Page (English)
 #labels Featured
 
-== Micron System Version 3 简介 ==
+= Micron System Version 3 Introduction =
 
-  Micron System是一个嵌入式系统开发项目，同时是对嵌入式系统开发的研究项目。本项目由[MartinTang Martin Tang]所领导，并将持续的开发下去，直到各个目标的达成。由于开发人员较少、工作量较大、个人等原因，预计距离项目开始，推出第一个Release的时间为2年。
+  Micron System is a embedded system development project, at the same time a embedded system research project. This project is lead by [MartinTang Martin Tang] and will be continued until every objectives are achieved, the estimated releasing date is about 2 years after project start.
 
-  2年的开发时间并不意味着2年之内我们不会向外提供任何有价值的东西，相反，我们将把开发过程中的所有技术细节以文档的方式放在本项目WIKI之中，供后来的开发者、其他OS开发者交流参考用。
+  No releasing during the following two years doesn't mean this project will be useless, because we are going to document every single part of the development process, aiming at a full development log and full developer support site. The Linux system is somehow in lake of documentation so that it is hard to begin for developers.
 
-== 开发新闻 ==
+  Micron System has no intention to be a Windows or Linux replacement, but a research purpose POSIX system for embedded applications, in the aim of collect the latest technologies available and recombination of them.
 
-  * 2007年07月30日 本Wiki创建
+  There may have commercial activity involved as we don't refuse commercial development, but please don't violate our [MicronLicense License Agreement].
 
-== Micron 开发手册 ==
+== Project News ==
 
-  * [Plan 本项目开发计划]
-    * [PlanInit 初期开发计划]
-  * [Arch 计算机标准体系]
-    * [ArchIbmpc IBM/PC标准]
-  * [Proc 处理器控制]
-    * [ProcI386 IA-32 处理器架构]
-      * [ProcI386Protect 保护模式简介]
-      * [ProcI386Gdt GDT描述符]
-      * [ProcI386Ldt LDT描述符]
-      * [ProcI386Idt IDT描述符]
-      * [ProcI386Tss TSS描述符]
-  * [Porting 向新处理器的移植]
-  * [Dev Micron设备驱动文档]
-    * [DevChr 字符设备驱动]
-      * [DevChrTty TTY显示驱动]
-    * [DevBlk 块设备驱动]
-      * [DevBlkHdd ATA硬盘驱动]
-    * [DevNet 网络设备驱动]
-      * [DevNetNe2k NE2000标准网卡]
-  * [Devdev 编写Micron驱动]
-    * [DevdevHowto Micron 驱动Howto]
-    * [DevdevDev 设备驱动开发]
-    * [DevdevMod 内核模块开发]
-    * [DevdevSrv 系统服务开发]
-    * [DevdevKrn 内核扩展模式]
-  * [Proto 各种通讯协议]
-    * [ProtoTcpip TCP/IP协议]
-  * [Bus 总线标准与控制]
-    * [BusPCI PCI总线]
-    * [BusISA ISA总线]
+  * 2007.07.30 Wiki Created.
 
-== Micron 开发者笔记 ==
+== Micron Developer's Reference ==
+
+  * [Plan Project Plans]
+    * [PlanInit Initial Plan]
+  * [Arch Computer System Architectures]
+    * [ArchIbmpc IBM/PC Standard]
+  * [Proc Processor Control]
+    * [ProcI386 Intel IA-32 Architecture]
+      * [ProcI386Protect Protected Mode Programming]
+  * [Porting Porting To New Hardware]
+  * [Dev Micron Device Documentation]
+    * [DevChr Character Devices]
+      * [DevChrTty TTY Driver]
+    * [DevBlk Block Devices]
+      * [DevBlkHdd ATA Hard Drive]
+    * [DevNet Net Devices]
+      * [DevNetNe2k NE2000 Standard Net Cards]
+  * [Devdev Writing Micron Drivers]
+    * [DevdevHowto Micron Driver Howto]
+    * [DevdevDev Device Driver Development]
+    * [DevdevMod Kernel Module Development]
+    * [DevdevSrv System Service Development]
+    * [DevdevKrn Kernel Extension]
+  * [Proto Various Protocols]
+    * [ProtoTcpip TCP/IP Protocol]
+  * [Bus Bus Standards & Control]
+    * [BusPCI PCI Bus]
+    * [BusISA ISA Bus]
+
+== Micron Developer Notes ==
 
   * [PsnMartin Martin]
   * [Psnflyinsky88 flyinsky88]
+
+
+
+
 
