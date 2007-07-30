@@ -1,25 +1,21 @@
-= 历史记录 =
+= History =
 
-  Micron System的开发目标如下：
-    * 代码级多处理器支持
-    * 新处理器支持的方便性
-    * 面向芯片的快速可移植驱动
-    * POSIX标准的支持
-    * 模块化以及微内核化单内核扩展（待研究）
-    * Linux的许多技术的重新整理
+  Micron System Development Objectives:
+    * Code level multi-processor support interface
+    * Easy porting to new processors
+    * Chip oriented quick device driver development
+    * POSIX standard support
+    * Modulization and micro kernel integration (Researching)
+    * Various Linux technologiy rearrangement.
 
-  根据以上目标，Micron的开发计划的主要思路是，先以任意处理器的支持为基础，搭建方便的开发、调试环境，然后将主要工作放在核心开发之上（核心指所有处理器未来将共享的C/C++代码部分）。
+  Based on the objectives above，Micron project's main lead is first to develop one(any) processor's full support, and based on the support code put main attention on the portable kernel deveopment (C/C++ based), which every target will share. Then the porting to new platforms will all based on the first processor interface model.
 
-= 目前的状况 =
+= Current =
 
-  Micron的开发已经基本将I386处理器的静态部分驱动基本完成，中断、GDT、DMA、TTY的支持也已基本完成预计的要求。动态部分（任务切换、分页式内存管理）的开发，必须先有硬盘驱动、文件系统进而进程加载为基础，顾现在的主要工作经历放在硬盘驱动上面。同时，[Psnflyinsky88 flyinsky]正在忙于对NE2000网卡的驱动以及TCP/IP协议栈的工作之上。
-  由于ATA/IDE硬盘使用来自PCI总线的UltraDMA，故目前只有采用PIO方式进行读写，待PCI总线驱动完善之后方可在现有[DevBlk 块设备]的rdwr接口上扩展rdwrDMA接口。
+  During 3 week's hard development, the static part of I386 processor driver has almost finished, in order to provide a dynamic part development and debug environment, we are going to implement part of the kernel and most importantly the hard disk driver and VFS layer. After we can load our first file, the MMU driver will be on its way.
+  Because the ATA/IDE hard disk uses DMA from the PCI bus's UltraDMA, we had to implement the hard disk in the PIO way, and after we have finished the PCI driver, the DMA mode will be put back to it.
 
-= 下一步计划 =
-
-  文件系统开发。
-
-
+= Future =
 
 
 
