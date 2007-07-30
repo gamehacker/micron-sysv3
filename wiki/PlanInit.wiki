@@ -1,5 +1,3 @@
-#summary One-sentence summary of this page.
-
 = 历史记录 =
 
   Micron System的开发目标如下：
@@ -20,7 +18,6 @@
 = 下一步计划 =
 
   文件系统开发。
-
 
 
 
