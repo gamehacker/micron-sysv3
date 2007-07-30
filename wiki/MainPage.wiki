@@ -23,7 +23,7 @@
       * [ProcI386Idt IDT描述符]
       * [ProcI386Tss TSS描述符]
   * [Porting 向新处理器的移植]
-  * [Dev Micron设备驱动文档 ]
+  * [Dev Micron设备驱动文档]
     * [DevChr 字符设备驱动]
       * [DevChrTty TTY显示驱动]
     * [DevBlk 块设备驱动]
