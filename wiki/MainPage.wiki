@@ -51,6 +51,5 @@
 
 = Translations =
 
-[MainPageChn 简体中文]
-
+  * [MainPageChn 简体中文]
 
