@@ -1,3 +1,5 @@
+#summary Plan for the initial stage.
+
 = History =
 
   Micron System Development Objectives:
@@ -19,7 +21,6 @@
   Because the ATA/IDE hard disk uses DMA from the PCI bus's UltraDMA, we had to implement the hard disk in the PIO way, and after we have finished the PCI driver, the DMA mode will be added to it.
 
 = Future =
-
 
 
 
