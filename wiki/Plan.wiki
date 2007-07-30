@@ -1,0 +1,16 @@
+#Main plan page.
+
+= Introduction =
+
+Micron System is a embedded system, with the following common characteristics:
+
+|| *License* || [MicronLicense Micron System Public License] (BSD License) ||
+|| *Architecture* || X86, X86_64, MIPS, MIPS64, POWERPC, ARM ||
+|| *Kernel Model* || Modulized Monolithic ||
+|| *System Interface* || POSIX ||
+|| *Project Start* || 2007.06.22 ||
+
+TO BE EXTENDED...
+
+
+
