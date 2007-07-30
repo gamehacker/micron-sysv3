@@ -2,7 +2,7 @@
 
   PC上最常用的硬盘控制芯片是IDE/ATA接口，其标准由T13标准组织和ANSI等进行维护，支持CHS、LBA等访问接口。
 
-[EDIT]
+[[EDIT]]
 
 = I/O介面 =
 
@@ -13,7 +13,6 @@
   [http://www.t13.org/| T13标准组织]
 
   [http://en.wikipedia.org/wiki/Advanced_Technology_Attachment| Wikipedia 关于IDE/ATA的页面]
-
 
 
 
