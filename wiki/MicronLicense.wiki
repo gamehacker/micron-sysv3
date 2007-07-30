@@ -1,16 +1,22 @@
 {{{
 Micron System Public License Agreement draft v1.0
 
+
 Copyright (c) 2007, Micron System Team
+
 
 All rights reserved.
 
+
 1.TERMS OF COPY, MODIFY AND REDISTRIBUTION
+
 
  1.Original BSD License
 
+
   Redistribution and use in source and binary forms, with or without
   modification, are permitted provided that the following conditions are met:
+
 
   a) Redistributions of source code must retain the above copyright notice,
      this list of conditions and the following disclaimer.
@@ -21,8 +27,10 @@ All rights reserved.
      used to endorse or promote products derived from this software without
      specific prior written permission.
 
+
  2.Appended License:
-    
+
+
   a) Any modification to the source code must be redistributed with the form of
      a patch file rather than redistributing the modified source itself.
   b) This software may contain patented technologies, the user must also apply
@@ -33,7 +41,9 @@ All rights reserved.
   d) In part 1.1c, the word products includes, but not limited to embedded
      applications.
 
+
 2.HOW TO APPLY
+
 
   Micron System Public License Agreement is conformant with copyright law and
   and patent law, the license is applied when the following conditions are met:
@@ -46,7 +56,9 @@ All rights reserved.
      license content, like
        command -l or command --license
 
+
 3.NO WARRANTY
+
 
   THIS SOFTWARE AND SOURCE CODE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
   CONTRIBUTERS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
