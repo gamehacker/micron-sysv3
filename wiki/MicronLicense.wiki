@@ -1,4 +1,3 @@
-
 Micron System Public License Agreement draft v1.0
 
 Copyright (c) 2007, Micron System Team
@@ -9,54 +8,30 @@ All rights reserved.
 
  1.Original BSD License
 
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions are met:
+  Redistribution and use in source and binary forms, with or without modification, are permitted provided that the following conditions are met:
 
-  a) Redistributions of source code must retain the above copyright notice,
-     this list of conditions and the following disclaimer.
-  b) Redistributions in binary form must reproduce the above copyright notice,
-     this list of conditions and the following disclaimer in the documentation
-     and/or other materials provided with the distribution.
-  c) Neither the name of the Micron System Team nor the contributors may be
-     used to endorse or promote products derived from this software without
-     specific prior written permission.
+  a) Redistributions of source code must retain the above copyright notice, this list of conditions and the following disclaimer.
+  b) Redistributions in binary form must reproduce the above copyright notice, this list of conditions and the following disclaimer in the documentation and/or other materials provided with the distribution.
+  c) Neither the name of the Micron System Team nor the contributors may be used to endorse or promote products derived from this software without specific prior written permission.
 
  2.Appended License:
     
-  a) Any modification to the source code must be redistributed with the form of
-     a patch file rather than redistributing the modified source itself.
-  b) This software may contain patented technologies, the user must also apply
-     to the rights of the patent law.
-  c) Any consequence caused by the modifications provided by unverified third
-     party redistributors including in both source and binary form is not
-     related to Micron System Team.
-  d) In part 1.1c, the word products includes, but not limited to embedded
-     applications.
+  a) Any modification to the source code must be redistributed with the form of a patch file rather than redistributing the modified source itself.
+  b) This software may contain patented technologies, the user must also apply to the rights of the patent law.
+  c) Any consequence caused by the modifications provided by unverified third party redistributors including in both source and binary form is not related to Micron System Team.
+  d) In part 1.1c, the word products includes, but not limited to embedded applications.
 
 2.HOW TO APPLY
 
-  Micron System Public License Agreement is conformant with copyright law and
-  and patent law, the license is applied when the following conditions are met:
+  Micron System Public License Agreement is conformant with copyright law and and patent law, the license is applied when the following conditions are met:
 
-  a) A file named "LICENSE" or "LICENSE.txt" containing exactly the MSPLA
-     is placed in the root directory of the released package.
+  a) A file named "LICENSE" or "LICENSE.txt" containing exactly the MSPLA is placed in the root directory of the released package.
   b) Every protected file should include the following string:
       PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
-  c) If a software with output availablity, it should can print a copy of the
-     license content, like
+  c) If a software with output availablity, it should can print a copy of the license content, like
        command -l or command --license
 
 3.NO WARRANTY
 
-  THIS SOFTWARE AND SOURCE CODE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
-  CONTRIBUTERS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
-  NOT LIMITED TO, THE IMPLIED WARRANTIES OF MECHANTABILITY AND FITNESS FOR A
-  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
-  CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTIAL, SPECIAL, 
-  EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
-  OR BUSINESS IN INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
-  WHETHER IN CONTRACT, STRICT LIABLITY, OR TORT (INCLUDING NEGLIGENCE OR
-  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
-  ADVICED OF THE POSSIBILITY OF SUCH DAMAGE.
+  THIS SOFTWARE AND SOURCE CODE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTERS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MECHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTIAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS IN INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABLITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVICED OF THE POSSIBILITY OF SUCH DAMAGE.
 
