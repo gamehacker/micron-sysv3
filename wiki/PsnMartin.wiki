@@ -1,8 +1,6 @@
-
 = Introduction =
 
-  这里我将保存开发过程中的一些记录。
+  Edit this page later.
 
 = Details =
-
 
