@@ -35,7 +35,7 @@
     * 14 -> IRQ of first controller
     * 15 -> IRQ of second controller
 
-= Command Sets =
+= Command Set & Programming Method =
 
   Please Refer To T13 Publication: 
  _Information Technology - AT Attachment with Packet Interface - 5 (ATA/ATAPI-5)_
@@ -43,7 +43,6 @@
 = References =
 
   * [http://www.t13.org T13 Organization Publications]
-
 
 
 
