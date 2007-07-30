@@ -2,8 +2,7 @@
 
 = Introduction =
 
-Add your content here.
-
+  NOTICE: This documentation does NOT fully describe the ATA/IDE hard disk device fully, but a description of essential part of its functionality.
 
 = Details =
 
