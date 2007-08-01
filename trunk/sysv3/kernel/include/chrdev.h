@@ -13,7 +13,6 @@
 /* Character Device I/O Interface */
 struct ChrDev
 {
-	dev_t major;
 	int (*open )(id_t id, int oflag, mode_t mode);
 	int (*close)(id_t id);
 	int (*read )(id_t id, char *buf, off_t cnt);

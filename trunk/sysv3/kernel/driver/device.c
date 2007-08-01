@@ -21,6 +21,10 @@ int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 {
 	switch(type) {
 	case CHRDEV:
+		MSG(MAJOR(dID) > NCHRDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NCHRDEVS) {
+			return -1;
+		}
 		// Check if device exists
 		if(ChrDev[MAJOR(dID)].open == 0) {
 			return ENODEV;
@@ -29,6 +33,10 @@ int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 		}
 		break;
 	case BLKDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
 		// Check if device exists
 		if(BlkDev[MAJOR(dID)].open == 0) {
 			return ENODEV;
@@ -44,6 +52,10 @@ int DeviceClose(enum DevType type, id_t dID)
 {
 	switch(type) {
 	case CHRDEV:
+		MSG(MAJOR(dID) > NCHRDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NCHRDEVS) {
+			return -1;
+		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
 		if(ChrDev[MAJOR(dID)].open == 0 ||
@@ -54,6 +66,10 @@ int DeviceClose(enum DevType type, id_t dID)
 		}
 		break;
 	case BLKDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
 		if(BlkDev[MAJOR(dID)].open == 0 ||
@@ -71,6 +87,10 @@ int DeviceRead (enum DevType type, id_t dID, char *buf, off_t cnt)
 {
 	switch(type) {
 	case CHRDEV:
+		MSG(MAJOR(dID) > NCHRDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NCHRDEVS) {
+			return -1;
+		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
 		if(ChrDev[MAJOR(dID)].open == 0 ||
@@ -81,6 +101,18 @@ int DeviceRead (enum DevType type, id_t dID, char *buf, off_t cnt)
 		}
 		break;
 	case BLKDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
+		// Check if device exists, open operation is always checked
+		// as the existence of device entry
+		if(BlkDev[MAJOR(dID)].open == 0 ||
+		   BlkDev[MAJOR(dID)].read == 0) {
+			return ENODEV;
+		} else {
+			return BlkDev[MAJOR(dID)].read(dID, buf, cnt);
+		}
 		break;
 	}
 	return ENODEV;
@@ -90,6 +122,10 @@ int DeviceWrite(enum DevType type, id_t dID, char *buf, off_t cnt)
 {
 	switch(type) {
 	case CHRDEV:
+		MSG(MAJOR(dID) > NCHRDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NCHRDEVS) {
+			return -1;
+		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
 		if(ChrDev[MAJOR(dID)].open == 0 ||
@@ -100,25 +136,17 @@ int DeviceWrite(enum DevType type, id_t dID, char *buf, off_t cnt)
 		}
 		break;
 	case BLKDEV:
-		break;
-	}
-	return ENODEV;
-}
-
-int DeviceRdwr (enum DevType type, id_t dID, mode_t mode, char *buf, 
-		blkcnt_t sectors)
-{
-	switch(type) {
-	case CHRDEV:
-		break;
-	case BLKDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
 		if(BlkDev[MAJOR(dID)].open == 0 ||
-		   BlkDev[MAJOR(dID)].rdwr == 0) {
+		   BlkDev[MAJOR(dID)].write== 0) {
 			return ENODEV;
 		} else {
-			return BlkDev[MAJOR(dID)].rdwr(dID, mode, buf, sectors);
+			return BlkDev[MAJOR(dID)].write(dID, buf, cnt);
 		}
 		break;
 	}
@@ -129,6 +157,10 @@ int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
 {
 	switch(type) {
 	case CHRDEV:
+		MSG(MAJOR(dID) > NCHRDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NCHRDEVS) {
+			return -1;
+		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
 		if(ChrDev[MAJOR(dID)].open == 0 ||
@@ -139,6 +171,10 @@ int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
 		}
 		break;
 	case BLKDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
 		if(BlkDev[MAJOR(dID)].open == 0 ||
@@ -146,6 +182,33 @@ int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
 			return ENODEV;
 		} else {
 			return BlkDev[MAJOR(dID)].ioctl(dID, cmd, arg);
+		}
+		break;
+	}
+	return ENODEV;
+}
+
+int DeviceLseek(enum DevType type, id_t dID, int off, int whence)
+{
+	switch(type) {
+	case CHRDEV:
+		MSG(MAJOR(dID) > NCHRDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NCHRDEVS) {
+			return -1;
+		}
+		break;
+	case BLKDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
+		// Check if device exists, open operation is always checked
+		// as the existence of device entry
+		if(BlkDev[MAJOR(dID)].open == 0 ||
+		   BlkDev[MAJOR(dID)].lseek== 0) {
+			return ENODEV;
+		} else {
+			return BlkDev[MAJOR(dID)].lseek(dID, off, whence);
 		}
 		break;
 	}

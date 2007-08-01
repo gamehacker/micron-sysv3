@@ -26,18 +26,18 @@ int modinit()
 	while((modtabp[i].init!=0) && (&modtabp[i]<&modtab_end)) {
 		modhdl = modtabp[i].init;
 		kprintf("%C[MODULE]%C:", 0x0E, 0x0F);
-		kprintf("%s Initializing...%X", modtabp[i].desc, 68);
+		kprintf("%s Initializing...", modtabp[i].desc);
 		if(modhdl() == 0) {
-			kprintf("%C[SUCCESS]%C\n", 0x0A, 0x0F);
+			kprintf("%X%C[SUCCESS]%C\n", 68, 0x0A, 0x0F);
 		} else {
-			kprintf("%C[FAILURE]%C\n", 0x0C, 0x0F);
+			kprintf("%X%C[FAILURE]%C\n", 68, 0x0C, 0x0F);
 			modhdl = modtabp[i].exit;
 			kprintf("%C[MODULE]%C:", 0x0E, 0x0F);
-			kprintf("%s Unitialized...%X", modtabp[i].desc, 68);
+			kprintf("%s Unitialized...", modtabp[i].desc);
 			if(modhdl() == 0) {
-				kprintf("%C[SUCCESS]%C\n", 0x0A, 0x0F);
+				kprintf("%X%C[SUCCESS]%C\n", 68, 0x0A, 0x0F);
 			} else {
-				kprintf("%C[FAILURE]%C\n", 0x0C, 0x0F);
+				kprintf("%X%C[FAILURE]%C\n", 68, 0x0C, 0x0F);
 			}
 		}
 		i++;

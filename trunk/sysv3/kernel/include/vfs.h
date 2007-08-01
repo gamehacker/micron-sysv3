@@ -8,7 +8,6 @@
 #define __MICRON_KERNEL_VFS_H__
 
 /* Open file modes */
-#ifndef S_IRWXU
 #define	S_IRWXU 	0x0007
 #define		S_IRUSR 0x0001	// Read permission, owner
 #define		S_IWUSR 0x0002	// Write permission, owner
@@ -30,7 +29,13 @@
 #define		S_IFREG	0x6000	// Regular file.
 #define		S_IFSCK 0x7000	// Socket file
 #define		S_IFPRC 0x8000	// Procfs
-#define		S_IFDEV 0x9000 // Device fs.
+#define		S_IFDEV 0x9000	// Device fs.
+
+/* File access modes */
+#define	O_ACCMODE	 0x000F
+#define 	O_RDONLY 0x0001
+#define 	O_WRONLY 0x0002
+#define 	O_RDWR	 0x0003
 
 #endif
 
