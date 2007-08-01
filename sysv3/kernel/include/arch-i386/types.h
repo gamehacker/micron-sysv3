@@ -31,7 +31,7 @@ typedef int            blksize_t;	// Block size descriptor
 typedef int            off_t;		// file sizes
 
 /* File attribute */
-typedef unsigned short mode_t;		// File attributes
+typedef unsigned int mode_t;		// File attributes
 
 #endif
 

@@ -2,6 +2,7 @@
  * Micron System V3 - I386 Specific - TTY
  * Copyright (C) 2007, Micron System Team
  * Copyright (C) 2007, Martin Tang
+ * Copyright (C) 2007, Jerry Liu
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************
  * Design Notes

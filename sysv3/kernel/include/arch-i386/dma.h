@@ -28,15 +28,15 @@
 /* Values used with dma1_read_write */
 #define D1_AUTOINIT 0x10		/* Autoinitialization enable */
 					/*   else disable */
-#define D1_INCR     0x20		/* Address increment select */
-					/*   else decrement */
+#define D1_DECR     0x20		/* Address decrement select */
+					/*   else increment */
 #define D1_DEMAND   0x00		/* Demand mode */
 #define D1_SINGLE   0x40		/* Single mode */
 #define D1_BLOCK    0x80		/* Block mode */
 #define D1_CASCADE  0xC0		/* Cascade mode */
 
 extern void dma1_init (unsigned mode);
-extern void dma1_stat (char *stat, unsigned int *buf);
+extern void dma1_stat (unsigned channel, char *stat, unsigned int *buf);
 extern int  dma1_read (unsigned channel, unsigned mode);
 extern int  dma1_write(unsigned channel, unsigned mode);
 extern int  dma1_close(unsigned channel);

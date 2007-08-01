@@ -13,8 +13,10 @@
 struct BlkDev
 {
 	int (*open )(id_t id, int oflag, mode_t mode);
-	int (*close)(id_t id);
-	int (*rdwr )(id_t id, mode_t mode, char *buf, blkcnt_t sectors);
+	int (*close)(id_t id);	
+	int (*read )(id_t id, char *buf, off_t cnt);
+	int (*write)(id_t id, char *buf, off_t cnt);
+	int (*lseek)(id_t id, off_t offset, int whence);
 	int (*ioctl)(id_t id, int cmd, int arg);
 };
 
