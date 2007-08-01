@@ -6,6 +6,7 @@
  *****************************************************************************/
 #include <config.h>
 #include <libc.h>
+#include <vfs.h>
 
 void kmain()
 {

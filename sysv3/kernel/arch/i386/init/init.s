@@ -18,8 +18,10 @@
 .extern dma_init
 .extern tty_init
 .extern dev_init
+.extern vcache_init
 	movl $stack, %esp	/* setup stack for kernel */
 	call dev_init		/* initialize device manager first */
+	call vcache_init	/* initialize vnode cache */
 	call tty_init		/* initialize TTY */
 	call idt_init		/* install new gdt managed by kernel */
 	call irq_init		/* initialize IRQ */

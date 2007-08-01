@@ -66,8 +66,7 @@ void tty_scroll(int id)
 		*dest++ = *src++;
 	}
 	cnt = tty_disp[id].max_x;
-	dest= tty_disp[id].buf +
-		tty_disp[id].max_x * (tty_disp[id].max_y - 1);
+	dest= tty_disp[id].buf + tty_disp[id].max_x * (tty_disp[id].max_y - 1);
 	while(cnt--) {
 		dest[cnt] = ' '|(0x0f<<8);
 	}
