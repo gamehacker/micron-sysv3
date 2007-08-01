@@ -8,16 +8,16 @@
 #include <libc.h>
 
 /* Various device mount points */
-struct ChrDev ChrDev[NCHRDEVS];
-struct BlkDev BlkDev[NBLKDEVS];
+struct dev_chr dev_chr[NCHRDEVS];
+struct dev_blk dev_blk[NBLKDEVS];
 
-void DeviceInit()
+void dev_init()
 {
-	memset(&ChrDev, 0, sizeof(struct ChrDev)*NCHRDEVS);
-	memset(&BlkDev, 0, sizeof(struct BlkDev)*NBLKDEVS);
+	memset(&dev_chr, 0, sizeof(struct dev_chr)*NCHRDEVS);
+	memset(&dev_blk, 0, sizeof(struct dev_blk)*NBLKDEVS);
 }
 
-int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
+int dev_open(enum dev_type type, id_t dID, int oflag, mode_t mode)
 {
 	switch(type) {
 	case CHRDEV:
@@ -26,10 +26,10 @@ int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 			return -1;
 		}
 		// Check if device exists
-		if(ChrDev[MAJOR(dID)].open == 0) {
+		if(dev_chr[MAJOR(dID)].open == 0) {
 			return ENODEV;
 		} else {
-			return ChrDev[MAJOR(dID)].open(dID, oflag, mode);
+			return dev_chr[MAJOR(dID)].open(dID, oflag, mode);
 		}
 		break;
 	case BLKDEV:
@@ -38,17 +38,17 @@ int DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode)
 			return -1;
 		}
 		// Check if device exists
-		if(BlkDev[MAJOR(dID)].open == 0) {
+		if(dev_blk[MAJOR(dID)].open == 0) {
 			return ENODEV;
 		} else {
-			return BlkDev[MAJOR(dID)].open(dID, oflag, mode);
+			return dev_blk[MAJOR(dID)].open(dID, oflag, mode);
 		}
 		break;
 	}
 	return ENODEV;
 }
 
-int DeviceClose(enum DevType type, id_t dID)
+int dev_close(enum dev_type type, id_t dID)
 {
 	switch(type) {
 	case CHRDEV:
@@ -58,11 +58,11 @@ int DeviceClose(enum DevType type, id_t dID)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(ChrDev[MAJOR(dID)].open == 0 ||
-		   ChrDev[MAJOR(dID)].close== 0) {
+		if(dev_chr[MAJOR(dID)].open == 0 ||
+		   dev_chr[MAJOR(dID)].close== 0) {
 			return ENODEV;
 		} else {
-			return ChrDev[MAJOR(dID)].close(dID);
+			return dev_chr[MAJOR(dID)].close(dID);
 		}
 		break;
 	case BLKDEV:
@@ -72,18 +72,18 @@ int DeviceClose(enum DevType type, id_t dID)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(BlkDev[MAJOR(dID)].open == 0 ||
-		   BlkDev[MAJOR(dID)].close== 0) {
+		if(dev_blk[MAJOR(dID)].open == 0 ||
+		   dev_blk[MAJOR(dID)].close== 0) {
 			return ENODEV;
 		} else {
-			return BlkDev[MAJOR(dID)].close(dID);
+			return dev_blk[MAJOR(dID)].close(dID);
 		}
 		break;
 	}
 	return ENODEV;
 }
 
-int DeviceRead (enum DevType type, id_t dID, char *buf, off_t cnt)
+int dev_read (enum dev_type type, id_t dID, char *buf, off_t cnt)
 {
 	switch(type) {
 	case CHRDEV:
@@ -93,11 +93,11 @@ int DeviceRead (enum DevType type, id_t dID, char *buf, off_t cnt)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(ChrDev[MAJOR(dID)].open == 0 ||
-		   ChrDev[MAJOR(dID)].read == 0) {
+		if(dev_chr[MAJOR(dID)].open == 0 ||
+		   dev_chr[MAJOR(dID)].read == 0) {
 			return ENODEV;
 		} else {
-			return ChrDev[MAJOR(dID)].read(dID, buf, cnt);
+			return dev_chr[MAJOR(dID)].read(dID, buf, cnt);
 		}
 		break;
 	case BLKDEV:
@@ -107,18 +107,18 @@ int DeviceRead (enum DevType type, id_t dID, char *buf, off_t cnt)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(BlkDev[MAJOR(dID)].open == 0 ||
-		   BlkDev[MAJOR(dID)].read == 0) {
+		if(dev_blk[MAJOR(dID)].open == 0 ||
+		   dev_blk[MAJOR(dID)].read == 0) {
 			return ENODEV;
 		} else {
-			return BlkDev[MAJOR(dID)].read(dID, buf, cnt);
+			return dev_blk[MAJOR(dID)].read(dID, buf, cnt);
 		}
 		break;
 	}
 	return ENODEV;
 }
 
-int DeviceWrite(enum DevType type, id_t dID, char *buf, off_t cnt)
+int dev_write(enum dev_type type, id_t dID, char *buf, off_t cnt)
 {
 	switch(type) {
 	case CHRDEV:
@@ -128,11 +128,11 @@ int DeviceWrite(enum DevType type, id_t dID, char *buf, off_t cnt)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(ChrDev[MAJOR(dID)].open == 0 ||
-		   ChrDev[MAJOR(dID)].write== 0) {
+		if(dev_chr[MAJOR(dID)].open == 0 ||
+		   dev_chr[MAJOR(dID)].write== 0) {
 			return ENODEV;
 		} else {
-			return ChrDev[MAJOR(dID)].write(dID, buf, cnt);
+			return dev_chr[MAJOR(dID)].write(dID, buf, cnt);
 		}
 		break;
 	case BLKDEV:
@@ -142,18 +142,18 @@ int DeviceWrite(enum DevType type, id_t dID, char *buf, off_t cnt)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(BlkDev[MAJOR(dID)].open == 0 ||
-		   BlkDev[MAJOR(dID)].write== 0) {
+		if(dev_blk[MAJOR(dID)].open == 0 ||
+		   dev_blk[MAJOR(dID)].write== 0) {
 			return ENODEV;
 		} else {
-			return BlkDev[MAJOR(dID)].write(dID, buf, cnt);
+			return dev_blk[MAJOR(dID)].write(dID, buf, cnt);
 		}
 		break;
 	}
 	return ENODEV;
 }
 
-int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
+int dev_ioctl(enum dev_type type, id_t dID, int cmd, int arg)
 {
 	switch(type) {
 	case CHRDEV:
@@ -163,11 +163,11 @@ int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(ChrDev[MAJOR(dID)].open == 0 ||
-		   ChrDev[MAJOR(dID)].ioctl== 0) {
+		if(dev_chr[MAJOR(dID)].open == 0 ||
+		   dev_chr[MAJOR(dID)].ioctl== 0) {
 			return ENODEV;
 		} else {
-			return ChrDev[MAJOR(dID)].ioctl(dID, cmd, arg);
+			return dev_chr[MAJOR(dID)].ioctl(dID, cmd, arg);
 		}
 		break;
 	case BLKDEV:
@@ -177,18 +177,18 @@ int DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(BlkDev[MAJOR(dID)].open == 0 ||
-		   BlkDev[MAJOR(dID)].ioctl== 0) {
+		if(dev_blk[MAJOR(dID)].open == 0 ||
+		   dev_blk[MAJOR(dID)].ioctl== 0) {
 			return ENODEV;
 		} else {
-			return BlkDev[MAJOR(dID)].ioctl(dID, cmd, arg);
+			return dev_blk[MAJOR(dID)].ioctl(dID, cmd, arg);
 		}
 		break;
 	}
 	return ENODEV;
 }
 
-int DeviceLseek(enum DevType type, id_t dID, int off, int whence)
+int dev_lseek(enum dev_type type, id_t dID, int off, int whence)
 {
 	switch(type) {
 	case CHRDEV:
@@ -204,11 +204,11 @@ int DeviceLseek(enum DevType type, id_t dID, int off, int whence)
 		}
 		// Check if device exists, open operation is always checked
 		// as the existence of device entry
-		if(BlkDev[MAJOR(dID)].open == 0 ||
-		   BlkDev[MAJOR(dID)].lseek== 0) {
+		if(dev_blk[MAJOR(dID)].open == 0 ||
+		   dev_blk[MAJOR(dID)].lseek== 0) {
 			return ENODEV;
 		} else {
-			return BlkDev[MAJOR(dID)].lseek(dID, off, whence);
+			return dev_blk[MAJOR(dID)].lseek(dID, off, whence);
 		}
 		break;
 	}
