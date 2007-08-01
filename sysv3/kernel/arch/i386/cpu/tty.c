@@ -23,7 +23,7 @@
 #include <irq.h>
 
 /* Device descriptor */
-struct ChrDev *tty_dev = &ChrDev[CHR_TTY];
+struct dev_chr *tty_dev = &dev_chr[CHR_TTY];
 
 /************************** TTY Driver Begin *********************************/
 

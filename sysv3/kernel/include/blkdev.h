@@ -10,7 +10,7 @@
 #include <config.h>
 #include <types.h>
 
-struct BlkDev
+struct dev_blk
 {
 	int (*open )(id_t id, int oflag, mode_t mode);
 	int (*close)(id_t id);	

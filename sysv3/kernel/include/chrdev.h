@@ -11,7 +11,7 @@
 #include <types.h>
 
 /* Character Device I/O Interface */
-struct ChrDev
+struct dev_chr
 {
 	int (*open )(id_t id, int oflag, mode_t mode);
 	int (*close)(id_t id);

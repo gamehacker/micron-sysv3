@@ -17,9 +17,9 @@
 .extern page_init
 .extern dma_init
 .extern tty_init
-.extern DeviceInit
+.extern dev_init
 	movl $stack, %esp	/* setup stack for kernel */
-	call DeviceInit		/* initialize device manager first */
+	call dev_init		/* initialize device manager first */
 	call tty_init		/* initialize TTY */
 	call idt_init		/* install new gdt managed by kernel */
 	call irq_init		/* initialize IRQ */

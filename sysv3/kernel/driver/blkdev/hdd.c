@@ -40,7 +40,7 @@
 #define CMD_WRITE	0x30	/* PIO mode write */
 #define CMD_SEEK	0x70	/* seek function */
 
-struct BlkDev *hdd_dev=&BlkDev[BLK_HDD];
+struct dev_blk *hdd_dev=&dev_blk[BLK_HDD];
 
 struct hdd_stat
 {
@@ -103,6 +103,11 @@ int hdd_read(id_t id, char *buf, off_t cnt)
 	} else {
 		outportb(REG_DEVICE, (hdd_stat.h & 0x0F)|0x10);
 	}
+
+	// clear interrupt status
+	hdd_stat.rready = 0;
+
+	// send the command
 	hdd_command(CMD_READ);
 
 	// wait for interrupt

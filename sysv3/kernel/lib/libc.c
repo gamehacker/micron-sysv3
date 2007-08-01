@@ -89,45 +89,45 @@ kprintf(char *fmt, ...)
 		switch(*fmt) {
 		case 'b':
 			itoa(args[argi++], buf, 2);
-			DeviceWrite(CHRDEV, DEVID(CHR_TTY, 0), buf, 
+			dev_write(CHRDEV, DEVID(CHR_TTY, 0), buf, 
 					strlen(buf));
 			break;
 		case 'd':
 			itoa(args[argi++], buf, 10);
-			DeviceWrite(CHRDEV, DEVID(CHR_TTY, 0), buf, 
+			dev_write(CHRDEV, DEVID(CHR_TTY, 0), buf, 
 					strlen(buf));
 			break;
 		case 'x':
 			itoa(args[argi++], buf, 16);
-			DeviceWrite(CHRDEV, DEVID(CHR_TTY, 0), buf,
+			dev_write(CHRDEV, DEVID(CHR_TTY, 0), buf,
 					strlen(buf));
 			break;
 		case 's':
-			DeviceWrite(CHRDEV, DEVID(CHR_TTY, 0), 
+			dev_write(CHRDEV, DEVID(CHR_TTY, 0), 
 				(char*)args[argi], strlen((char*)args[argi]));
 			argi++;
 			break;
 		case 'c':
-			DeviceWrite(CHRDEV, DEVID(CHR_TTY, 0),
+			dev_write(CHRDEV, DEVID(CHR_TTY, 0),
 					(char*)&args[argi++], 1);
 			break;
 		case 'C':
-			DeviceIoctl(CHRDEV, DEVID(CHR_TTY, 0), 2, 
+			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 2, 
 					(char)args[argi++]);
 			break;
 		case 'X':
-			DeviceIoctl(CHRDEV, DEVID(CHR_TTY, 0), 4, 
+			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 4, 
 					(char)args[argi++]);
 			break;
 		case 'Y':
-			DeviceIoctl(CHRDEV, DEVID(CHR_TTY, 0), 5, 
+			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 5, 
 					(char)args[argi++]);
 			break;
 		}
 		fmt++;
 		break;
 	default:
-		DeviceWrite(CHRDEV, DEVID(CHR_TTY, 0), fmt, 1);
+		dev_write(CHRDEV, DEVID(CHR_TTY, 0), fmt, 1);
 		fmt++;
 		break;
 	}

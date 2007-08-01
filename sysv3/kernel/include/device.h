@@ -18,7 +18,7 @@
 /* DEVICE TODO: Add other device type headers here */
 
 /* Device type enumeration */
-enum DevType
+enum dev_type
 {
 	CHRDEV,
 	BLKDEV
@@ -26,8 +26,8 @@ enum DevType
 };
 
 /* Device descriptor holder */
-struct ChrDev ChrDev[NCHRDEVS];
-struct BlkDev BlkDev[NBLKDEVS];
+extern struct dev_chr dev_chr[NCHRDEVS];
+extern struct dev_blk dev_blk[NBLKDEVS];
 
 /* Macros to deal with device IDs */
 #define DEVID(major, minor)	((major&0xffff)<<16)|(minor&0xffff)
@@ -40,13 +40,13 @@ struct BlkDev BlkDev[NBLKDEVS];
 #define SEEK_END 2
 
 /* Device operation method function interface */
-extern void  DeviceInit ();
-extern int   DeviceOpen (enum DevType type, id_t dID, int oflag, mode_t mode);
-extern int   DeviceClose(enum DevType type, id_t dID);
-extern int   DeviceLseek(enum DevType type, id_t dID, off_t off, int whence);
-extern int   DeviceRead (enum DevType type, id_t dID, char *buf, off_t cnt);
-extern int   DeviceWrite(enum DevType type, id_t dID, char *buf, off_t cnt);
-extern int   DeviceIoctl(enum DevType type, id_t dID, int cmd, int arg);
+extern void  dev_init();
+extern int   dev_open (enum dev_type type, id_t dID, int oflag, mode_t mode);
+extern int   dev_close(enum dev_type type, id_t dID);
+extern int   dev_lseek(enum dev_type type, id_t dID, off_t off, int whence);
+extern int   dev_read (enum dev_type type, id_t dID, char *buf, off_t cnt);
+extern int   dev_write(enum dev_type type, id_t dID, char *buf, off_t cnt);
+extern int   dev_ioctl(enum dev_type type, id_t dID, int cmd, int arg);
 /* DEVICE TODO: Add new device model operations here */
 
 #endif
