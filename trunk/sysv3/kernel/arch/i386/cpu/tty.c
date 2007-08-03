@@ -79,28 +79,7 @@ int tty_write(id_t id, char *buf, off_t cnt)
 	/* get target display struct */
 	struct tty_disp *disp = &tty_disp[MINOR(id)];
 	
-	while(cnt--) switch(*buf) {
-	case '\b':
-		if(disp->pos_x > 0)
-			disp->pos_x--;
-		buf++;
-		break;
-	case '\r':
-		if(disp->pos_x > 0)
-			disp->pos_x = 0;
-		buf++;
-		break;
-	case '\n':
-		disp->pos_x = 0;
-		disp->pos_y+= 1;
-		buf++;
-		break;
-	case '\t':
-		temp = disp->pos_x;
-		disp->pos_x = (temp/8 + 1)*8;
-		buf++;
-		break;
-	default:
+	while(cnt--) {
 		if(disp->pos_x >= disp->max_x) {
 			disp->pos_x = 0;
 			disp->pos_y++;
@@ -109,14 +88,39 @@ int tty_write(id_t id, char *buf, off_t cnt)
 			tty_scroll(MINOR(id));
 			disp->pos_y--;
 		}
-		disp->buf[disp->pos_x+disp->pos_y*disp->max_x] = 
-			*buf|(disp->color<<8);
-		tty_setcursor(MINOR(id), disp->pos_x+1, disp->pos_y);
+		switch(*buf) {
+		case '\b':
+			if(disp->pos_x > 0)
+				disp->pos_x--;
+			buf++;
+			break;
+		case '\r':
+			if(disp->pos_x > 0)
+				disp->pos_x = 0;
+			buf++;
+			break;
+		case '\n':
+			disp->pos_x = 0;
+			disp->pos_y+= 1;
+			buf++;
+			break;
+		case '\t':
+			temp = disp->pos_x;
+			disp->pos_x = (temp/8 + 1)*8;
+			buf++;
+			break;
+		default:
+			disp->buf[disp->pos_x+disp->pos_y*disp->max_x] = 
+				*buf|(disp->color<<8);
+	
+			/* prepare for next character */
+			disp->pos_x++;
+			buf++;
+			break;
+		}
 
-		/* prepare for next character */
-		disp->pos_x++;
-		buf++;
-		break;
+		/* update cursor */
+		tty_setcursor(MINOR(id), disp->pos_x, disp->pos_y);
 	}
 
 	return 0;

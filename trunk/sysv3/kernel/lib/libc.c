@@ -10,7 +10,7 @@
 
 char *itoa(int value, char *str, int radix)
 {
-	int len=0, val = value;
+	unsigned len=0, val = (unsigned)value, rad =(unsigned)radix;
 
 	if(value == 0) {
 		str[0] = '0';
@@ -21,19 +21,19 @@ char *itoa(int value, char *str, int radix)
 	/* evaluate target string length */
 	while(val) {
 		len++;
-		val = val/radix;
+		val = val/rad;
 	}
 
 	/* cut down end of string */
 	str[len] = '\0';
 
 	/* do the conversion */
-	while(len--) if((value%radix)>=0 && (value%radix)<=9) {
-		str[len] = '0' + value%radix;
-		value = value/radix;
-	} else if((value%radix)>=10) {
-		str[len] = 'a' + value%radix - 10;
-		value = value/radix;
+	while(len--) if((value%rad)>=0 && (value%rad)<=9) {
+		str[len] = '0' + value%rad;
+		value = value/rad;
+	} else if((value%rad)>=10) {
+		str[len] = 'a' + value%rad - 10;
+		value = value/rad;
 	}
 	return str;
 }

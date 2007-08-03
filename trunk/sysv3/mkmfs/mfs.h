@@ -8,7 +8,7 @@
 #define __IMAGE_MFS_H__
 
 // Configurations
-#define MFS_NAMELEN 60		// MFS supported file name length
+#define MFS_NAMELEN 64		// MFS supported file name length
 #define MFS_BLKSIZE 1024	// MFS block size
 
 // Definitions
@@ -71,6 +71,7 @@ struct mfs_superblk {
 	mfs_u32 s_iblkcnt;	// Inode block count
 	mfs_u32 s_dblk;		// Data block
 	mfs_u32 s_dblkcnt;	// Data block count
+	mfs_u32 s_blksize;	// Block size
 };
 
 // MFS Inode structure
@@ -89,7 +90,6 @@ struct mfs_inode {
 	mfs_u32 i_mtime;	// Last modify time
 	mfs_u32 i_ctime;	// File creation time
 	mfs_u32 i_blkentry;	// Block index of first storage block
-	mfs_u32 i_blksize;	// Block size
 	mfs_u32 i_blocks;	// Block index storage blocks continuity
 	mfs_u32 i_next;		// Next node on same level
 	mfs_u32 i_parent;	// Parent inode index

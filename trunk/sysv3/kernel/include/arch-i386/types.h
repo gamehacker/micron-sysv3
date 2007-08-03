@@ -24,7 +24,7 @@ typedef char		s8_t;
 typedef s32_t	id_t;		// General identifier 
 typedef s16_t	uid_t;		// User ID
 typedef s16_t	gid_t;		// Group ID
-typedef s16_t	dev_t;		// Used for device IDs
+typedef s32_t	dev_t;		// Used for device IDs
 typedef u32_t	ino_t;		// Inode IDs
 typedef u32_t	nlink_t;	// File hard link count
 typedef u32_t	time_t;		// Time type

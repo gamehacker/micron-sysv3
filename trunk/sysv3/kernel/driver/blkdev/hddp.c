@@ -107,8 +107,7 @@ int hddp_init()
 	int i;
 	for(i=0; i<NPARTION; i++) {
 		/* seek for 1st sector for identification info */
-		if(dev_lseek(BLKDEV, DEVID(BLK_HDDP, i), 1, 
-					SEEK_SET) == -1) {
+		if(dev_lseek(BLKDEV, DEVID(BLK_HDDP, i), 1, SEEK_SET) == -1) {
 			return 0;
 		}
 
@@ -118,6 +117,8 @@ int hddp_init()
 		/* Type probes */
 		if(!strncmp(buf, "MFS", 3)) {
 			hddp_data[i].type = MFS;
+		} else {
+			hddp_data[i].type = -1;
 		}
 
 		/* get end sector of partition */
