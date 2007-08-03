@@ -59,7 +59,7 @@
 #define 	O_RDWR	 0x0003		/* Read/Write access */
 
 /* File system operations */
-extern ino_t iget(char *path, int parent);
+extern ino_t iget(ino_t cdir, char *path, int parent);
 
 #endif
 
