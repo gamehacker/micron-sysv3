@@ -70,14 +70,14 @@ int mfs_new(char debug)
 		printf("[MFS]: Entering MFS module\n");
 
 	// Allocate the blocks
-	mfs_data.m_blocks[0] = malloc(MFS_BLKSIZE);	 // the boot block
+	mfs_data.m_blocks[0] = malloc(512);	 // the boot block
 	mfs_data.m_blocks[1] = malloc(MFS_BLKSIZE);	 // the super block
 	mfs_data.m_blocks[2] = malloc(MFS_BLKSIZE*NKBLK);// the kernel block
 	mfs_data.m_blocks[3] = malloc(MFS_BLKSIZE*NIBMP);// the inode bitmap blk
 	mfs_data.m_blocks[4] = malloc(MFS_BLKSIZE*NDBMP);// the data bitmap blk
 	mfs_data.m_blocks[5] = malloc(MFS_BLKSIZE*NIBLK);// the inode blk
 	mfs_data.m_blocks[6] = malloc(MFS_BLKSIZE*NDBLK);// the data blk
-	memset(mfs_data.m_blocks[0], 0, MFS_BLKSIZE);
+	memset(mfs_data.m_blocks[0], 0, 512);
 	memset(mfs_data.m_blocks[1], 0, MFS_BLKSIZE);
 	memset(mfs_data.m_blocks[2], 0, MFS_BLKSIZE*NKBLK);
 	memset(mfs_data.m_blocks[3], 0, MFS_BLKSIZE*NIBMP);
@@ -90,7 +90,7 @@ int mfs_new(char debug)
 	sblk->s_magic[0]='M';
 	sblk->s_magic[1]='F';
 	sblk->s_magic[2]='S';
-	sblk->s_kblk    =2;
+	sblk->s_kblk    =1;
 	sblk->s_kblkcnt =NKBLK;
 	sblk->s_ibmp    =sblk->s_kblk + NKBLK;
 	sblk->s_ibmpcnt =NIBMP;
@@ -102,17 +102,17 @@ int mfs_new(char debug)
 	sblk->s_dblkcnt =NDBLK;
 	if(mfs_data.m_debug) {
 		printf("[SBLK]: i=%-8dcnt=%-8d", 1, 1);
-		printf("add=0x%-8x\n", 1*MFS_BLKSIZE);
+		printf("add=0x%-8x\n", 512);
 		printf("[KBLK]: i=%-8dcnt=%-8d", 2, NKBLK);
-		printf("add=0x%-8x\n", 2*MFS_BLKSIZE);
+		printf("add=0x%-8x\n", 512+1*MFS_BLKSIZE);
 		printf("[IBMP]: i=%-8dcnt=%-8d", sblk->s_ibmp, sblk->s_ibmpcnt);
-		printf("add=0x%-8x\n", sblk->s_ibmp*MFS_BLKSIZE);
+		printf("add=0x%-8x\n", 512+sblk->s_ibmp*MFS_BLKSIZE);
 		printf("[DBMP]: i=%-8dcnt=%-8d", sblk->s_dbmp, sblk->s_dbmpcnt);
-		printf("add=0x%-8x\n", sblk->s_dbmp*MFS_BLKSIZE);
+		printf("add=0x%-8x\n", 512+sblk->s_dbmp*MFS_BLKSIZE);
 		printf("[IBLK]: i=%-8dcnt=%-8d", sblk->s_iblk, sblk->s_iblkcnt);
-		printf("add=0x%-8x\n", sblk->s_iblk*MFS_BLKSIZE);
+		printf("add=0x%-8x\n", 512+sblk->s_iblk*MFS_BLKSIZE);
 		printf("[DBLK]: i=%-8dcnt=%-8d", sblk->s_dblk, sblk->s_dblkcnt);
-		printf("add=0x%-8x\n", sblk->s_dblk*MFS_BLKSIZE);
+		printf("add=0x%-8x\n", 512+sblk->s_dblk*MFS_BLKSIZE);
 	}
 
 	// Setup the root inode
@@ -134,7 +134,7 @@ int mfs_end(char *outname)
 	
 	// Write the blocks
 	lseek(out, 0, SEEK_SET);
-	write(out, mfs_data.m_blocks[0], MFS_BLKSIZE);
+	write(out, mfs_data.m_blocks[0], 512);
 	write(out, mfs_data.m_blocks[1], MFS_BLKSIZE);
 	write(out, mfs_data.m_blocks[2], MFS_BLKSIZE*NKBLK);
 	write(out, mfs_data.m_blocks[3], MFS_BLKSIZE*NIBMP);

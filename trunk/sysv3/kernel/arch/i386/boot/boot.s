@@ -163,7 +163,7 @@ stat_ksize:
 	movb $0x02,      %al	/* read super block, 2 sectors */
 	movw $0x00,      %bx
 	movb $0x00,      %dh
-	movb $0x03,      %cl	/* sector 3 */
+	movb $0x02,      %cl	/* sector 2 */
 	movb b_devi,     %dl
 	push %cs
 	pop  %es
@@ -172,6 +172,7 @@ stat_ksize:
 	movw %es:4(%bx), %ax	/* s_kblk */
 	movw $0x02,      %cx	/* 2 sectors per block in MFS */
 	mulw %cx
+	incw %ax
 	movw %ax,        b_ksec
 	movw %es:6(%bx), %ax	/* s_kblkcnt */
 	movw $0x02,      %cx	/* same as above */
