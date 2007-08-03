@@ -8,30 +8,43 @@
 #define __IMAGE_MFS_H__
 
 // Configurations
-#define MFS_NAMELEN 80		// MFS supported file name length
+#define MFS_NAMELEN 60		// MFS supported file name length
 #define MFS_BLKSIZE 1024	// MFS block size
 
 // Definitions
 #ifndef S_IRWXU
-#define	S_IRWXU 	0x0007
-#define		S_IRUSR 0x0001	// Read permission, owner
-#define		S_IWUSR 0x0002	// Write permission, owner
-#define		S_IXUSR 0x0004	// Execute/search permission, owner
-#define	S_IRWXG		0x0070	// Read, write, execute/search by group 
-#define		S_IRGRP	0x0010	// Read permission, group
-#define 	S_IWGRP	0x0020	// Write permission, group
-#define		S_IXGRP	0x0040	// Execute/search permission, group
-#define	S_IRWXO		0x0700	// Read, write, execute/search by others
-#define		S_IROTH	0x0100	// Read permission, others
-#define		S_IWOTH	0x0200	// Write permission, others
-#define		S_IXOTH	0x0400	// Execute/search permission, others
-#define	S_IFMT		0xF000	// Type of file. 
-#define		S_IFIFO	0x1000	// FIFO special. 
-#define		S_IFCHR	0x2000	// Character special. 
-#define		S_IFBLK	0x3000	// Block special. 
-#define		S_IFDIR	0x4000	// Directory. 
-#define		S_IFLNK	0x6000	// Symbolic link. 
-#define		S_IFREG	0x8000	// Regular. 
+
+/* POSIX Open file modes */
+#define	S_IRWXU 	0x00000007
+#define		S_IRUSR 0x00000001	// Read permission, owner
+#define		S_IWUSR 0x00000002	// Write permission, owner
+#define		S_IXUSR 0x00000004	// Execute/search permission, owner
+#define	S_IRWXG		0x00000070	// Read, write, execute/search by group 
+#define		S_IRGRP	0x00000010	// Read permission, group
+#define 	S_IWGRP	0x00000020	// Write permission, group
+#define		S_IXGRP	0x00000040	// Execute/search permission, group
+#define	S_IRWXO		0x00000700	// Read, write, execute/search by others
+#define		S_IROTH	0x00000100	// Read permission, others
+#define		S_IWOTH	0x00000200	// Write permission, others
+#define		S_IXOTH	0x00000400	// Execute/search permission, others
+
+/* POSIX other attributes */
+#define	S_ISUID		0x00001000	// Set user ID on execution
+#define S_ISGID		0x00002000	// Set group ID on execution
+#define S_ISVTX		0x00004000	// On directories, restricted deletion
+
+/* POSIX File types */
+#define	S_IFMT		0x000F0000	// Type of file. 
+#define		S_IFIFO	0x00010000	// FIFO special. 
+#define		S_IFCHR	0x00020000	// Character special. 
+#define		S_IFBLK	0x00030000	// Block special. 
+#define		S_IFDIR	0x00040000	// Directory. 
+#define		S_IFLNK	0x00050000	// Symbolic link. 
+#define		S_IFREG	0x00060000	// Regular file.
+#define		S_IFSOCK 0x00070000	// Socket file
+#define		S_IFPROC 0x00080000	// Procfs
+#define		S_IFDEV 0x00090000	// Device fs.
+
 #endif
 
 // MFS Data Type Definitions (currently i386)
@@ -64,29 +77,25 @@ struct mfs_superblk {
 struct mfs_inode {
 	// Identifiers
 	mfs_s8  i_name[MFS_NAMELEN];	// File name
-	mfs_u16 i_mode;			// Inode mode
-	mfs_u16 i_nlinks;		// Number of linked files
-	mfs_u32 i_sn;			// Inode serial number
-
-	// Time
-	mfs_u32 i_ctime;	// File creation time
-	mfs_u32 i_mtime;	// Last modify time
-	mfs_u32 i_atime;	// Last access time
-
-	// Ownership
+	mfs_s32 i_dev;		// Device ID of device containing file
+	mfs_u32 i_ino;		// Inode serial number
+	mfs_u32 i_mode;		// Inode mode
+	mfs_u32 i_nlink;	// Number of linked files
 	mfs_u16 i_uid;		// Owner user ID
 	mfs_u16 i_gid;		// Owner group ID
-
-	// Structure linking (all storage are block indexes)
-	mfs_u32 i_level;	// Level inode index
+	mfs_s32 i_rdev;		// Device ID (if char or blk special)
+	mfs_u32 i_size;		// File size
+	mfs_u32 i_atime;	// Last access time
+	mfs_u32 i_mtime;	// Last modify time
+	mfs_u32 i_ctime;	// File creation time
+	mfs_u32 i_blkentry;	// Block index of first storage block
+	mfs_u32 i_blksize;	// Block size
+	mfs_u32 i_blocks;	// Block index storage blocks continuity
+	mfs_u32 i_next;		// Next node on same level
 	mfs_u32 i_parent;	// Parent inode index
 	mfs_u32 i_child;	// Child inode index
-	mfs_u32 i_file;		// File storage link inode block index
-
-	// File allocation
-	mfs_u32 i_blk;		// Block index of first storage block
-	mfs_u32 i_blk_count;	// Block index storage blocks continuity
-};
+	mfs_u32 i_expand;	// Node expansion (same file blk extention)
+}__attribute__((packed));
 
 // Exporting library functions
 extern int mfs_new(char debug);

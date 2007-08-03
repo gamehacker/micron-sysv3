@@ -10,7 +10,6 @@
 #include <config.h>
 #include <types.h>
 #include <module.h>
-#include <vfs.h>
 #include <export.h>
 #include <errno.h>
 #include <chrdev.h>
