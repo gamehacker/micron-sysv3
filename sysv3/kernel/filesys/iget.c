@@ -7,7 +7,7 @@
 #include <fs.h>
 #include <libc.h>
 
-ino_t iget(ino_t cvdir, char *path, int parent)
+ino_t iget(ino_t cdir, char *path, int parent)
 {
 	ino_t ip;
 	char *pathc=path, *pathn;
@@ -16,7 +16,7 @@ ino_t iget(ino_t cvdir, char *path, int parent)
 	if(pathc[0] == '/') {
 		ip = 0;
 	} else {
-		ip = cvdir;
+		ip = cdir;
 	}
 
 	/* seek for its parent */
