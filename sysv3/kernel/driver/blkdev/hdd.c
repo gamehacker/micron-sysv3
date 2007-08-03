@@ -11,7 +11,7 @@
 #include <irq.h>
 
 /* IMPLEMENTATION NOTICE: 
- *   The following macros must be fined prior to use this driver:
+ *   The following macros must be defined prior to use this driver:
  *   BLK_HDD		- Block device major ID
  *   BLK_HDD_IOBASE	- Device I/O base
  */
@@ -158,6 +158,9 @@ int hdd_lseek(id_t id, off_t offset, int whence)
 	if(MINOR(id) >=2) {
 		return -1;
 	}
+	if(offset > hdd_stat.C * hdd_stat.H * hdd_stat.S) {
+		return -1;
+	}
 	if(whence == SEEK_SET) {
 		hdd_stat.c = (offset/hdd_stat.S/hdd_stat.H) % hdd_stat.C;
 		hdd_stat.h = (offset/hdd_stat.S) % hdd_stat.H;
@@ -171,9 +174,9 @@ int hdd_lseek(id_t id, off_t offset, int whence)
 			outportb(REG_DEVICE, (hdd_stat.h & 0x0F)|0x10);
 		}
 		hdd_command(CMD_SEEK);
-		DEBUG(hdd_stat.c);
-		DEBUG(hdd_stat.h);
-		DEBUG(hdd_stat.s);
+		//DEBUG(hdd_stat.c);
+		//DEBUG(hdd_stat.h);
+		//DEBUG(hdd_stat.s);
 		return 0;
 	}
 	return -1;
@@ -210,11 +213,11 @@ void hdd_intr1(struct Register *regs)
 		}
 		break;
 	case CMD_READ:
-		kprintf("__int_read__\n");
+		//kprintf("__int_read__\n");
 		hdd_stat.rready = 1;
 		break;
 	case CMD_WRITE:
-		kprintf("__int_write__\n");
+		//kprintf("__int_write__\n");
 		break;
 	case CMD_SEEK:
 		//kprintf("__int_seek__\n");

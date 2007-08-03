@@ -27,6 +27,7 @@ extern void arch_enablei();	/* enable all interrupts */
 #define NESYMLEN	20	// Maximum export symbol name length
 #define NMIDSLEN	8	// Maximum module ID string length
 #define NMDESLEN	20	// Maximum module description string length
+#define NPARTION	8	// Number of partitions in HDD
 #define NINODES		4096	// Vnode cache items
 
 /*
@@ -38,6 +39,7 @@ extern void arch_enablei();	/* enable all interrupts */
 
 /* Block devices */
 #define BLK_HDD		0
+#define BLK_HDDP	1
 
 /*
  * Device driver I/O base definitions

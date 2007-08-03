@@ -10,7 +10,7 @@ all:
 	@make --no-print-directory -C library
 	@make --no-print-directory -C application
 	@make --no-print-directory -C mkmfs
-	@mkmfs/mkmfs.exe -v -r rootfs -f mfs \
+	@mkmfs/mkmfs.exe -d -v -r rootfs -f mfs \
 	        -b kernel/boot -k kernel/micron -o micron.img
 
 run:
