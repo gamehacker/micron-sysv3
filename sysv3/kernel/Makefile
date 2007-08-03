@@ -28,6 +28,8 @@ include arch/$(ARCH)/Makefile
 OBJECTS+=driver/device.o \
 	 filesys/icache.o \
 	 filesys/iget.o \
+	 filesys/fs.o \
+	 filesys/fs/mfs.o \
 	 lib/module.o \
 	 lib/export.o \
 	 lib/libc.o

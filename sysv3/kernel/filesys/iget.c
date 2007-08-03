@@ -15,6 +15,7 @@ ino_t iget(ino_t cdir, char *path, int parent)
 	/* are we starting from the root ? */
 	if(pathc[0] == '/') {
 		ip = 0;
+		pathc++;
 	} else {
 		ip = cdir;
 	}
@@ -28,6 +29,9 @@ ino_t iget(ino_t cdir, char *path, int parent)
 	if(parent) {
 		return ip;
 	}
+
+	/* if continue to find the final target */
+
 	return 0;
 }
 

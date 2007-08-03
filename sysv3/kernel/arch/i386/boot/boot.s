@@ -228,8 +228,10 @@ error:
 /* Entry point of 32 bit mode */
 _start32:
 	call kern_move
-	movb $'A', 0xb8000
-	ljmp $0x08, $0x100000	/* jump to kernel entry point */
+	movb $'A',   0xb8000
+	orl  %eax,   %eax
+	movb b_devi, %al
+	ljmp $0x08,  $0x100000	/* jump to kernel entry point */
 				/* this is the point of no return */
 
 /* Kernel Loader */

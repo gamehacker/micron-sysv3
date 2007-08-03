@@ -6,6 +6,7 @@
  *****************************************************************************/
 
 .global _start; _start:
+.extern kboot
 .extern kmain
 .extern stack
 .extern modinit
@@ -19,6 +20,7 @@
 .extern tty_init
 .extern dev_init
 .extern icache_init
+	movb %al,    kboot
 	movl $stack, %esp	/* setup stack for kernel */
 	call dev_init		/* initialize device manager first */
 	call icache_init	/* initialize vnode cache */

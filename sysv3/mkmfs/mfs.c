@@ -100,6 +100,7 @@ int mfs_new(char debug)
 	sblk->s_iblkcnt =NIBLK;
 	sblk->s_dblk    =sblk->s_iblk + NIBLK;
 	sblk->s_dblkcnt =NDBLK;
+	sblk->s_blksize =MFS_BLKSIZE;
 	if(mfs_data.m_debug) {
 		printf("[SBLK]: i=%-8dcnt=%-8d", 1, 1);
 		printf("add=0x%-8x\n", 512);
@@ -268,7 +269,6 @@ int mfs_mkdir(char *path, char *name)
 	iblk[indexi].i_mtime   = time(0);
 	iblk[indexi].i_ctime   = time(0);
 	iblk[indexi].i_blkentry= 0;
-	iblk[indexi].i_blksize = MFS_BLKSIZE;
 	iblk[indexi].i_blocks  = 0;
 	iblk[indexi].i_next    = iblk[pathi].i_child;
 	iblk[indexi].i_parent  = pathi;
@@ -325,7 +325,6 @@ int mfs_write(char *path, char *name, char *buff, int size)
 	iblk[indexi].i_atime  = time(0);
 	iblk[indexi].i_mtime  = time(0);
 	iblk[indexi].i_ctime  = time(0);
-	iblk[indexi].i_blksize= MFS_BLKSIZE;
 	iblk[indexi].i_next   = iblk[pathi].i_child;
 	iblk[indexi].i_parent = pathi;
 	iblk[indexi].i_child  = 0;
