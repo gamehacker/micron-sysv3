@@ -10,8 +10,10 @@
 #include <types.h>
 
 extern char *itoa(int value, char *str, int radix);
-extern int strlen(char *str);
-extern int strcmp(char *str1, char *str2);
+extern char *strchr(char *s, int c);
+extern int strlen (char *str);
+extern int strcmp (char *str1, char *str2);
+extern int strncmp(char *str1, char *str2, size_t n);
 extern void *memcpy(void *dest, void *src, size_t cnt);
 extern void *memset(void *dest, int ch, size_t cnt);
 extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);

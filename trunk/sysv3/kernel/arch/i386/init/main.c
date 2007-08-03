@@ -6,10 +6,11 @@
  *****************************************************************************/
 #include <config.h>
 #include <libc.h>
-#include <vfs.h>
 
 void kmain()
 {
+	/* setup file system root */
+
 	SYSTEM("Total System Memory: %d KB\n", arch_memsize/1024);
 	kprintf("\nWelcome to Micron System Version 3\n\n");
 }

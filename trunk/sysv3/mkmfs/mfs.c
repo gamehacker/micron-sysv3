@@ -213,7 +213,7 @@ int mfs_iget(char *path)
 			printf("[MFS]: -->%s\n", pathent[i]);
 //		printf("%d->%s\n", i, pathent[i]);
 //		printf("==%d\n", iblk[ibi].i_child);
-		for(ibi=iblk[ibi].i_child; ibi!=0; ibi=iblk[ibi].i_level)
+		for(ibi=iblk[ibi].i_child; ibi!=0; ibi=iblk[ibi].i_next)
 			if(!strcmp(iblk[ibi].i_name, pathent[i]))
 				break;
 		if(strcmp(iblk[ibi].i_name, pathent[i])) {
@@ -256,20 +256,25 @@ int mfs_mkdir(char *path, char *name)
 	}
 	mfs_markbmp(mfs_data.m_blocks[3], indexi, 1);	// mark used
 	strcpy(iblk[indexi].i_name, name);
-	iblk[indexi].i_mode  = S_IFDIR|S_IRWXU|S_IRWXG|S_IROTH;
-	iblk[indexi].i_sn    = indexi;
-	iblk[indexi].i_ctime = time(0);
-	iblk[indexi].i_mtime = time(0);
-	iblk[indexi].i_atime = time(0);
-	iblk[indexi].i_uid   = 0;
-	iblk[indexi].i_gid   = 0;
-	iblk[indexi].i_level = iblk[pathi].i_child;
-	iblk[indexi].i_parent= pathi;
-	iblk[indexi].i_child = 0;
-	iblk[indexi].i_file  = 0;
-	iblk[indexi].i_blk      = 0;
-	iblk[indexi].i_blk_count= 0;
-	iblk[pathi].i_child = indexi;
+	iblk[indexi].i_dev     = 0;
+	iblk[indexi].i_ino     = indexi;
+	iblk[indexi].i_mode    = S_IFDIR|S_IRWXU|S_IRWXG|S_IROTH;
+	iblk[indexi].i_nlink   = 0;
+	iblk[indexi].i_uid     = 0;
+	iblk[indexi].i_gid     = 0;
+	iblk[indexi].i_rdev    = 0;
+	iblk[indexi].i_size    = 0;		/* dir have no size */
+	iblk[indexi].i_atime   = time(0);
+	iblk[indexi].i_mtime   = time(0);
+	iblk[indexi].i_ctime   = time(0);
+	iblk[indexi].i_blkentry= 0;
+	iblk[indexi].i_blksize = MFS_BLKSIZE;
+	iblk[indexi].i_blocks  = 0;
+	iblk[indexi].i_next    = iblk[pathi].i_child;
+	iblk[indexi].i_parent  = pathi;
+	iblk[indexi].i_child   = 0;
+	iblk[indexi].i_expand  = 0;
+	iblk[pathi].i_child    = indexi;
 
 	return 0;
 }
@@ -309,18 +314,23 @@ int mfs_write(char *path, char *name, char *buff, int size)
 	}
 	mfs_markbmp(mfs_data.m_blocks[3], indexi, 1);	// mark used
 	strcpy(iblk[indexi].i_name, name);
-	iblk[indexi].i_mode  = S_IFREG|S_IRWXU|S_IRWXG|S_IROTH;
-	iblk[indexi].i_sn    = indexi;
-	iblk[indexi].i_ctime = time(0);
-	iblk[indexi].i_mtime = time(0);
-	iblk[indexi].i_atime = time(0);
-	iblk[indexi].i_uid   = 0;
-	iblk[indexi].i_gid   = 0;
-	iblk[indexi].i_level = iblk[pathi].i_child;
-	iblk[indexi].i_parent= pathi;
-	iblk[indexi].i_child = 0;
-	iblk[indexi].i_file  = 0;
-	iblk[pathi].i_child = indexi;
+	iblk[indexi].i_dev    = 0;
+	iblk[indexi].i_ino    = indexi;
+	iblk[indexi].i_mode   = S_IFREG|S_IRWXU|S_IRWXG|S_IROTH;
+	iblk[indexi].i_nlink  = 0;
+	iblk[indexi].i_uid    = 0;
+	iblk[indexi].i_gid    = 0;
+	iblk[indexi].i_rdev   = 0;
+	iblk[indexi].i_size   = size;
+	iblk[indexi].i_atime  = time(0);
+	iblk[indexi].i_mtime  = time(0);
+	iblk[indexi].i_ctime  = time(0);
+	iblk[indexi].i_blksize= MFS_BLKSIZE;
+	iblk[indexi].i_next   = iblk[pathi].i_child;
+	iblk[indexi].i_parent = pathi;
+	iblk[indexi].i_child  = 0;
+	iblk[indexi].i_expand = 0;
+	iblk[pathi].i_child   = indexi;
 
 	// allocate data block and copy data, then setup block link data
 
@@ -328,7 +338,7 @@ int mfs_write(char *path, char *name, char *buff, int size)
 	dblkr = size/MFS_BLKSIZE;
 	if(size % MFS_BLKSIZE)
 		dblkr++;
-	iblk[indexi].i_blk_count= dblkr;
+	iblk[indexi].i_blocks= dblkr;
 	if(mfs_data.m_debug)
 		printf("[MFS]: Needed blocks: %d\n", dblkr);
 	
@@ -342,12 +352,13 @@ int mfs_write(char *path, char *name, char *buff, int size)
 		}
 		mfs_markbmp(mfs_data.m_blocks[4], dblki, 1);	// mark used
 	}
-	iblk[indexi].i_blk      = dblki - iblk[indexi].i_blk_count + 1;
+	iblk[indexi].i_blkentry      = dblki - iblk[indexi].i_blocks + 1;
 	if(mfs_data.m_debug)
-		printf("[MFS]: Beginning from block: %d\n", iblk[indexi].i_blk);
+		printf("[MFS]: Beginning from block: %d\n", 
+				iblk[indexi].i_blkentry);
 
 	// writing blocks
-	memcpy(&mfs_data.m_blocks[6][iblk[indexi].i_blk * MFS_BLKSIZE], \
+	memcpy(&mfs_data.m_blocks[6][iblk[indexi].i_blkentry * MFS_BLKSIZE], \
 		buff, size);
 	return 0;
 }

@@ -8,7 +8,7 @@
 #define __MICRON_KERNEL_VFS_H__
 
 #include <config.h>
-#include <vcache.h>
+#include <icache.h>
 
 /* POSIX Open file modes */
 #define	S_IRWXU 	0x00000007
@@ -57,6 +57,9 @@
 #define 	O_RDONLY 0x0001		/* Read only access */
 #define 	O_WRONLY 0x0002		/* Write only access */
 #define 	O_RDWR	 0x0003		/* Read/Write access */
+
+/* File system operations */
+extern ino_t iget(char *path, int parent);
 
 #endif
 

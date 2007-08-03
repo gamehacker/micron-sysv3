@@ -38,6 +38,17 @@ char *itoa(int value, char *str, int radix)
 	return str;
 }
 
+char *strchr(char *s, int c)
+{
+	while(*s != '\0') {
+		if(*s == (char)c) {
+			return s;
+		}
+		s++;
+	}
+	return 0;
+}
+
 int strlen(char *str)
 {
 	int len=0;
@@ -55,6 +66,16 @@ int strcmp(char *str1, char *str2)
 	} else {
 		while(len1--) if(*str1++ != *str2++) {
 				return -1;
+		}
+	}
+	return 0;
+}
+
+int strncmp(char *str1, char *str2, size_t n)
+{
+	while(n--) {
+		if(*str1++ != *str2++) {
+			return -1;
 		}
 	}
 	return 0;
@@ -78,8 +99,7 @@ void *memset(void *dest, int ch, size_t cnt)
 	return dest;
 }
 
-int __attribute__((format(printf, 1, 2)))
-kprintf(char *fmt, ...)
+int kprintf(char *fmt, ...)
 {
 	unsigned *args = (unsigned*)&fmt, argi=1;
 	char buf[255];

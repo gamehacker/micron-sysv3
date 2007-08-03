@@ -27,7 +27,7 @@ extern void arch_enablei();	/* enable all interrupts */
 #define NESYMLEN	20	// Maximum export symbol name length
 #define NMIDSLEN	8	// Maximum module ID string length
 #define NMDESLEN	20	// Maximum module description string length
-#define NVNODES		4096	// Vnode cache items
+#define NINODES		4096	// Vnode cache items
 
 /*
  * Various device major device IDs
