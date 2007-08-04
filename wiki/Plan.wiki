@@ -12,7 +12,8 @@
 = Current =
 
   VFS layer design on stage.
-  Sector Buffer on line.
+
+  Sector Buffer development in progress.
 
 = Future =
 
