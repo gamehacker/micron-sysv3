@@ -2,7 +2,9 @@
 
 = Introduction =
 
-  In this article, we are going to introduce some basis of Micron Device Driver Framework.
+  Device drivers gives Micron System new hardware support, notice that this layer is should be only hardware specific. Protocols such as TCP/IP, File systems, etc. are implemented in other type of kernel modules.
+
+  In this article we describe some basis of Micron Device Driver Framework.
 
 = Character Special Device =
 
