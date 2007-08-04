@@ -5,7 +5,6 @@
   After one month's hard development, the basic structures such as interrupts etc. has been implemented successfully.
 
   In the need of developing dymanic part of the kernel, there should be some dependencies be developed prior to dynamic parts:
-
     * Disk driver
     * File system support
     * Virtual File System support
