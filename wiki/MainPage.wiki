@@ -17,32 +17,11 @@
 
 = Micron Developer's Reference =
 
-  * [Plan Project Plans]
-    * [PlanInit Initial Plan]
-  * Computer System Architectures
-    * [ArchIbmpc IBM/PC Standard]
-  * [Proc Processor Control]
-    * [ProcI386 Intel IA-32 Architecture]
-      * [ProcI386Protect Protected Mode Programming]
-  * [Porting Porting To New Hardware]
-  * Micron Device Documentation
-    * [DevChr Character Devices]
-      * [DevChrTty TTY Driver]
-    * [DevBlk Block Devices]
-      * [DevBlkHdd ATA Hard Drive]
-    * [DevNet Net Devices]
-      * [DevNetNe2k NE2000 Standard Net Cards]
-  * Devdev Writing Micron Drivers
-    * [DevdevHowto Micron Driver Howto]
-    * [DevdevDev Device Driver Development]
-    * [DevdevMod Kernel Module Development]
-    * [DevdevSrv System Service Development]
-    * [DevdevKrn Kernel Extension]
-  * Various Protocols
-    * [ProtoTcpip TCP/IP Protocol]
-  * Bus Standards & Control
-    * [BusPCI PCI Bus]
-    * [BusISA ISA Bus]
+  * [Plan Project Plan & TODOs]
+  * [Fs File System Developer's Guide]
+  * [Dev Device Driver Developer's Guide]
+  * [Net Network Protocol Developer's Guide]
+  * [Mod Kernel Module Developer's Guide]
 
 = Micron Developer Notes =
 
