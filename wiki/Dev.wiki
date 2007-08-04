@@ -41,6 +41,8 @@ struct dev_blk
 All device driver implementations should first refer to [Mod Kernel Module Developer's Guide], and here is how to use kernel module to install a new device driver:
 
 {{{
+#include <device.h>
+#include <libc.h>
 /* IMPLEMENTATION NOTICE:
  *   The following macros must be defined prior to use this driver:
  *   CHR_DEVICENAME      - Char device major ID in config.h
@@ -76,6 +78,7 @@ int device_init()
     device_dev->read = device_read;
     device_dev->write= device_write;
     device_dev->ioctl= device_ioctl;
+    kprintf("\nhello world\n");
     return 0;           /* 0 upon success, -1 upon failure */
 }
 int device_exit()
@@ -85,6 +88,7 @@ int device_exit()
     device_dev->read = 0;
     device_dev->write= 0;
     device_dev->ioctl= 0;
+    kprintf("\ngoodbye world\n");
     return 0;    /* 0 upon success, -1 upon failure */
 }
 REGISTER_MODULE(device, "Device Description", device_init, device_exit);
