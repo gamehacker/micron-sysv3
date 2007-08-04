@@ -18,10 +18,10 @@
 = Micron Developer's Reference =
 
   * [Plan Project Plan & TODOs]
+  * [Mod Kernel Module Developer's Guide]
   * [Fs File System Developer's Guide]
   * [Dev Device Driver Developer's Guide]
   * [Net Network Protocol Developer's Guide]
-  * [Mod Kernel Module Developer's Guide]
 
 = Micron Developer Notes =
 
