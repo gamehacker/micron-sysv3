@@ -39,11 +39,12 @@ There are generally 2 way of doing this:
   * Compile module together with kernel without any modification of kernel source.
   * Dynamically load it from a file system (not implemented yet)
 
-  To compile the module with a kernel, you need to modify 2 files depending on what type of module you are developing:
-    * Single architecture specific
-    * All platform supported
+To compile the module with a kernel, you need to modify 2 files depending on what type of module you are developing:
+  * Single architecture specific
+  * All platform supported
 
-  On the Single architecture specific condition, you should add your file to be compiled together to the file:
+On the Single architecture specific condition, you should add your file to be compiled together to the file:
+
 {{{
 // In arch/$Architecture/Makefile :
 // Search and find the lines:
@@ -53,7 +54,8 @@ OBJECTS+=arch/i386/init/init.o \
 // Append your module to the place and order it should be compiled, name .c to .o
 }}}
 
-  On the All platform supported condition, you should add your file to be compiled together to the file:
+On the All platform supported condition, you should add your file to be compiled together to the file:
+
 {{{
 // In Makefile :
 // Search and find the lines:
@@ -62,4 +64,3 @@ OBJECTS+=driver/device.o \
          filesys/iget.o \
 // Append your module to the place and order it should be compiled, name .c to .o
 }}}
-
