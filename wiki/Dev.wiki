@@ -35,3 +35,59 @@ struct dev_blk
 };
 
 }}}
+
+= Example Device Driver (Character Special) =
+
+All device driver implementations should first refer to [Mod Kernel Module Developer's Guide], and here is how to use kernel module to install a new device driver:
+
+{{{
+/* IMPLEMENTATION NOTICE:
+ *   The following macros must be defined prior to use this driver:
+ *   CHR_DEVICENAME      - Char device major ID in config.h
+ */
+struct dev_chr *device_dev = &dev_chr[CHR_DEVICENAME];
+int device_open(id_t id, int oflag, mode_t mode)
+{
+    return 0;
+}
+int device_close(id_t id)
+{
+    return 0;
+}
+int device_read (id_t id, char *buf, off_t cnt)
+{
+    return 0;
+}
+int device_write(id_t id, char *buf, off_t cnt)
+{
+    return 0;
+}
+int device_ioctl(id_t id, int cmd, int arg)
+{
+    return 0;
+}
+int device_init()
+{
+    if(device_dev->open != 0) {
+        return -1;      /* device descriptor already used */
+    }
+    device_dev->open = device_open;
+    device_dev->close= device_close;
+    device_dev->read = device_read;
+    device_dev->write= device_write;
+    device_dev->ioctl= device_ioctl;
+    return 0;           /* 0 upon success, -1 upon failure */
+}
+int device_exit()
+{
+    device_dev->open = 0;
+    device_dev->close= 0;
+    device_dev->read = 0;
+    device_dev->write= 0;
+    device_dev->ioctl= 0;
+    return 0;    /* 0 upon success, -1 upon failure */
+}
+REGISTER_MODULE(device, "Device Description", device_init, device_exit);
+}}}
+
+NOTICE: Theoretically not all operations should be implemented as function, but if you are not familiar with the internal working of modulization, please implement them all.
