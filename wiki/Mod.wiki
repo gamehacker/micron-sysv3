@@ -1,4 +1,4 @@
-#summary One-sentence summary of this page.
+#summary Kernel Module Developer's Guide.
 
 = Introduction =
 
@@ -61,5 +61,4 @@ OBJECTS+=driver/device.o \
          filesys/iget.o \
 // Append your module to the place and order it should be compiled, name .c to .o
 }}}
-
 
