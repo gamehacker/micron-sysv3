@@ -1,0 +1,38 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+  In Micron System, the word 'Module' means kernel extensions that linked to the running kernel in both the statically linked (compiled together with kernel) and dynamically (loaded as a module file).
+
+  Kernel module includes a variety of kernel extensions, including but not limited to:
+    * Device driver supports
+    * File system supports
+    * Network protocol supports
+    * Kernel functionality expansion (system call)
+
+= Kernel Module Framework =
+
+  Any kernel module should have AT LEAST the following basic structure:
+  {{{
+  #include <module.h>
+  int module_init()
+  {
+          return 0;    /* 0 upon successful operation, -1 if failure */
+  }
+  int module_exit()
+  {
+          return 0;    /* 0 upon successful operation, -1 if failure */
+  }
+  REGISTER_MODULE(module, "Description of Module", module_init, module_exit);
+  }}}
+
+  Notice the init method is being called upon every load of module(dynamic) or kernel initialization(statical), and the exit method is being called upon every unload of module(dynamic) or kernel uninitalization(staticall).
+
+  You can also manually initializa or uninitalize a module through functions:
+    * modstart() - not implemented yet
+    * modkill()  - not implemented yet
+
+
+
+
+
