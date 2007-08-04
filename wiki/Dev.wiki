@@ -95,3 +95,183 @@ REGISTER_MODULE(device, "Device Description", device_init, device_exit);
 }}}
 
 NOTICE: Theoretically not all operations should be implemented as function, but if you are not familiar with the internal working of modulization, please implement them all.
+
+Please put your source *.c file under /device/$TYPE/, according to its type it belongs.
+
+= How To Add A New Device Interface & Install Point =
+
+The effectiency of a device driver is measured by the perfectness of its operating interface, if you found any of thoese device type and interfaces not matching yours, please follow this section.
+
+To add a new device interface means you want to modify the kernel source tree a bit and design yourself a new interface and install point, please prepare yourself and this is not a easy task :)
+
+If you are sure you are going to implement a interface that wanted to be included in the official source tree, please contact [PsnMartin Martin Tang] first :)
+
+Currently the files describing device interface including:
+{{{
+/include/arch-$ARCH/config.h
+/include/chrdev.h
+/include/blkdev.h
+/include/device.h
+/device/device.c
+/device/chrdev/*
+/device/blkdev/*
+}}}
+
+To add a new interface, please read those files above, then follow here:
+
+== Step 1. Add your own interface descriptor ==
+
+Suppose your device type is TYPE, then, first add a file under /include/TYPE.h with the following information:
+
+{{{
+/*****************************************************************************
+ * Micron System V3 - System Core
+ * Copyright (C) 2007, Micron System Team
+ * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
+ *****************************************************************************/
+#ifndef __MICRON_KERNEL_TYPE_H__
+#define __MICRON_KERNEL_TYPE_H__
+
+#include <config.h>
+#include <types.h>
+
+/* Character Device I/O Interface */
+struct dev_TYPE
+{
+	int (*open)(id_t dID, int oflag, mode_t mode);
+	int (*operation)(id_t id, Parameters...);
+};
+
+#endif
+}}}
+
+== Step 2. Modify /include/device.h ==
+
+Add your TYPE to enum dev_type declearation, for example:
+
+{{{
+/* Device type enumeration */
+enum dev_type
+{
+	CHRDEV,
+	BLKDEV,
+	TYPEDEV              // added here
+	/* DEVICE TODO: Add other device type names here */
+};
+}}}
+
+Add your device interface install point:
+
+{{{
+/* Device descriptor holder */
+extern struct dev_chr dev_chr[NCHRDEVS];
+extern struct dev_blk dev_blk[NBLKDEVS];
+extern struct dev_TYPE dev_TYPE[NTYPEDEVS]; // added here
+}}}
+
+Notice: the NTYPEDEVS is defined in /include/arch-ARCH/config.h
+
+Add your new operations to externs:
+
+{{{
+/* Device operation method function interface */
+extern void  dev_init();
+extern int   dev_open (enum dev_type type, id_t dID, int oflag, mode_t mode);
+extern int   dev_close(enum dev_type type, id_t dID);
+extern int   dev_lseek(enum dev_type type, id_t dID, off_t off, int whence);
+extern int   dev_read (enum dev_type type, id_t dID, char *buf, off_t cnt);
+extern int   dev_write(enum dev_type type, id_t dID, char *buf, off_t cnt);
+extern int   dev_ioctl(enum dev_type type, id_t dID, int cmd, int arg);
+extern int   dev_operation(enum dev_type type, id_t dID, Parameters...);  // added here
+...
+/* DEVICE TODO: Add new device model operations here */
+}}}
+
+== Step 3. Modify /device/device.c ==
+
+Add your device to handlers of already existed operations, for example:
+
+{{{
+
+int dev_open(enum dev_type type, id_t dID, int oflag, mode_t mode)
+{
+	switch(type) {
+	case CHRDEV:
+		MSG(MAJOR(dID) > NCHRDEVS, "dID excceed chrdev limit\n");
+		if(MAJOR(dID) > NCHRDEVS) {
+			return -1;
+		}
+		// Check if device exists
+		if(dev_chr[MAJOR(dID)].open == 0) {
+			return ENODEV;
+		} else {
+			return dev_chr[MAJOR(dID)].open(dID, oflag, mode);
+		}
+		break;
+	case BLKDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
+		// Check if device exists
+		if(dev_blk[MAJOR(dID)].open == 0) {
+			return ENODEV;
+		} else {
+			return dev_blk[MAJOR(dID)].open(dID, oflag, mode);
+		}
+		break;
+	case TYPEDEV:
+		MSG(MAJOR(dID) > NTYPEDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NTYPEDEVS) {
+			return -1;
+		}
+		// Check if device exists
+		if(dev_TYPE[MAJOR(dID)].open == 0) {
+			return ENODEV;
+		} else {
+			return dev_TYPE[MAJOR(dID)].open(dID, oflag, mode);
+		}
+		break;
+	}
+	return ENODEV;
+}
+
+}}}
+
+Add your own operations:
+
+{{{
+
+int dev_operation(enum dev_type type, id_t dID, Parameters...)
+{
+	switch(type) {
+	case CHRDEV:
+		MSG(MAJOR(dID) > NCHRDEVS, "dID excceed chrdev limit\n");
+		if(MAJOR(dID) > NCHRDEVS) {
+			return -1;
+		}
+		break;
+	case BLKDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
+		break;
+	case TYPEDEV:
+		MSG(MAJOR(dID) > NBLKDEVS, "dID excceed blkdev limit\n");
+		if(MAJOR(dID) > NBLKDEVS) {
+			return -1;
+		}
+		// Check if device exists
+		if(dev_TYPE[MAJOR(dID)].operation == 0) {
+			return ENODEV;
+		} else {
+			return dev_TYPE[MAJOR(dID)].operation(dID, Parameters...);
+		}
+
+		break;
+	}
+	return ENODEV;
+}
+
+}}}
