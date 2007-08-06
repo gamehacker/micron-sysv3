@@ -26,10 +26,6 @@ include arch/$(ARCH)/Makefile
 
 # Portable Kernel Objective Code Targets
 OBJECTS+=driver/device.o \
-	 filesys/icache.o \
-	 filesys/iget.o \
-	 filesys/fs.o \
-	 filesys/fs/mfs.o \
 	 lib/module.o \
 	 lib/export.o \
 	 lib/libc.o

@@ -7,7 +7,6 @@
 #include <config.h>
 #include <device.h>
 #include <libc.h>
-#include <icache.h>
 
 /* boot device enum */
 enum kbootype
@@ -33,10 +32,6 @@ void kmain()
 		break;
 	case HDDISK0:
 		SYSTEM("Booted from hda0, setting it up as root\n");
-		icache[0].i_ino  = 0;
-		icache[0].i_dev  = DEVID(BLK_HDD, 0);
-		icache[0].i_vstat= V_AVAIL|V_CHILDEXT;
-		icache[0].i_vsem++;		/* never release root */
 		break;
 	case HDDISK1:
 		SYSTEM("Booted from hdb0\n");

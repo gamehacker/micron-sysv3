@@ -28,8 +28,6 @@ extern void arch_enablei();	/* enable all interrupts */
 #define NMIDSLEN	8	// Maximum module ID string length
 #define NMDESLEN	20	// Maximum module description string length
 #define NPARTION	8	// Number of partitions in HDD
-#define NINODES		4096	// Inode cache items
-#define NVFSENTS	8	// Number of supported file systems
 
 /*
  * Various device major device IDs
