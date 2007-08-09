@@ -1,12 +1,12 @@
 #summary One-sentence summary of this page.
 
-= Introduction =
+= 1.Introduction =
 
 *NOTICE: THE INFORMATION PROVIDED HERE IS NOT COMPLETE, AND MAY CHANGE AT ANY TIME.*
 
 This documentation describes the file system designed and used in Micron System, and gives introduces how to use the facilitied to implement a new file system support.
 
-= Architecture =
+= 2.Architecture =
 
 The Micron System semi-realtime system implements UNIX-compliant file system and provides optimizations to solve some realtime issues, the structure of the design is as follows:
 
@@ -27,9 +27,27 @@ The file system design used in Micron System implements 2 layers of caching, whi
  # Inode Cache
  # Sector Cache
 
-= The VFS Layer =
+*Design Requirements:*
+  # As the file system may be need in device driver initialization time, to provide the same model of charateristic in both dynamically loaded and statically linked modules, any interface function or mechanisam implemented in File System should be initialization-less.
+  # File system implementation layer should also can be implented as modules, which are both statically and dynamically loadable during anytime of execution.
+  # As the need of meeting the general situations of controlling both caches, the file system implentations should all be non-specific both to mount points and devices underlying it.
 
+== 1.The VFS Layer ==
 
+Virtual File System Layer provides standard UNIX-compliant, non-privileged interfaces to other modules, drivers for use, and internally manages various file systems and storage hardwares.
+
+As different from most file system implementations, the inode in Micron System is managed by a order based priority, semaphore locked allocation mechanism, and all supported file system's own file node descriptions should be translated to MFS format of inode in order to be managed by the system. Any read/write to file is performed by VFS directly on the sector cache rather than file system implementations.
+
+The interfaces that should be implemented in VFS layer includes:
+{{{
+int 
+}}}
+
+== 2.Mount Point ==
+
+== 3.Inode Cache ==
+
+== 4.Sector Cache ==
 
 
 
