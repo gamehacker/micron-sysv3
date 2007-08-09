@@ -32,6 +32,5 @@ OBJECTS+=arch/i386/init/init.o \
 	 arch/i386/cpu/tss.o \
 	 arch/i386/cpu/io.o \
 	 arch/i386/cpu/tty.o \
-	 driver/blkdev/hdd.o \
-	 driver/blkdev/hddp.o
+	 driver/blkdev/hdd.o
 
