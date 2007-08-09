@@ -72,7 +72,7 @@ int fsync    (int fildes);
 
 /* VFS related */
 int fstatvfs(int fildes, struct statvfs *buf);
-int statvfs(const char *restrict path, struct statvfs *restrict buf); 
+int statvfs (const char *path, struct statvfs *buf); 
 
 /* FS related */
 void sync(void); 
@@ -83,7 +83,6 @@ void sync(void);
 == 3.Inode Cache ==
 
 == 4.Sector Cache ==
-
 
 
 
