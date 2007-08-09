@@ -25,7 +25,8 @@ OC= $(CROSS)objcopy
 include arch/$(ARCH)/Makefile
 
 # Portable Kernel Objective Code Targets
-OBJECTS+=driver/device.o \
+OBJECTS+=filesys/vcache.o \
+	 driver/device.o \
 	 lib/module.o \
 	 lib/export.o \
 	 lib/libc.o
