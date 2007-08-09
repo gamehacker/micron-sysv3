@@ -1,0 +1,39 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+
+*NOTICE: THE INFORMATION PROVIDED HERE IS NOT COMPLETE, AND MAY CHANGE AT ANY TIME.*
+
+This documentation describes the file system designed and used in Micron System, and gives introduces how to use the facilitied to implement a new file system support.
+
+= Architecture =
+
+The Micron System semi-realtime system implements UNIX-compliant file system and provides optimizations to solve some realtime issues, the structure of the design is as follows:
+
+{{{
+# File System Internal Structure
+___________________________________________(File System)||(Device Module)__
+[VFS Layer] >>>>>>>>>>>>>>>>>>>>>>>>>> |                ||
+            > [Mount Point] > [MFS]    |                ||
+                            > [E2FS]   |                ||
+                            > [JFFS]   |                ||
+                            > [FAT]  > | [Sector Cache] || > [Disk Driver]
+            > [Inode Cache] < ^^^^^^   |                ||
+}}}
+
+The file system design used in Micron System implements 2 layers of caching, which provides senior effectiency in both inode management and disk read/write. The system is implemented in 3 layers and 4 parts:
+ # VFS Layer
+ # Mount Point
+ # Inode Cache
+ # Sector Cache
+
+= The VFS Layer =
+
+
+
+
+
+
+
+
+
