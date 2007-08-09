@@ -40,7 +40,42 @@ As different from most file system implementations, the inode in Micron System i
 
 The interfaces that should be implemented in VFS layer includes:
 {{{
-int 
+/* file node related */
+int mknod (const char *path, mode_t mode, dev_t dev);
+int mkfifo(const char *path, mode_t mode);
+int unlink(const char *path);
+
+/* link related */
+int symlink     (const char *path1, const char *path2);
+ssize_t readlink(const char *path, char *buf, size_t bufsize);
+
+/* directory related */
+int mkdir(const char *path, mode_t mode);
+int rmdir(const char *path);
+
+/* file status related */
+int chmod(const char *path, mode_t mode);
+int stat (const char *path, struct stat *buf);
+int lstat(const char *path, struct stat *buf);
+
+/* open file related *
+int open     (const char *path, int oflag, ... );
+int close    (int fildes);
+ssize_t read (int fildes, void *buf, size_t nbyte);
+ssize_t write(int fildes, const void *buf, size_t nbyte);
+int fcntl    (int fildes, int cmd, ...);
+off_t lseek  (int fildes, off_t offset, int whence);
+int dup      (int fildes);
+int dup2     (int fildes, int fildes2);
+int fstat    (int fildes, struct stat *buf);
+int fsync    (int fildes); 
+
+/* VFS related */
+int fstatvfs(int fildes, struct statvfs *buf);
+int statvfs(const char *restrict path, struct statvfs *restrict buf); 
+
+/* FS related */
+void sync(void); 
 }}}
 
 == 2.Mount Point ==
@@ -48,7 +83,6 @@ int
 == 3.Inode Cache ==
 
 == 4.Sector Cache ==
-
 
 
 
