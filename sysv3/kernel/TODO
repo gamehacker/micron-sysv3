@@ -1,22 +1,25 @@
+Micron System V3 Task Schedule
 
-Phase 1:
-1.I386 bootloader;				FINISHED
 
-Phase 2:
+CURRENT PROGRESS:
+  Completed scheduled file system part design and implementation, ready to 
+  work on tasking part of system.
 
-1.Add GDT management system;			FINISHED
-2.Add IDT management system;			FINISHED
-3.Add up interrupt handler entries;		GOING
-4.Add up TSS management unit;
-5.Design task switching interface;
-6.Add MMU driver;
-7.Add page based memory allocation interface;
-8.Add system call registering mechanism;
-9.I386 architecture driver integrity check;
 
-Phase 3:
+SCHEDULE:
+  1.I386 processor task switching mechanism.
+  2.UNIX layer file scheduling mechanism and interface.
+    1.Memory map and page system design
+    2.ELF loader
+    3.Task switching
 
-1.Kernel unix layer design
+FUTURE:
+  Scheduled for both kernel task(thread only) and process support.
+    Kernel tasks should be defined with __task__ prefix and automatically
+    dispatched both in static module and dynamic loaded modules.
 
-TO BE CONTINUED...
+  Process contains support for dynamic loaded libraries.
+
+  Scheduling mechanism use priority based algorithm, reduce kernel consuming
+  of processor time as low as possible.
 

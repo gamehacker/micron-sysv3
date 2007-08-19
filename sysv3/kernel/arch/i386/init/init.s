@@ -19,18 +19,19 @@
 .extern dma_init
 .extern tty_init
 .extern dev_init
-	movb %al,    kboot
+	movl %eax,   kboot
 	movl $stack, %esp	/* setup stack for kernel */
-	call dev_init		/* initialize device manager first */
+	call bss_init		/* initialize bss section */
 	call tty_init		/* initialize TTY */
 	call idt_init		/* install new gdt managed by kernel */
 	call irq_init		/* initialize IRQ */
-	call mem_size		/* get memory size info */
 	call rtc_init		/* initialize RTC */
 	call gdt_init		/* install new gdt managed by kernel */
 	call page_init		/* initialize RTC */
+	call mem_size		/* get memory size info */
 	sti			/* enable all interrupts */
 	call modinit		/* initialize all modules */
 	call kmain
+
 halt:	hlt			/* kmain function should never return */
 	jmp halt

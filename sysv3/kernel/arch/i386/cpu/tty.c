@@ -73,7 +73,7 @@ void tty_scroll(int id)
 }
 
 // Screen output
-int tty_write(id_t id, char *buf, off_t cnt)
+int tty_write(dev_t id, char *buf, off_t cnt)
 {
 	unsigned temp;
 	/* get target display struct */
@@ -177,7 +177,7 @@ void tty_intr(struct Register *regs)
 }
 
 // Keyboard input
-int tty_read(id_t id, char *buf, off_t cnt)
+int tty_read(dev_t id, char *buf, off_t cnt)
 {
 	buf[0] = tty_kbd_buf_pop();
 	return 0;
@@ -185,7 +185,7 @@ int tty_read(id_t id, char *buf, off_t cnt)
 
 /*************************** Begin of Common Interface ***********************/
 
-int tty_ioctl(id_t id, int cmd, int arg)
+int tty_ioctl(dev_t id, int cmd, int arg)
 {
 	int i;
 	struct tty_disp *tty = &tty_disp[MINOR(id)];
@@ -213,12 +213,12 @@ int tty_ioctl(id_t id, int cmd, int arg)
 	return 0;
 }
 
-int tty_open(id_t id, int oflag, mode_t mode)
+int tty_open(dev_t id, int oflag, mode_t mode)
 {
 	return 0;
 }
 
-int tty_close(id_t id)
+int tty_close(dev_t id)
 {
 	return 0;
 }

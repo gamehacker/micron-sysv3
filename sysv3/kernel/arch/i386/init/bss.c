@@ -1,18 +1,19 @@
 /*****************************************************************************
- * Micron System V3 - System Core
+ * Micron System V3 - I386 Architecture Driver
  * Copyright (C) 2007, Micron System Team
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
-#ifndef __MICRON_KERNEL_VCACHE_H__
-#define __MICRON_KERNEL_VCACHE_H__
 
-#include <config.h>
-#include <types.h>
-#include <vnode.h>
+extern unsigned bssend;
+extern unsigned bss;
 
-extern struct vnode *vcache_alloc();
-extern void vcache_promo(struct vnode *vp);
-
-#endif
+void bss_init()
+{
+	unsigned *bssp = &bss;
+	while(bssp < &bssend) {
+		*bssp++ = 0;
+	}
+	*bssp = 0;
+}
 

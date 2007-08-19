@@ -9,9 +9,10 @@
  *   1 inode bmp blk = 8192 inodes = 1048576 bytes = 1024 blocks
  *   1 data bmp blk  = 8192 blocks
  *****************************************************************************/
- #define NKBLK	512					// kernel size in kb
+ #define NKSIZ	512*1024				// kernel size in size 
  #define NIBMP	1					// inode no ctl
  #define NDBMP	1					// data blk no ctl
+ #define NKBLK  NKSIZ/MFS_BLKSIZE
  #define NIBLK	(NIBMP*8*sizeof(struct mfs_inode))
  #define NDBLK	NIBLK //(NDBMP*8*MFS_BLKSIZE)
 /*****************************************************************************/
@@ -102,10 +103,10 @@ int mfs_new(char debug)
 	sblk->s_dblkcnt =NDBLK;
 	sblk->s_blksize =MFS_BLKSIZE;
 	if(mfs_data.m_debug) {
-		printf("[SBLK]: i=%-8dcnt=%-8d", 1, 1);
+		printf("[SBLK]: i=%-8dcnt=%-8d", 0, 1);
 		printf("add=0x%-8x\n", 512);
-		printf("[KBLK]: i=%-8dcnt=%-8d", 2, NKBLK);
-		printf("add=0x%-8x\n", 512+1*MFS_BLKSIZE);
+		printf("[KBLK]: i=%-8dcnt=%-8d", sblk->s_kblk, sblk->s_kblkcnt);
+		printf("add=0x%-8x\n", 512+sblk->s_kblk*MFS_BLKSIZE);
 		printf("[IBMP]: i=%-8dcnt=%-8d", sblk->s_ibmp, sblk->s_ibmpcnt);
 		printf("add=0x%-8x\n", 512+sblk->s_ibmp*MFS_BLKSIZE);
 		printf("[DBMP]: i=%-8dcnt=%-8d", sblk->s_dbmp, sblk->s_dbmpcnt);
@@ -257,7 +258,6 @@ int mfs_mkdir(char *path, char *name)
 	}
 	mfs_markbmp(mfs_data.m_blocks[3], indexi, 1);	// mark used
 	strcpy(iblk[indexi].i_name, name);
-	iblk[indexi].i_dev     = 0;
 	iblk[indexi].i_ino     = indexi;
 	iblk[indexi].i_mode    = S_IFDIR|S_IRWXU|S_IRWXG|S_IROTH;
 	iblk[indexi].i_nlink   = 0;
@@ -314,7 +314,6 @@ int mfs_write(char *path, char *name, char *buff, int size)
 	}
 	mfs_markbmp(mfs_data.m_blocks[3], indexi, 1);	// mark used
 	strcpy(iblk[indexi].i_name, name);
-	iblk[indexi].i_dev    = 0;
 	iblk[indexi].i_ino    = indexi;
 	iblk[indexi].i_mode   = S_IFREG|S_IRWXU|S_IRWXG|S_IROTH;
 	iblk[indexi].i_nlink  = 0;
@@ -335,11 +334,13 @@ int mfs_write(char *path, char *name, char *buff, int size)
 
 	// count needed blocks for storage
 	dblkr = size/MFS_BLKSIZE;
-	if(size % MFS_BLKSIZE)
+	if(size % MFS_BLKSIZE) {
 		dblkr++;
+	}
 	iblk[indexi].i_blocks= dblkr;
-	if(mfs_data.m_debug)
+	if(mfs_data.m_debug) {
 		printf("[MFS]: Needed blocks: %d\n", dblkr);
+	}
 	
 	// allocate blocks
 	// TODO: Add continuity check here, discuss: really needed??
@@ -352,9 +353,10 @@ int mfs_write(char *path, char *name, char *buff, int size)
 		mfs_markbmp(mfs_data.m_blocks[4], dblki, 1);	// mark used
 	}
 	iblk[indexi].i_blkentry      = dblki - iblk[indexi].i_blocks + 1;
-	if(mfs_data.m_debug)
+	if(mfs_data.m_debug) {
 		printf("[MFS]: Beginning from block: %d\n", 
 				iblk[indexi].i_blkentry);
+	}
 
 	// writing blocks
 	memcpy(&mfs_data.m_blocks[6][iblk[indexi].i_blkentry * MFS_BLKSIZE], \

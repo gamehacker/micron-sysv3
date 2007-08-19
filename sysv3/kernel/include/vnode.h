@@ -4,8 +4,8 @@
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
-#ifndef __MICRON_KERNEL_MOUNT_H__
-#define __MICRON_KERNEL_MOUNT_H__
+#ifndef __MICRON_KERNEL_VNODE_H__
+#define __MICRON_KERNEL_VNODE_H__
 
 #include <config.h>
 #include <types.h>
@@ -29,15 +29,25 @@ struct vnode {
 	blkcnt_t blocks;	// Block index storage blocks continuity
 
 	/* internal data */
-	struct vnode *sem;	// process visit semaphore
+	unsigned     sem;	// process visit semaphore
 	struct vnode *next;	// Next node on same level
 	struct vnode *parent;	// Parent inode index
 	struct vnode *child;	// Child inode index
 	struct vnode *expand;	// Node expansion (same file blk extention)
 
 	/* cache related */
+	struct vnode *clast;	// last entry in the cache list
 	struct vnode *cnext;	// next entry in the cache list
 };
+
+/* POSIX Open file flags */
+#define O_RDWR		0x00000003	/* both read and write */
+#define O_RDONLY	0x00000001	/* open read only */
+#define O_WRONLY	0x00000002	/* open write only */
+#define O_APPEND	0x00000010
+#define O_CREAT		0x00000020
+#define O_EXCL		0x00000040
+#define O_TRUNC		0x00000080
 
 /* POSIX Open file modes */
 #define	S_IRWXU 	0x00000007
@@ -69,6 +79,17 @@ struct vnode {
 #define		S_IFSOCK 0x00070000	// Socket file
 #define		S_IFPROC 0x00080000	// Procfs
 #define		S_IFDEV 0x00090000	// Device fs.
+
+/* POSIX standard procedures */
+#define S_ISFIFO(m)	((m&S_IFMT)==(S_IFIFO))
+#define S_ISCHR(m)	((m&S_IFMT)==(S_IFCHR))
+#define S_ISBLK(m)	((m&S_IFMT)==(S_IFBLK))
+#define S_ISDIR(m)	((m&S_IFMT)==(S_IFDIR))
+#define S_ISLNK(m)	((m&S_IFMT)==(S_IFLNK))
+#define S_ISREG(m)	((m&S_IFMT)==(S_IFREG))
+#define S_ISOCK(m)	((m&S_IFMT)==(S_IFSOCK))
+#define S_ISPROC(m)	((m&S_IFMT)==(S_IFPROC))
+#define S_ISDEV(m)	((m&S_IFMT)==(S_IFDEV))
 
 #endif
 

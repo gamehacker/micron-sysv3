@@ -8,7 +8,7 @@
 #define __IMAGE_MFS_H__
 
 // Configurations
-#define MFS_NAMELEN 64		// MFS supported file name length
+#define MFS_NAMELEN 68		// MFS supported file name length
 #define MFS_BLKSIZE 1024	// MFS block size
 
 // Definitions
@@ -78,7 +78,6 @@ struct mfs_superblk {
 struct mfs_inode {
 	// Identifiers
 	mfs_s8  i_name[MFS_NAMELEN];	// File name
-	mfs_s32 i_dev;		// Device ID of device containing file
 	mfs_u32 i_ino;		// Inode serial number
 	mfs_u32 i_mode;		// Inode mode
 	mfs_u32 i_nlink;	// Number of linked files

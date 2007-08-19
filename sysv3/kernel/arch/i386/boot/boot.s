@@ -142,14 +142,18 @@ kern_copy:
 	addw  %ax,     copy_d
 	movb  b_devs,  %al
 	movb  %al,     copy_n
-	movb  $0,      copy_s
+	movb  b_ksec,  %al
+	movb  %al,     copy_s
 	movb  copy_h,  %al
 	incb  %al
+	movb  %al,     copy_h
 	cmpb  b_devh,  %al
 	jz    2f
 	jmp   1b
 2:	movw  copy_c,  %ax
 	incw  %ax
+	movw  %ax,     copy_c
+	movb  $0,      copy_h
 	cmpw  b_devc,  %ax
 	jz    error
 	jmp   1b
@@ -228,7 +232,6 @@ error:
 /* Entry point of 32 bit mode */
 _start32:
 	call kern_move
-	movb $'A',   0xb8000
 	orl  %eax,   %eax
 	movb b_devi, %al
 	ljmp $0x08,  $0x100000	/* jump to kernel entry point */

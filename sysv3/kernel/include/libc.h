@@ -11,6 +11,7 @@
 
 extern char *itoa(int value, char *str, int radix);
 extern char *strchr(char *s, int c);
+extern char *strcpy(char *str1, char *str2);
 extern int strlen (char *str);
 extern int strcmp (char *str1, char *str2);
 extern int strncmp(char *str1, char *str2, size_t n);
@@ -35,7 +36,7 @@ extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 	}
 
 #define DEBUG(data) \
-	kprintf("%CDEBUG:%s= 0x%x\n%C",0x0E,#data,data,0x0F);
+	kprintf("%CDEBUG:%s= 0x%x\n%C",0x0E,#data,(unsigned)data,0x0F);
 
 #define SYSTEM(fmt, arg...) \
 	kprintf("%C[SYSTEM]%C:", 0x0E, 0x0F); \

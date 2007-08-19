@@ -29,10 +29,13 @@ typedef u32_t	ino_t;		// Inode IDs
 typedef u32_t	nlink_t;	// File hard link count
 typedef u32_t	time_t;		// Time type
 typedef u32_t	size_t;		// Counter for sizes
+typedef s32_t	ssize_t;	// Counter for sizes
 typedef s32_t	blkcnt_t;	// Block counter
 typedef s32_t	blksize_t;	// Block size descriptor
 typedef s32_t	off_t;		// file sizes
 typedef u32_t	mode_t;		// File attributes
+
+#define NULL 0
 
 #endif
 

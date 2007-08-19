@@ -7,6 +7,7 @@
 #include <config.h>
 #include <device.h>
 #include <libc.h>
+#include <vfs.h>
 
 /* boot device enum */
 enum kbootype
@@ -31,7 +32,8 @@ void kmain()
 		SYSTEM("Booted from floppy1\n");
 		break;
 	case HDDISK0:
-		SYSTEM("Booted from hda0, setting it up as root\n");
+		SYSTEM("Booted from hda, setting it up as root\n");
+		mountab_mount(0, 0, DEVID(BLK_HDA, 1));
 		break;
 	case HDDISK1:
 		SYSTEM("Booted from hdb0\n");
@@ -40,5 +42,6 @@ void kmain()
 
 	SYSTEM("Total System Memory: %d KB\n", arch_memsize/1024);
 	kprintf("\nWelcome to Micron System Version 3\n\n");
+
 }
 

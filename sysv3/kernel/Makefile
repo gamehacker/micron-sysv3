@@ -11,7 +11,7 @@ CROSS=i686-elf-
 
 # Compile Flags
 ASFLAGS=-g
-CCFLAGS=-g -O2 -Wall -fno-strict-aliasing -Iinclude -fno-builtin
+CCFLAGS=-g -Wall -fno-strict-aliasing -Iinclude -fno-builtin
 CXXFLAGS=$(CCFLAGS)
 
 # Toolchain Configuration
@@ -26,6 +26,12 @@ include arch/$(ARCH)/Makefile
 
 # Portable Kernel Objective Code Targets
 OBJECTS+=filesys/vcache.o \
+	 filesys/scache.o \
+	 filesys/mount.o \
+	 filesys/vfs.o \
+	 filesys/ofile.o \
+	 filesys/fs.o \
+	 filesys/fs/mfs.o \
 	 driver/device.o \
 	 lib/module.o \
 	 lib/export.o \
