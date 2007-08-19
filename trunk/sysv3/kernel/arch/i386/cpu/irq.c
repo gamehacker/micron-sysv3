@@ -43,7 +43,7 @@ void isr_install_syscall(void (*handler)(struct Register*))
 void isr_entry(struct Register *regs)
 {
 	if((regs->intn >= 0) && (regs->intn <= 31)) {
-		PANIC(irq_handler[regs->intn] == 0, "ISR=%d", regs->intn);
+		PANIC(isr_handler[regs->intn] == 0, "ISR=%d", regs->intn);
 		isr_handler[regs->intn](regs);
 	} else if((regs->intn >= 32) && (regs->intn <= 47)) {
 		MSG(irq_handler[regs->intn-32] == 0, "IRQ=%d", regs->intn-32);

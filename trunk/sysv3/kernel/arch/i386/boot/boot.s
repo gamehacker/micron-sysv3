@@ -120,7 +120,6 @@ copy_d:	.word 0x1000
 kern_copy:
 	movw  b_ksec,  %ax	/* only for the first time */
 	movb  b_devs,  %bl
-	subb  %al,     %bl
 	movb  %bl,     copy_n
 	movb  %al,     copy_s
 1:	movb  b_devi,  %dl	/* boot device i */

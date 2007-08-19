@@ -42,6 +42,5 @@ void kmain()
 
 	SYSTEM("Total System Memory: %d KB\n", arch_memsize/1024);
 	kprintf("\nWelcome to Micron System Version 3\n\n");
-
 }
 
