@@ -9,7 +9,7 @@ ENTRY(_start)
 
 kernel_begin = 0x100000;
 page_size    = 0x1000;
-stack_size   = 0x1000;
+stack_size   = 0x3000;
 
 SECTIONS
 {
@@ -47,6 +47,7 @@ SECTIONS
 	{
 		bss = . ;
 		*(.bss)
+		bssend = . ;
 		. = ALIGN(page_size);
 	}
 	.stack : AT(kernel_begin +(stack_end - code))

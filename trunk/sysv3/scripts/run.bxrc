@@ -334,7 +334,7 @@ boot: disk
 # 
 # Default value are sync=none, time0=local
 #=======================================================================
-#clock: sync=none, time0=local
+clock: sync=realtime, time0=local
 
 
 #=======================================================================

@@ -49,6 +49,16 @@ char *strchr(char *s, int c)
 	return 0;
 }
 
+char *strcpy(char *str1, char *str2)
+{
+	char *s1=str1, *s2=str2;
+	while(*s2 != 0) {
+		*s1++ = *s2++;
+	}
+	*s1 = 0;
+	return str1;
+}
+
 int strlen(char *str)
 {
 	int len=0;

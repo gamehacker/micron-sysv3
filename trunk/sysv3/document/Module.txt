@@ -1,0 +1,53 @@
+KERNEL MODULE DOCUMENTATION					*Module*
+===============================================================================
+
+Introduction~
+
+Modules can be used to extend Micron System functionality, in the following way:
+
+	1. Device Drivers		see |Device|
+	2. File System			see |Filesys|
+	3. Protocol (local/remote)	see |Protocol|
+	4. System Service		see |Service|
+
+Functions~
+
+The functions can be used in a kernel module:
+
+Register a module under kernel management.
+
+>	REGISTER_MODULE(ID, "Desc", init_function, exit_function);
+
+Tutorial~
+
+Put the following text into testmod.c in kernel source root directory:
+
+>	#include <module.h>
+>	#include <libc.h>
+>	
+>	int testmod_init()
+>	{
+>		kprintf("hello world\n");
+>		return 0;	/* 0=success, -1=failure */
+>	}
+>
+>	int testmod_exit()
+>	{
+>		kprintf("Goodbye world\n");
+>		return 0;	/* 0=success, -1=failure */
+>	}
+>
+>	REGISTER_MODULE(testmod, "Test Module", testmod_init, testmod_exit);
+
+To add the new module into kernel build, edit Makefile (for global modules) or
+arch/$Arch/Makefile (for Architecture specific modules), and add it to be bulid
+in the following method:
+
+>	OBJECTS(+)=any.o \
+>		   testmod.o	# add your module in this mannor
+
+Rebuild the kernel and run the emulator, your module will be automatically
+initialized.
+
+===============================================================================
+vim:ft=help

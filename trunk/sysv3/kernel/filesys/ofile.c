@@ -4,15 +4,18 @@
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
-#ifndef __MICRON_KERNEL_VCACHE_H__
-#define __MICRON_KERNEL_VCACHE_H__
+#include <ofile.h>
 
-#include <config.h>
-#include <types.h>
-#include <vnode.h>
+struct ofile ofile[NMXOFILE];
 
-extern struct vnode *vcache_alloc();
-extern void vcache_promo(struct vnode *vp);
-
-#endif
+struct ofile *ofile_alloc()
+{
+	int i;
+	for(i=0; i<NMXOFILE; i++) {
+		if(ofile[i].node ==0) {
+			return &ofile[i];
+		}
+	}
+	return 0;	/* no empty one found */
+}
 

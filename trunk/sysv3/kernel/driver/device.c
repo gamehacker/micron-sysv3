@@ -11,13 +11,7 @@
 struct dev_chr dev_chr[NCHRDEVS];
 struct dev_blk dev_blk[NBLKDEVS];
 
-void dev_init()
-{
-	memset(&dev_chr, 0, sizeof(struct dev_chr)*NCHRDEVS);
-	memset(&dev_blk, 0, sizeof(struct dev_blk)*NBLKDEVS);
-}
-
-int dev_open(enum dev_type type, id_t dID, int oflag, mode_t mode)
+int dev_open(enum dev_type type, dev_t dID, int oflag, mode_t mode)
 {
 	switch(type) {
 	case CHRDEV:
@@ -48,7 +42,7 @@ int dev_open(enum dev_type type, id_t dID, int oflag, mode_t mode)
 	return ENODEV;
 }
 
-int dev_close(enum dev_type type, id_t dID)
+int dev_close(enum dev_type type, dev_t dID)
 {
 	switch(type) {
 	case CHRDEV:
@@ -83,7 +77,7 @@ int dev_close(enum dev_type type, id_t dID)
 	return ENODEV;
 }
 
-int dev_read (enum dev_type type, id_t dID, char *buf, off_t cnt)
+int dev_read (enum dev_type type, dev_t dID, char *buf, off_t cnt)
 {
 	switch(type) {
 	case CHRDEV:
@@ -118,7 +112,7 @@ int dev_read (enum dev_type type, id_t dID, char *buf, off_t cnt)
 	return ENODEV;
 }
 
-int dev_write(enum dev_type type, id_t dID, char *buf, off_t cnt)
+int dev_write(enum dev_type type, dev_t dID, char *buf, off_t cnt)
 {
 	switch(type) {
 	case CHRDEV:
@@ -153,7 +147,7 @@ int dev_write(enum dev_type type, id_t dID, char *buf, off_t cnt)
 	return ENODEV;
 }
 
-int dev_ioctl(enum dev_type type, id_t dID, int cmd, int arg)
+int dev_ioctl(enum dev_type type, dev_t dID, int cmd, int arg)
 {
 	switch(type) {
 	case CHRDEV:
@@ -188,7 +182,7 @@ int dev_ioctl(enum dev_type type, id_t dID, int cmd, int arg)
 	return ENODEV;
 }
 
-int dev_lseek(enum dev_type type, id_t dID, int off, int whence)
+int dev_lseek(enum dev_type type, dev_t dID, int off, int whence)
 {
 	switch(type) {
 	case CHRDEV:

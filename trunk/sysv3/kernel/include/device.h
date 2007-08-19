@@ -33,19 +33,13 @@ extern struct dev_blk dev_blk[NBLKDEVS];
 #define MAJOR(dID)		((dID>>16)&0xffff)
 #define MINOR(dID)		(dID&0xffff)
 
-/* Lseek whence value */
-#define SEEK_SET 0
-#define SEEK_CUR 1
-#define SEEK_END 2
-
 /* Device operation method function interface */
-extern void  dev_init();
-extern int   dev_open (enum dev_type type, id_t dID, int oflag, mode_t mode);
-extern int   dev_close(enum dev_type type, id_t dID);
-extern int   dev_lseek(enum dev_type type, id_t dID, off_t off, int whence);
-extern int   dev_read (enum dev_type type, id_t dID, char *buf, off_t cnt);
-extern int   dev_write(enum dev_type type, id_t dID, char *buf, off_t cnt);
-extern int   dev_ioctl(enum dev_type type, id_t dID, int cmd, int arg);
+extern int   dev_open (enum dev_type type, dev_t dID, int oflag, mode_t mode);
+extern int   dev_close(enum dev_type type, dev_t dID);
+extern int   dev_lseek(enum dev_type type, dev_t dID, off_t off, int whence);
+extern int   dev_read (enum dev_type type, dev_t dID, char *buf, off_t cnt);
+extern int   dev_write(enum dev_type type, dev_t dID, char *buf, off_t cnt);
+extern int   dev_ioctl(enum dev_type type, dev_t dID, int cmd, int arg);
 /* DEVICE TODO: Add new device model operations here */
 
 #endif

@@ -19,6 +19,7 @@ BOOTSECT=arch/i386/boot/boot.o
 
 # kernel objectives
 OBJECTS+=arch/i386/init/init.o \
+	 arch/i386/init/bss.o \
 	 arch/i386/init/main.o \
 	 arch/i386/init/memsize.o \
 	 arch/i386/init/config.o \
@@ -32,5 +33,5 @@ OBJECTS+=arch/i386/init/init.o \
 	 arch/i386/cpu/tss.o \
 	 arch/i386/cpu/io.o \
 	 arch/i386/cpu/tty.o \
-	 driver/blkdev/hdd.o
+	 driver/blkdev/hda.o
 

@@ -12,12 +12,12 @@
 
 struct dev_blk
 {
-	int (*open )(id_t id, int oflag, mode_t mode);
-	int (*close)(id_t id);	
-	int (*read )(id_t id, char *buf, off_t cnt);
-	int (*write)(id_t id, char *buf, off_t cnt);
-	int (*lseek)(id_t id, off_t offset, int whence);
-	int (*ioctl)(id_t id, int cmd, int arg);
+	int (*open )(dev_t id, int oflag, mode_t mode);
+	int (*close)(dev_t id);	
+	int (*read )(dev_t id, char *buf, off_t cnt);
+	int (*write)(dev_t id, char *buf, off_t cnt);
+	int (*lseek)(dev_t id, off_t offset, int whence);
+	int (*ioctl)(dev_t id, int cmd, int arg);
 };
 
 #endif

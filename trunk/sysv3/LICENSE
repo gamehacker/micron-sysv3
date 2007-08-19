@@ -24,7 +24,7 @@ All rights reserved.
     
   a) Any modification to the source code must be redistributed in the form of
      a patch file rather than redistributing the modified source itself.
-  b) This software may contain patented technologie, the user must also apply
+  b) This software may contain patented technology, the user must also apply
      to the rights of the patent law.
   c) Any consequence caused by the modifications provided by uncertified third
      party redistributors including in both source and binary form is not
@@ -40,7 +40,7 @@ All rights reserved.
   a) A file named "LICENSE" or "LICENSE.txt" containing exactly the MSPLA
      is placed in the root directory of the released package.
   b) Every protected file should include the following string:
-      PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
+       PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
   c) If a software with output availablity, it should can print a copy of the
      license content, like
        command -l or command --license

@@ -24,15 +24,21 @@ extern void arch_enablei();	/* enable all interrupts */
 
 #define NCHRDEVS	16	// Maximum number of char devices
 #define NBLKDEVS	16	// Maximum number of block devices
+#define NBLKENTS	8	// Maximum number of block device entries
 
 #define NESYMLEN	20	// Maximum export symbol name length
 
 #define NMIDSLEN	8	// Maximum module ID string length
 #define NMDESLEN	20	// Maximum module description string length
 
-#define NVNAMLEN	64	// Maximum node name string length
+#define NMXBLKSZ	4096	// Maximum block size supported
+#define NVNAMLEN	68	// Maximum node name string length
 #define NVFSMNTS	8	// Maximum number of mount points
+#define NFSENTYS	5	// File system support install points
 #define NVCHCNTS	4096	// Number of vnodes inside vcache
+#define NSECACHS	512	// Number of sector caches
+#define NPATHSTR	512	// Maximum path string length
+#define NMXOFILE	128	// Maximum number of open files
 
 /*
  * Various device major device IDs
@@ -42,7 +48,7 @@ extern void arch_enablei();	/* enable all interrupts */
 #define CHR_TTY		0
 
 /* Block devices */
-#define BLK_HDD		0
+#define BLK_HDA		0
 
 /*
  * Device driver I/O base definitions
