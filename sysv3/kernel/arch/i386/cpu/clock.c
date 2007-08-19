@@ -97,7 +97,7 @@ void rtc_init()
 	month = BCD2HEXB(inportb(0x71));
 	outportb(0x70, 9);	/* year */
 	year = BCD2HEXB(inportb(0x71));
-	SYSTEM("System Initialization Start: %d-%d-%d %d:%d:%d\n", year, 
+	SYSTEM("System Initialization Start: %d-%d-%d %d:%d:%d\n", year+2000, 
 		month, day, hour, minute, second);
 
 	/* calculate to time calculated in ms from 2000-01-01 */

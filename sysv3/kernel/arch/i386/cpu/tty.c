@@ -84,7 +84,7 @@ int tty_write(dev_t id, char *buf, off_t cnt)
 			disp->pos_x = 0;
 			disp->pos_y++;
 		}
-		if(disp->pos_y >= disp->max_y) {
+		if(disp->pos_y >= disp->max_y-1) {
 			tty_scroll(MINOR(id));
 			disp->pos_y--;
 		}
