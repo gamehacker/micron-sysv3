@@ -625,7 +625,8 @@ private_colormap: enabled=0
 #         overwrite files.
 #
 #=======================================================================
-ne2k: ioaddr=0x300, irq=3, mac=b0:c4:20:00:00:00, ethmod=win32, ethdev=\Device\NPF_{8AE05D8D-2D04-4625-BAB1-A476B65E430F}
+ne2k: enabled=0
+# ne2k: ioaddr=0x300, irq=3, mac=b0:c4:20:00:00:00, ethmod=win32, ethdev=\Device\NPF_{8AE05D8D-2D04-4625-BAB1-A476B65E430F}
 
 # ne2k: ioaddr=0x240, irq=9, mac=fe:fd:00:00:00:01, ethmod=fbsd, ethdev=en0 #macosx
 # ne2k: ioaddr=0x240, irq=9, mac=b0:c4:20:00:00:00, ethmod=fbsd, ethdev=xl0
