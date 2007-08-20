@@ -22,9 +22,9 @@
 	movl %eax,   kboot
 	movl $stack, %esp	/* setup stack for kernel */
 	call bss_init		/* initialize bss section */
+	call irq_init		/* initialize IRQ */  /* If irq is not initialized, kb seems not to work. --Huang Guan*/
 	call tty_init		/* initialize TTY */
 	call idt_init		/* install new gdt managed by kernel */
-	call irq_init		/* initialize IRQ */
 	call rtc_init		/* initialize RTC */
 	call gdt_init		/* install new gdt managed by kernel */
 	call page_init		/* initialize RTC */

@@ -8,6 +8,7 @@
 #define __MICRON_KERNEL_LIBC_H__
 
 #include <types.h>
+#include <stdarg.h>
 
 extern char *itoa(int value, char *str, int radix);
 extern char *strchr(char *s, int c);
@@ -17,7 +18,11 @@ extern int strcmp (char *str1, char *str2);
 extern int strncmp(char *str1, char *str2, size_t n);
 extern void *memcpy(void *dest, void *src, size_t cnt);
 extern void *memset(void *dest, int ch, size_t cnt);
-extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
+extern int __attribute__((format(printf, 1, 2))) kprintf(const char *fmt, ...);
+extern int sprintf(char * buf, const char *fmt, ...);
+extern int printf( const char *fmt, ...);
+//this is in vsprintf.c
+extern int vsprintf(char *buf, const char *fmt, va_list args);
 
 /* debug functions */
 #define PANIC(cond, str...) \
@@ -39,8 +44,10 @@ extern int __attribute__((format(printf, 1, 2))) kprintf(char *fmt, ...);
 	kprintf("%CDEBUG:%s= 0x%x\n%C",0x0E,#data,(unsigned)data,0x0F);
 
 #define SYSTEM(fmt, arg...) \
-	kprintf("%C[SYSTEM]%C:", 0x0E, 0x0F); \
-	kprintf(fmt, ##arg);
+    { \
+        kprintf("%C[SYSTEM]%C:", 0x0E, 0x0F); \
+        kprintf(fmt, ##arg); \
+	}
 
 
 #endif

@@ -15,9 +15,23 @@ struct Register
 	unsigned int eip, cs, eflags, useresp, userss; // only valid from ring 3
 };
 
+//
+typedef struct Register regs_t;
+
 extern void isr_install(int index, void (*)(struct Register*));
 extern void irq_install(int index, void (*)(struct Register*));
 extern void isr_install_syscall(void (*)(struct Register*));
+extern void irq_mask( int irq, int enabled );
+
+//! Added by Huang Guan 2007-08-20
+#define local_irq_save(x) \
+__asm__ __volatile__("pushfl ; popl %0 ; cli":"=g" (x): :"memory")
+#define local_irq_restore(x) \
+__asm__ __volatile__("pushl %0 ; popfl": :"g" (x):"memory")
+#define local_irq_disable() \
+__asm__ __volatile__("cli": : :"memory")
+#define local_irq_enable() \
+__asm__ __volatile__("sti": : :"memory")
 
 #endif
 

@@ -21,7 +21,7 @@ typedef short		s16_t;
 typedef char		s8_t;
 
 /* POSIX types */
-typedef s32_t	id_t;		// General identifier 
+typedef s32_t	id_t;		// General identifier
 typedef s16_t	uid_t;		// User ID
 typedef s16_t	gid_t;		// Group ID
 typedef s32_t	dev_t;		// Used for device IDs
@@ -35,7 +35,8 @@ typedef s32_t	blksize_t;	// Block size descriptor
 typedef s32_t	off_t;		// file sizes
 typedef u32_t	mode_t;		// File attributes
 
-#define NULL 0
+//#define NULL 0
+#define NULL ((void*)0)  //more proper
 
 #endif
 

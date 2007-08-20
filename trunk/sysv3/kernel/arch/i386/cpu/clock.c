@@ -27,14 +27,11 @@ void rtc_freq(unsigned freq)
 void rtc_intr(struct Register *regs)
 {
 	rtc_time ++;
-	if( !(rtc_second % 1000) )
+	if( !(rtc_time % 1000) ){
+        //printf(".");  //Let's see how long dose a minute last?
         rtc_second ++;
+	}
 }
-
-void invalid(struct Register *regs)
-{
-}
-
 
 void rtc_init()
 {
@@ -64,8 +61,5 @@ void rtc_init()
 	// Show time
 	strtime( &rtc_second, timestr );
 	SYSTEM("System Initialization Start: %s\n", timestr );
-	// TODO: REMOVE THIS !!! i don't know why this happen, this is a way
-	// to get around it
-    irq_install(7, invalid);
 }
 

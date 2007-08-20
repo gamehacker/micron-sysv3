@@ -20,6 +20,7 @@ CC= $(CROSS)gcc $(CCFLAGS)
 CXX=$(CROSS)c++ $(CXXFLAGS)
 LD= $(CROSS)ld  $(LDFLAGS)
 OC= $(CROSS)objcopy
+OD= $(CROSS)objdump
 
 # Include Target Platform Makefile
 include arch/$(ARCH)/Makefile
@@ -35,7 +36,9 @@ OBJECTS+=filesys/vcache.o \
 	 driver/device.o \
 	 lib/module.o \
 	 lib/export.o \
-	 lib/libc.o
+	 lib/libc.o \
+	 lib/vsprintf.o \
+	 lib/time.o
 
 # Targets
 all: boot micron
@@ -43,15 +46,17 @@ all: boot micron
 boot:$(BOOTSECT)
 	@echo "[LINKING ] $@"; $(LD) $(BOOTSECT) -T$(BOOTSCPT) -o$@.elf
 	@echo "[BUILDING] $@"; $(OC) -Obinary $@.elf $@
+	@echo "[DUMPPING] $@"; $(OD) -S $@.elf > $@.dmp
 
 micron:$(OBJECTS)
 	@echo "[LINKING ] $@"; $(LD) $(OBJECTS) -T$(LDSCRIPT) -o$@.elf
 	@echo "[BUILDING] $@"; $(OC) -Obinary $@.elf $@
+	@echo "[DUMPPING] $@"; $(OD) -S $@.elf > $@.dmp
 
 clean:
 	@echo "[REMOVE] $(OBJECTS) $(BOOTSECT) boot micron"; \
 		rm $(OBJECTS) $(BOOTSECT) \
-		boot.elf boot micron.elf micron
+		boot.elf boot micron.elf micron micron.dmp
 
 help:
 	@echo "****************************************************************"
