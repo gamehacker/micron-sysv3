@@ -13,10 +13,11 @@
 #include <libc.h>
 #include <irq.h>
 
-void irq_eoi()
+void irq_eoi(int irq)
 {
+    if( irq>=8 )
+        outportb(0xA0, 0x20);
 	outportb(0x20, 0x20);
-	outportb(0xA0, 0x20);
 }
 
 void (*isr_handler[32])(struct Register*);
@@ -49,14 +50,15 @@ void isr_install_syscall(void (*handler)(struct Register*))
 void isr_entry(struct Register *regs)
 {
 	if((regs->intn >= 0) && (regs->intn <= 31)) {
-		PANIC(isr_handler[regs->intn] == 0, "ISR=%d  eip=%x", regs->intn, regs->eip);
+		PANIC(isr_handler[regs->intn] == 0, "ISR=%d", regs->intn);
 		isr_handler[regs->intn](regs);
 	} else if((regs->intn >= 32) && (regs->intn <= 47)) {
 	    int irq = regs->intn-32;
-		MSG(irq_handler[irq] == 0, "IRQ=%d", irq);
+	    //Bochs will fire the unwanted irq 7??
+		MSG(irq_handler[irq] == 0 && irq!=7, "IRQ=%d", irq);
 		if ( irq_handler[irq] )
             irq_handler[irq](regs);
-		irq_eoi();
+		irq_eoi(irq);
 	}else if(regs->intn == 0x80) {
 		isr_handler[regs->intn](regs);
 	}
@@ -80,7 +82,7 @@ void pic_init()
 	// is this a mistake?
 	//outportb(0x20, 0x0);
 	//outportb(0xA0, 0x0);
-	outportb(0x21, 0xFB); //note: this is not 0xFF, or the second pic won't work :)
+	outportb(0x21, 0xFB); //note: this is not 0xFF, or the slave pic won't work :)
 	outportb(0xA1, 0xFF);
 }
 
