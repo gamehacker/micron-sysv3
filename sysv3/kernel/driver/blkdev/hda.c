@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Micron System V3 - Device Driver - I386 - TTY
+ * Micron System V3 - Device Driver - I386 - HDA
  * Copyright (C) 2007, Micron System Team
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
@@ -11,7 +11,7 @@
 #include <libc.h>
 #include <irq.h>
 
-/* IMPLEMENTATION NOTICE: 
+/* IMPLEMENTATION NOTICE:
  *   The following macros must be defined prior to use this driver:
  *   BLK_HDD		- Block device major ID
  *   BLK_HDD_IOBASE	- Device I/O base
@@ -112,7 +112,7 @@ int hda_read(dev_t id, char *buf, off_t cnt)
 
 	// wait for interrupt
 	while(!hda_stat.rready) asm("hlt");
-	
+
 	// Actual writing sequence
 	int i = 0;
 	while(hda_status() & 0x08) {
@@ -134,7 +134,7 @@ int hda_write(dev_t id, char *buf, off_t cnt)
 	outportb(REG_CYLH, (hda_stat.c>>8) & 0xFF);
 	outportb(REG_DEVICE, hda_stat.h & 0x0F);
 	hda_command(CMD_WRITE);
-	
+
 	// Writing in
 	int i = 0;
 	while(hda_status() & 0x08) {
@@ -240,7 +240,7 @@ struct mfs_sblk {
 	blkcnt_t  s_dblk;	// Data block
 	blkcnt_t  s_dblkcnt;	// Data block count
 	blksize_t s_blksize;	// Block size
-}; 
+};
 /************ For Partition Detection Use *************/
 
 
@@ -268,7 +268,7 @@ int hda_init()
 	/* Detection of partitions */
 	hda_partition[0].begin = 2;	/* first partition at 1st sector */
 	for(i=0; i<NVFSMNTS; i++) {
-		if(hda_lseek(DEVID(BLK_HDA, 0), hda_partition[i].begin, 0) 
+		if(hda_lseek(DEVID(BLK_HDA, 0), hda_partition[i].begin, 0)
 								== -1) {
 			break;
 		}

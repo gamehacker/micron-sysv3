@@ -4,6 +4,7 @@
  * Copyright (C) 2007, Martin Tang
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT
  *****************************************************************************/
+#include <stdarg.h>
 #include <libc.h>
 #include <device.h>
 #include <config.h>
@@ -109,22 +110,22 @@ void *memset(void *dest, int ch, size_t cnt)
 	return dest;
 }
 
-int kprintf(char *fmt, ...)
+int kprintf(const char *fmt, ...)
 {
+	char buf[256];
 	unsigned *args = (unsigned*)&fmt, argi=1;
-	char buf[255];
 	while(*fmt != '\0') switch(*fmt) {
 	case '%':
 		fmt++;
 		switch(*fmt) {
 		case 'b':
 			itoa(args[argi++], buf, 2);
-			dev_write(CHRDEV, DEVID(CHR_TTY, 0), buf, 
+			dev_write(CHRDEV, DEVID(CHR_TTY, 0), buf,
 					strlen(buf));
 			break;
 		case 'd':
 			itoa(args[argi++], buf, 10);
-			dev_write(CHRDEV, DEVID(CHR_TTY, 0), buf, 
+			dev_write(CHRDEV, DEVID(CHR_TTY, 0), buf,
 					strlen(buf));
 			break;
 		case 'x':
@@ -133,7 +134,7 @@ int kprintf(char *fmt, ...)
 					strlen(buf));
 			break;
 		case 's':
-			dev_write(CHRDEV, DEVID(CHR_TTY, 0), 
+			dev_write(CHRDEV, DEVID(CHR_TTY, 0),
 				(char*)args[argi], strlen((char*)args[argi]));
 			argi++;
 			break;
@@ -142,25 +143,49 @@ int kprintf(char *fmt, ...)
 					(char*)&args[argi++], 1);
 			break;
 		case 'C':
-			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 2, 
+			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 2,
 					(char)args[argi++]);
 			break;
 		case 'X':
-			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 4, 
+			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 4,
 					(char)args[argi++]);
 			break;
 		case 'Y':
-			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 5, 
+			dev_ioctl(CHRDEV, DEVID(CHR_TTY, 0), 5,
 					(char)args[argi++]);
 			break;
 		}
 		fmt++;
 		break;
 	default:
-		dev_write(CHRDEV, DEVID(CHR_TTY, 0), fmt, 1);
+		dev_write(CHRDEV, DEVID(CHR_TTY, 0), (char*)fmt, 1);
 		fmt++;
 		break;
 	}
 	return 0;
 }
 
+//standard libc printf
+int printf( const char *fmt, ...)
+{
+	va_list args;
+	int i;
+	char buf[256];
+	va_start(args, fmt);
+	i=vsprintf(buf, fmt, args);
+    dev_write(CHRDEV, DEVID(CHR_TTY, 0),
+            (char*)buf, i);
+	va_end(args);
+	return i;
+}
+
+
+int sprintf(char * buf, const char *fmt, ...)
+{
+	va_list args;
+	int i;
+	va_start(args, fmt);
+	i=vsprintf(buf,fmt,args);
+	va_end(args);
+	return i;
+}
