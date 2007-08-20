@@ -35,7 +35,6 @@ typedef s32_t	blksize_t;	// Block size descriptor
 typedef s32_t	off_t;		// file sizes
 typedef u32_t	mode_t;		// File attributes
 
-//#define NULL 0
 #define NULL ((void*)0)  //more proper
 
 #endif
