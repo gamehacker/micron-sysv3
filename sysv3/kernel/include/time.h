@@ -13,15 +13,15 @@
 #ifndef _TM_DEFINED
 struct tm
 {
-	int	tm_sec,     //
-        tm_min,     //
-        tm_hour,    //
-        tm_mday,    //day of the month
-        tm_mon,	    //month of the year
-        tm_year,    //
-        tm_wday,    //day of the week?  0~6
-        tm_yday,    //day of the year
-        tm_isdst;   //is leap year?
+	int tm_sec;     //
+	int tm_min;     //
+	int tm_hour;    //
+	int tm_mday;    //day of the month
+	int tm_mon;	    //month of the year
+	int tm_year;    //
+	int tm_wday;    //day of the week?  0~6
+	int tm_yday;    //day of the year
+	int tm_isdst;   //is leap year?
 };
 #define _TM_DEFINED
 #endif  //_TM_DEFINED

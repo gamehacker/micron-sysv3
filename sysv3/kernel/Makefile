@@ -56,7 +56,7 @@ micron:$(OBJECTS)
 clean:
 	@echo "[REMOVE] $(OBJECTS) $(BOOTSECT) boot micron"; \
 		rm $(OBJECTS) $(BOOTSECT) \
-		boot.elf boot micron.elf micron micron.dmp
+		boot.elf boot boot.dmp micron.elf micron micron.dmp
 
 help:
 	@echo "****************************************************************"

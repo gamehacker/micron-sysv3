@@ -36,7 +36,8 @@ void rtc_intr(struct Register *regs)
 void rtc_init()
 {
 	struct tm t;
-    char timestr[48];
+	char timestr[48];
+
 	/* initialize RTC */
 	rtc_freq(1000);
 	irq_install(0, rtc_intr);
