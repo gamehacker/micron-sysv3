@@ -123,6 +123,7 @@ extern int scache_commit(dev_t dev, blksize_t blksize);
 Mount point table is the mechanism which Micron used to register and mount a new block device, notice each device can be mounted ONLY ONCE.
 
 {{{
+/* These contents are defined in <mount.h> */
 struct mountab
 {
         char stat;                      /* mount point status */
@@ -155,6 +156,7 @@ extern int mountab_umount(dev_t dev);
 Vnode cache provides cache mechanism on already read inodes, the allocation is based on Least Used Reallocation(LUR) policy.
 
 {{{
+/* These contents are defined in <vcache.h> */
 /* reallocate a new vnode cache */
 extern struct vnode *vcache_alloc();
 /* promote a vnode if it has been used again and is not least used */
