@@ -17,8 +17,8 @@ ___________________________________________(File System)||(Device Module)__
             > [Mount Point] > [MFS]    |                ||
                             > [E2FS]   |                ||
                             > [JFFS]   |                ||
-                            > [FAT]  > | [Sector Cache] || > [Disk Driver]
-            > [Inode Cache] < ^^^^^^   |                ||
+                            > [FAT]    | [Sector Cache] || [Disk Driver]
+            > [Inode Cache]            |                ||
 }}}
 
 The file system design used in Micron System implements 2 layers of caching, which provides senior effectiency in both inode management and disk read/write. The system is implemented in 3 layers and 4 parts:
@@ -32,58 +32,55 @@ The file system design used in Micron System implements 2 layers of caching, whi
   # File system implementation layer should also can be implented as modules, which are both statically and dynamically loadable during anytime of execution.
   # As the need of meeting the general situations of controlling both caches, the file system implentations should all be non-specific both to mount points and devices underlying it.
 
-== 1.The VFS Layer ==
+= 3.File System Support Module Interface =
 
-Virtual File System Layer provides standard UNIX-compliant, non-privileged interfaces to other modules, drivers for use, and internally manages various file systems and storage hardwares.
+For each new file system's support in Micron System, the developer should write a kernel module interfacing the following structure, just like the other types of kernel modules and setup these entries in
 
-As different from most file system implementations, the inode in Micron System is managed by a order based priority, semaphore locked allocation mechanism, and all supported file system's own file node descriptions should be translated to MFS format of inode in order to be managed by the system. Any read/write to file is performed by VFS directly on the sector cache rather than file system implementations.
-
-The interfaces that should be implemented in VFS layer includes:
 {{{
-/* file node related */
-int mknod (const char *path, mode_t mode, dev_t dev);
-int mkfifo(const char *path, mode_t mode);
-int unlink(const char *path);
-
-/* link related */
-int symlink     (const char *path1, const char *path2);
-ssize_t readlink(const char *path, char *buf, size_t bufsize);
-
-/* directory related */
-int mkdir(const char *path, mode_t mode);
-int rmdir(const char *path);
-
-/* file status related */
-int chmod(const char *path, mode_t mode);
-int stat (const char *path, struct stat *buf);
-int lstat(const char *path, struct stat *buf);
-
-/* open file related */
-int open     (const char *path, int oflag, ... );
-int close    (int fildes);
-ssize_t read (int fildes, void *buf, size_t nbyte);
-ssize_t write(int fildes, const void *buf, size_t nbyte);
-int fcntl    (int fildes, int cmd, ...);
-off_t lseek  (int fildes, off_t offset, int whence);
-int dup      (int fildes);
-int dup2     (int fildes, int fildes2);
-int fstat    (int fildes, struct stat *buf);
-int fsync    (int fildes); 
-
-/* VFS related */
-int fstatvfs(int fildes, struct statvfs *buf);
-int statvfs (const char *path, struct statvfs *buf); 
-
-/* FS related */
-void sync(void); 
+struct fs fs[NFSENTYS];
 }}}
 
-== 2.Mount Point ==
+These structures are defined in header file:
 
-== 3.Inode Cache ==
+{{{
+kernel\include\fs.h
+}}}
 
-== 4.Sector Cache ==
+{{{
+struct fs
+{
+        /* file system probe */
+        int (*probe)(dev_t dev);
 
+        /* get file system block size */
+        blkcnt_t (*blksz)(dev_t dev);
+
+        /* load super block to buffer */
+        int (*lsblk)(dev_t dev, char *buf);
+
+        /* loading and saving nodes */
+        int (*lnode)(void *sblk, struct vnode *node);
+        int (*snode)(void *sblk, struct vnode *node);
+
+        /* node allocation and releasing */
+        struct vnode *(*ialloc)(void *sblk, dev_t dev);
+        int (*ifree)(void *sblk, struct vnode *node);
+
+        /* file data block allocation and releasing */
+        blkcnt_t (*daddr)(void *sblk);
+        blkcnt_t (*dalloc)(void *sblk, dev_t dev);
+        int (*dfree)(void *sblk, dev_t dev, blkcnt_t blk);
+};
+}}}
+
+For examples, you can refer to the file:
+{{{
+kernel\filesys\fs\mfs.c
+kernel\filesys\fs\mfs.h
+}}}
+which is the native implementation of Micron File System and 100% match with the Micron System's VFS interface.
+
+The key philosophy in adding a support for a new file system is *NODE DATA TRANSLATION*.
 
 
 
