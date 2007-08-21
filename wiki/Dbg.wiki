@@ -1,3 +1,4 @@
+#Summary Debugging Kernel Using _try And _catch
 #This page describes how to debug Micron Kernel and handle the exceptions.
 
 = try and catch =
@@ -80,7 +81,6 @@ There are some differences between try and {{{_try}}}:
 The Micron kernel mode programs( kernel-self code and other extra modules ) can use {{{_try}}} and {{{_catch}}} to handle the exceptions. 
 
 OK, try yours!
-
 
 
 
