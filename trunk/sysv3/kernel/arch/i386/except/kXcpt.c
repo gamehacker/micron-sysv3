@@ -20,7 +20,7 @@ static int kXcpt_test()
     }
     _catch  //my own catch
     {
-        printf("Exception happened.\n");
+        printf("Exception happened in test().\n");
         return 0;
     }
     printf("Reach the end!!\n");

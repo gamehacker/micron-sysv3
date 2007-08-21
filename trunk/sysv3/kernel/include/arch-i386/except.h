@@ -31,7 +31,7 @@ int __Xcpt_pop_filter( void );
 #define _try \
     struct __Xcpt_reg __d_Xcpt_reg; \
     int __Xcpt_happened; \
-    __asm__("movl $__Xcpt_catch_do, %%eax\n" \
+    __asm__("movl $3f, %%eax\n" \
             "movl %%eax, 0x4(%%ebx)\n" \
             "movl %%ebp, 0x8(%%ebx)\n" \
             "movl %%esp, 0xC(%%ebx)\n" \
@@ -41,19 +41,22 @@ int __Xcpt_pop_filter( void );
             "call __Xcpt_push_filter\n" \
             "addl $0x4, %%esp" \
             ::"b"( &__d_Xcpt_reg ) ); \
-    __asm__("movl $__Xcpt_real_ret, %eax\n" \
+    __asm__("movl $1f, %eax\n" \
             "movl %eax, 0x4(%ebp)" );
 
 //! _catch
 #define _catch \
     __Xcpt_happened = 0; \
-    __asm__("jmp __Xcpt_catch_if"); \
-    __asm__("__Xcpt_real_ret:\n" \
+    __asm__("jmp 2f"); \
+    __asm__("1:\n" \
+            "pushl %eax\n" \
             "call __Xcpt_pop_filter\n" \
-            "jmp *%eax"); \
-    __asm__("__Xcpt_catch_do:\n"); \
+            "movl %eax, %edx\n" \
+            "popl %eax\n" \
+            "jmp *%edx"); \
+    __asm__("3:\n"); \
     __Xcpt_happened = 1; \
-    __asm__("__Xcpt_catch_if:\n"); \
+    __asm__("2:\n"); \
     if( __Xcpt_happened )
 
 
