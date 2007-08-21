@@ -4,6 +4,10 @@
 
 In Micron System, the word 'Module' means kernel extensions that linked to the running kernel in both the statically linked (compiled together with kernel) and dynamically (loaded as a module file).
 
+There are generally 2 types of modules:
+  * Static module
+  * Thread module
+
 Kernel module includes a variety of kernel extensions, including but not limited to:
   * Device driver supports
   * File system supports
