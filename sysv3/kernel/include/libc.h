@@ -20,14 +20,14 @@ extern void *memcpy(void *dest, void *src, size_t cnt);
 extern void *memset(void *dest, int ch, size_t cnt);
 extern int __attribute__((format(printf, 1, 2))) kprintf(const char *fmt, ...);
 extern int sprintf(char * buf, const char *fmt, ...);
-extern int printf( const char *fmt, ...);
+extern int printf(const char *fmt, ...);
 //this is in vsprintf.c
 extern int vsprintf(char *buf, const char *fmt, va_list args);
 
 /* debug functions */
 #define PANIC(cond, str...) \
 	if(cond) {\
-		kprintf("%C[PANIC]: %s:%d: ", 0x0C, __FILE__, __LINE__); \
+		kprintf("%C[PANIC] %s:%d: ", 0x0C, __FILE__, __LINE__); \
 		kprintf(str); \
 		kprintf("\n%C", 0x0F); \
 		while(1); \
@@ -35,17 +35,17 @@ extern int vsprintf(char *buf, const char *fmt, va_list args);
 
 #define MSG(cond, str...) \
 	if(cond) { \
-		kprintf("%C[MESSAGE]: %s:%d: ", 0x0E, __FILE__, __LINE__); \
+		kprintf("%C[MESSAGE] %s:%d: ", 0x0E, __FILE__, __LINE__); \
 		kprintf(str); \
 		kprintf("\n%C", 0x0F); \
 	}
 
 #define DEBUG(data) \
-	kprintf("%CDEBUG:%s= 0x%x\n%C",0x0E,#data,(unsigned)data,0x0F);
+	kprintf("%C[DEBUG] %s= 0x%x\n%C",0x0E,#data,(unsigned)data,0x0F);
 
 #define SYSTEM(fmt, arg...) \
     { \
-        kprintf("%C[SYSTEM]%C:", 0x0E, 0x0F); \
+        kprintf("%C[SYSTEM]%C ", 0x0E, 0x0F); \
         kprintf(fmt, ##arg); \
 	}
 
