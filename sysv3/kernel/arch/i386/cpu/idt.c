@@ -5,6 +5,7 @@
  * PROTECTED UNDER MICRON SYSTEM PUBLIC LICENSE AGREEMENT.
  *****************************************************************************/
 #include <io.h>
+#include <idt.h>
 
 #define IDT_ENTRIES 256
 
@@ -26,19 +27,6 @@ struct idtr
 	unsigned limit:16;
 	unsigned address:32;
 }__attribute__((packed)) idtr;
-
-enum idt_type
-{
-	TASK = 5,		/* Task Gate */
-	INTR = 6,		/* Interrupt Gate */
-	TRAP = 7		/* Trap Gate */
-};
-
-enum idt_bits
-{
-	BITS16,			/* 16 bits gate */
-	BITS32			/* 32 bits gate */
-};
 
 void idt_setup(unsigned index,		// target idt entry index
 		    unsigned sel,		// handler code segment
