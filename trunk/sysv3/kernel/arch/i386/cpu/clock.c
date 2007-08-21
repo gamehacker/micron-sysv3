@@ -39,7 +39,7 @@ void rtc_init()
 	char timestr[48];
 
 	/* initialize RTC */
-	rtc_freq(1000);
+	//rtc_freq(1000);
 	irq_install(0, rtc_intr);
 
 	/* initialize system time */
