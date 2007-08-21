@@ -77,7 +77,10 @@ There are some differences between try and {{{_try}}}:
  # In one function, we can only use {{{_try}}} and {{{_catch}}} once.
  # We should include except.h when we use.
 
-The Micron kernel mode programs( kernel-self code and other extra modules ) can use {{{_try}}} and {{{_catch}}} to handle the exceptions. OK, try yours!
+The Micron kernel mode programs( kernel-self code and other extra modules ) can use {{{_try}}} and {{{_catch}}} to handle the exceptions. 
+
+OK, try yours!
+
 
 
 
