@@ -54,7 +54,9 @@ int __Xcpt_pop_filter( void );
             "movl %eax, %edx\n" \
             "popl %eax\n" \
             "jmp *%edx"); \
-    __asm__("3:\n"); \
+    __asm__("3:\n" \
+            "call __Xcpt_get_esp\n" \
+            "movl %eax, %esp"); \
     __Xcpt_happened = 1; \
     __asm__("2:\n"); \
     if( __Xcpt_happened )
