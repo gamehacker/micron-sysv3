@@ -14,13 +14,15 @@ static int kXcpt_test()
     _try    //my own try
     {
         //try context
-        printf("\ntry to make an exception.\n");
+        printf("\n^_^ Try to make an exception.\n");
         int c=0;
         c = 5/c;
     }
     _catch  //my own catch
     {
-        printf("Exception happened in test().\n");
+        printf("Exception Catched in kXcpt_test().\nMake another exception in catch{}\n");
+        int c=0;
+        c = 5/c;
         return 0;
     }
     printf("Reach the end!!\n");
@@ -31,8 +33,13 @@ extern int setup_isr_handler();
 int kXcpt_init()
 {
     setup_isr_handler();
-    if(0)
-        kXcpt_test();
+    if(1){
+        _try{
+            kXcpt_test();
+        }_catch{
+            printf("Exception Catched in kXcpt_init()\n");
+        }
+    }
     return 0;
 }
 

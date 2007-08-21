@@ -45,12 +45,24 @@ int __Xcpt_pop_filter( void )
     return ret_addr;
 }
 
+//! When catch, we should restore a correct esp
+int __Xcpt_get_esp()
+{
+    if( __cur_Xcpt_filter )
+    {
+        return __cur_Xcpt_filter->esp;
+    }
+    PANIC(1, "__cur_Xcpt_filter == NULL");
+    //not reached
+    return 0;
+}
 
 //!
 int filter_fill_regs( regs_t * r )
 {
-    if( __cur_Xcpt_filter && __cur_Xcpt_filter->fired )
+    if( __cur_Xcpt_filter && __cur_Xcpt_filter->fired ){
         __Xcpt_pop_filter();
+    }
     if( __cur_Xcpt_filter )
     {
         r->ebp = (unsigned int)__cur_Xcpt_filter->ebp;
