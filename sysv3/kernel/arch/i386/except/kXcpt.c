@@ -50,5 +50,5 @@ int kXcpt_exit()
 }
 
 
-REGISTER_MODULE(kXcpt, "Kernel Exception", kXcpt_init, kXcpt_exit);
+REGISTER_MODULE(SRV, kXcpt, "Kernel Exception", kXcpt_init, kXcpt_exit);
 
