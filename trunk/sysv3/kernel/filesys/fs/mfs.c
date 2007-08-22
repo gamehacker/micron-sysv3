@@ -463,5 +463,5 @@ int mfs_exit()
 	return 0;
 }
 
-REGISTER_MODULE(mfs, "Micron File System", mfs_init, mfs_exit);
+REGISTER_MODULE(FS, mfs, "Micron File System", mfs_init, mfs_exit);
 

@@ -303,5 +303,5 @@ int hda_exit()
 	return 0;
 }
 
-REGISTER_MODULE(hda, "ATA/IDE Hard Disk A", hda_init, hda_exit);
+REGISTER_MODULE(DRV, hda, "ATA/IDE Hard Disk A", hda_init, hda_exit);
 
