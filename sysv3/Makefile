@@ -14,14 +14,14 @@ all:
 	        -b kernel/boot -k kernel/micron -o micron.img
 
 run:
-	@qemu -L /qemu -hda micron.img -s &
+	@qemu -no-kqemu -m 32 -s -L /qemu micron.img &
 
 kdbg:
-	@qemu -L /qemu -hda micron.img -s -S &
+	@qemu -no-kqemu -m 32 -s -S -L /qemu micron.img &
 	@i686-elf-gdb --command scripts/gdb kernel/micron.elf
 
 bdbg:
-	@qemu -L /qemu -hda micron.img -s -S &
+	@qemu -no-kqemu -m 32 -s -S -L /qemu micron.img &
 	@i686-elf-gdb --command scripts/gdb kernel/boot.elf
 
 clean:
