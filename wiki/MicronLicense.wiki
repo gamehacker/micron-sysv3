@@ -1,4 +1,4 @@
-#summary Micron PPublic License Agreement draft v1.0
+#summary Micron Public License Agreement draft v1.0
 
 {{{
 Micron System Public License Agreement draft v1.0
