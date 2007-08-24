@@ -8,47 +8,11 @@
 #include <libc.h>
 #include <except.h>
 
-//! If _try _catch won't work, do this test.
-static int kXcpt_test()
-{
-    _try    //my own try
-    {
-        //try context
-        printf("\n^_^ Try to make an exception.\n");
-        int c=0;
-        c = 5/c;
-    }
-    _catch  //my own catch
-    {
-        printf("Exception Catched in kXcpt_test().\nMake another exception in catch{}\n");
-        int c=0;
-        c = 5/c;
-        return 0;
-    }
-    printf("Reach the end!!\n");
-    return 1;
-}
-
 extern int setup_isr_handler();
+
 int kXcpt_init()
 {
     setup_isr_handler();
-    if(1){
-        _try{
-            kXcpt_test();
-        }_catch{
-            printf("Exception Catched in kXcpt_init()\n");
-        }
-    }
     return 0;
 }
-
-
-int kXcpt_exit()
-{
-    return 0;
-}
-
-
-REGISTER_MODULE(SRV, kXcpt, "Kernel Exception", kXcpt_init, kXcpt_exit);
 

@@ -19,10 +19,11 @@
 .extern dma_init
 .extern tty_init
 .extern dev_init
+.extern kXcpt_init
 	movl %eax,   kboot
 	movl $stack, %esp	/* setup stack for kernel */
 	call bss_init		/* initialize bss section */
-	call irq_init		/* initialize IRQ */  /* If irq is not initialized, kb seems not to work. --Huang Guan*/
+	call irq_init		/* initialize IRQ */
 	call tty_init		/* initialize TTY */
 	call idt_init		/* install new gdt managed by kernel */
 	call rtc_init		/* initialize RTC */
@@ -30,6 +31,7 @@
 	call page_init		/* initialize RTC */
 	call mem_size		/* get memory size info */
 	sti			/* enable all interrupts */
+	call kXcpt_init		/* kernel exception handling */
 	call modinit		/* initialize all modules */
 	call kmain
 

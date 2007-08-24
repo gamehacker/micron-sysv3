@@ -111,7 +111,7 @@ int hda_read(dev_t id, char *buf, off_t cnt)
 	hda_command(CMD_READ);
 
 	// wait for interrupt
-	while(!hda_stat.rready) asm("hlt");
+	while(!hda_stat.rready);
 
 	// Actual writing sequence
 	int i = 0;
@@ -170,11 +170,6 @@ int hda_lseek(dev_t id, off_t offset, int whence)
 	hda_stat.c = (offset/hda_stat.S/hda_stat.H) % hda_stat.C;
 	hda_stat.h = (offset/hda_stat.S) % hda_stat.H;
 	hda_stat.s = offset % hda_stat.S;
-	outportb(REG_SECT, hda_stat.s & 0xFF);
-	outportb(REG_CYLL, hda_stat.c & 0xFF);
-	outportb(REG_CYLH, (hda_stat.c>>8) & 0xFF);
-	outportb(REG_DEVICE, hda_stat.h & 0x0F);
-	hda_command(CMD_SEEK);
 	return 0;
 }
 
@@ -215,9 +210,7 @@ void hda_intr(struct Register *regs)
 		break;
 	case CMD_WRITE:
 		//kprintf("__int_write__\n");
-		break;
-	case CMD_SEEK:
-		//kprintf("__int_seek__\n");
+		hda_stat.rready = 1;
 		break;
 	}
 	hda_stat.cmd = 0;
