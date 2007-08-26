@@ -179,6 +179,21 @@ int printf( const char *fmt, ...)
 	return i;
 }
 
+//Use this instead using printf directly plz!
+int _printf( const char *fmt, ...)
+{
+	va_list args;
+	int i;
+	char buf[256];
+	va_start(args, fmt);
+	i=vsprintf(buf, fmt, args);
+    dev_write(CHRDEV, DEVID(CHR_TTY, 0),
+            (char*)buf, i);
+	va_end(args);
+	return i;
+}
+
+
 
 int sprintf(char * buf, const char *fmt, ...)
 {
