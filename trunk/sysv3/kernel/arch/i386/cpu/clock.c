@@ -9,12 +9,14 @@
 #include <libc.h>
 #include <types.h>
 #include <time.h>
+#include <config.h>
 
 #define BCD2HEXB(bcd)	(bcd&0xf)+((bcd>>4)&0xf)*10
 
 //global variables, they may be accessed by another file
 unsigned rtc_time;      //unit: ms
 unsigned rtc_second;    //unit: s
+
 
 void rtc_freq(unsigned freq)
 {
@@ -24,13 +26,15 @@ void rtc_freq(unsigned freq)
 	outportb(0x40, div>>8);
 }
 
+extern void timer_rolling(); //kernel/kernel/systimer.c
 void rtc_intr(struct Register *regs)
 {
 	rtc_time ++;
-	if( !(rtc_time % 1000) ){
+	if( !(rtc_time % RTC_FREQUENCY) ){
         //printf(".");  //Let's see how long dose a minute last?
         rtc_second ++;
 	}
+	timer_rolling();
 }
 
 void rtc_init()
@@ -39,7 +43,7 @@ void rtc_init()
 	char timestr[48];
 
 	/* initialize RTC */
-	//rtc_freq(1000);
+	rtc_freq( RTC_FREQUENCY );
 	irq_install(0, rtc_intr);
 
 	/* initialize system time */

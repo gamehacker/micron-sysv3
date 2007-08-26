@@ -55,5 +55,8 @@ extern void arch_enablei();	/* enable all interrupts */
  */
 #define BLK_HDD_IOBASE	0x01F0
 
+//Note: setting rtc frequency to 1000 is not stable when running in virtual machines.
+#define RTC_FREQUENCY 100
+
 #endif
 

@@ -34,6 +34,7 @@ OBJECTS+=filesys/vcache.o \
 	 filesys/fs.o \
 	 filesys/fs/mfs.o \
 	 driver/device.o \
+	 kernel/systimer.o \
 	 lib/module.o \
 	 lib/export.o \
 	 lib/libc.o \
