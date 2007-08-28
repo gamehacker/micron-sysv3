@@ -3,7 +3,7 @@
 = Questions & Answers =
 == Q1: Why doesn't Micron kernel include a byte based allocator? ==
 
-For stablity issues, Micron System strongly NOT recommended to use dynamic byte base memory allocator in kernel, as it MUST lead to memory fragment and complexity of kernel design, we can't deal with complex situations, but we have ways to avoid that :)
+For stablity issues, Micron System strongly recommended NOT to use dynamical byte based memory allocator in kernel, as it MUST lead to memory fragmentation and complexity of kernel design to deal with it, we can't deal with complex situations, but we have ways to avoid that :)
 
 *Solution 1*:  Request your needed memory space from bss section statically:
 
